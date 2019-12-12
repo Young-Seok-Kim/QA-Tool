@@ -143,7 +143,7 @@ UINT VIEW::ThreadSecond(LPVOID _mothod) // picture Control에 영상 띄우는 코드, O
 
 						if(Main.compare[0] == 1)
 						{
-							IplImage *imgNames[NUM] = {Main.Result_cap[0],Main.Compare_cam}; // 이미지가 저장된 배열
+							IplImage *imgNames[NUM] = {Main.ResultImage[0],Main.Compare_cam}; // 이미지가 저장된 배열
 
 							Mat imgs[NUM];
 							Mat imgsHLS[NUM];

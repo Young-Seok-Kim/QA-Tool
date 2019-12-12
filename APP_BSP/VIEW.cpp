@@ -216,8 +216,11 @@ void VIEW::OnBnClickedCamsel()
 
 	if(sel_cam==0)
 		cam = cvCaptureFromCAM(sel_cam); // cam에 웹캠의 정보를 저장
-	else if (sel_cam==1 && cvCreateCameraCapture(sel_cam) != NULL)
-		cam = cvCaptureFromCAM(1); // cam에 웹캠의 정보를 저장
+	else if (sel_cam==1/* && cvCreateCameraCapture(sel_cam) != NULL*/)
+		if(cvCaptureFromCAM(1))
+			cam = cvCaptureFromCAM(1); // cam에 웹캠의 정보를 저장
+		else
+			MessageBox(L"캠이 연결되어있지 않습니다.");
 	else
 		MessageBox(L"캠이 연결되어있지 않습니다.");
 

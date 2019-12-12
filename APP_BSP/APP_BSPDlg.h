@@ -58,7 +58,7 @@ public:
 	bool Threadfirst_sw;
 	bool ThreadFirst_pause;
 	CWinThread *p1;
-
+	int compare[8]; // 몇번째의 이미지를 Compare 할 것인지	
 	int test;
 	afx_msg void OnBnClickedSetting();
 };

@@ -59,8 +59,6 @@ public:
 	////////////////////////////
 	int sel_cam; // 몇번째 카메라로 녹화할것인지 선택한다.
 	int sel_cap; // 이미지를 몇개나 Compare 할것인지 선택한다.
-
-	
 	
 	////////////////////////////
 	
@@ -101,4 +99,5 @@ public:
 	CButton m_btn_cap6;
 	CButton m_btn_cap7;
 	CButton m_btn_cap8;
+	afx_msg void OnBnClickedComBtn1();
 };

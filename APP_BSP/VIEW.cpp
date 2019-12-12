@@ -310,6 +310,7 @@ void VIEW::OnBnClickedCapBtn1()
 		//cvShowImage("Main.Compare_cam",&Main.Compare_cam);
 	}
 	
+	GetDlgItem(IDC_COM_BTN1)->EnableWindow(TRUE);
 
 	//((CButton*)GetDlgItem(IDC_BUTTON2))->EnableWindow(TRUE);
 }
@@ -346,6 +347,8 @@ void VIEW::OnBnClickedCapBtn2()
 		Main.Compare_cam = Main.Result_cap[1];
 		//cvShowImage("Main.Compare_cam",&Main.Compare_cam);
 	}
+
+	GetDlgItem(IDC_COM_BTN2)->EnableWindow(TRUE);
 }
 void VIEW::OnBnClickedCapBtn3()
 {
@@ -380,6 +383,7 @@ void VIEW::OnBnClickedCapBtn3()
 		Main.Compare_cam = Main.Result_cap[2];
 		//cvShowImage("Main.Compare_cam",&Main.Compare_cam);
 	}
+	GetDlgItem(IDC_COM_BTN3)->EnableWindow(TRUE);
 }
 
 void VIEW::OnBnClickedCapBtn4()
@@ -416,6 +420,8 @@ void VIEW::OnBnClickedCapBtn4()
 		Main.Compare_cam = Main.Result_cap[3];
 		//cvShowImage("Main.Compare_cam",&Main.Compare_cam);
 	}
+
+	GetDlgItem(IDC_COM_BTN4)->EnableWindow(TRUE);
 }
 
 void VIEW::OnBnClickedCapBtn5()
@@ -451,6 +457,8 @@ void VIEW::OnBnClickedCapBtn5()
 		Main.Compare_cam = Main.Result_cap[4];
 		//cvShowImage("Main.Compare_cam",&Main.Compare_cam);
 	}
+
+	GetDlgItem(IDC_COM_BTN5)->EnableWindow(TRUE);
 }
 
 void VIEW::OnBnClickedCapBtn6()
@@ -486,6 +494,8 @@ void VIEW::OnBnClickedCapBtn6()
 		Main.Compare_cam = Main.Result_cap[5];
 		//cvShowImage("Main.Compare_cam",&Main.Compare_cam);
 	}
+
+	GetDlgItem(IDC_COM_BTN6)->EnableWindow(TRUE);
 }
 
 void VIEW::OnBnClickedCapBtn7()
@@ -520,6 +530,8 @@ void VIEW::OnBnClickedCapBtn7()
 		Main.Compare_cam = Main.Result_cap[6];
 		//cvShowImage("Main.Compare_cam",&Main.Compare_cam);
 	}
+
+	GetDlgItem(IDC_COM_BTN7)->EnableWindow(TRUE);
 }
 
 void VIEW::OnBnClickedCapBtn8()
@@ -555,6 +567,7 @@ void VIEW::OnBnClickedCapBtn8()
 		Main.Compare_cam = Main.Result_cap[7];
 		//cvShowImage("Main.Compare_cam",&Main.Compare_cam);
 	}
+	GetDlgItem(IDC_COM_BTN8)->EnableWindow(TRUE);
 }
 
 

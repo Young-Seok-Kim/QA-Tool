@@ -12,10 +12,15 @@ using namespace std;
 using namespace cv;
 
 #define SCALE 02
-#define NUM 2 // 비교할 이미지의 갯수 이 코드에서는 캡처된 (런처,부트로더)화면과 비교할 화면 총 2개가 있으므로 2로 지정
+#define NUM 2 // 비교할 이미지의 갯수
 #define BINS 8
 
 CAPP_BSPDlg Main;
+int CAPP_BSPDlg::compare[8];
+IplImage* CAPP_BSPDlg::Compare_cam;
+IplImage* CAPP_BSPDlg::ResultImage[10];
+IplImage* CAPP_BSPDlg::Result_cap[8];
+CvCapture *CAPP_BSPDlg::cam;
 
 IMPLEMENT_DYNAMIC(VIEW, CAPP_BSPDlg)
 
@@ -131,7 +136,7 @@ UINT VIEW::ThreadSecond(LPVOID _mothod) // picture Control에 영상 띄우는 코드, O
 					cvFlip(pthImage,Main.ResultImage[x],1); // Main.ResultImage 변수에 넣은 원본 이미지를 좌우반전한다.
 					
 					//if(Main.Compare_cam == NULL)
-					Main.Compare_cam = cvCreateImage(cvGetSize(pthImage),pthImage->depth,pthImage->nChannels); // Main.ResultImage 변수에 원본이미지를 넣는다
+					Main.Compare_cam = cvCreateImage(cvGetSize(pthImage),pthImage->depth,pthImage->nChannels); // Main.Compare_cam 변수에 원본이미지를 넣는다
 					
 					pMain->m_viewcopy[x].CopyOf(Main.ResultImage[x]); // 좌우반전한 Main.ResultImage를 출력한다.
 					pMain->m_viewcopy[x].DrawToHDC(pDC->m_hDC,&rect);
@@ -139,63 +144,7 @@ UINT VIEW::ThreadSecond(LPVOID _mothod) // picture Control에 영상 띄우는 코드, O
 					//if ( Main.ResultImage[x] != NULL)
 					//cvCopy(Main.ResultImage[x], Main.Compare_cam);
 
-					////////////////////// 이하 Compare 코드 /////////////////////////////
-
-						if(Main.compare[0] == 1)
-						{
-							IplImage *imgNames[NUM] = {Main.ResultImage[0],Main.Compare_cam}; // 이미지가 저장된 배열
-
-							Mat imgs[NUM];
-							Mat imgsHLS[NUM];
-
-							for(int i=0;i<NUM;i++)
-								{
-									imgs[i] = cvarrToMat(imgNames[i]); // IplImage를 Mat형태로 변환
-
-									if(imgs[i].data==0)
-									{
-										cout << "Unable to read" << imgNames[i] <<endl;
-									}
-										cvtColor(imgs[i],imgsHLS[i], COLOR_BGR2HLS);
-								}
-
-							cout << "succeeded to read all image" << endl;
-
-							Mat histogram[NUM];
-
-							int channel_numbers[] = {0,1,2};
-							for (int i=0;i<NUM;i++)
-							{
-								int* number_bins=new int[imgsHLS[i].channels()];
-
-								for (int ch=0;ch<imgsHLS[i].channels();ch++)
-								{
-									number_bins[ch]=BINS;
-								}
-
-									float ch_range[] = {0.0,255.0};
-									const float *channel_ranges[] = {ch_range,ch_range,ch_range};
-									calcHist(&imgsHLS[i],1,channel_numbers,Mat(),histogram[i],imgsHLS[i].channels(),number_bins,channel_ranges);
-									normalize(histogram[i],histogram[i],1.0);
-									delete[] number_bins;
-							}
-								cout << "Image Comparison by HISTCMP_CORREL " << endl;
-
-								for(int i=0; i < NUM; i++)
-								{
-									for (int j = i+1 ; j<NUM ; j++)
-									{
-										double matching_score = compareHist(histogram[i], histogram[j],CV_COMP_CORREL);
-										cout << "런처화면 " << imgNames[i] << "과 캠화면 " << &Main.Compare_cam << "의 유사도는 " << matching_score << endl << endl;
-									}
-								}
-								Main.compare[0] = 0;
-						}
-
-
-					////////////////////// 이상 Compare 코드 /////////////////////////////
 					
-					// 이 사이에 Image Compare 구문을 넣어야 할듯싶다.
 					
 					
 					if ( x == 9)
@@ -270,7 +219,8 @@ void VIEW::OnClose()
 void VIEW::OnBnClickedCamsel()
 {
 	
-	
+	// MessageBox(_T("test"),_T("title"),MB_ICONERROR);
+
 	sel_cam = sel.GetCurSel();
 	sel.GetLBText(sel_cam,SelectCam);
 
@@ -336,6 +286,7 @@ int VIEW::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	cout << "Main Dialog에서 정의한 test : " << Main.test << endl;
 	return 0;
 }
+
 void VIEW::OnBnClickedCapBtn1()
 {
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.

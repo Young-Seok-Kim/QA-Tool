@@ -6,13 +6,21 @@
 #include "APP_BSP.h"
 #include "APP_BSPDlg.h"
 #include "VIEW.h"
+#include "stdio.h"
+
+#define SCALE 02
+#define NUM 2 // 비교할 이미지의 갯수 이 코드에서는 캡처된 (런처,부트로더)화면과 비교할 화면 총 2개가 있으므로 2로 지정
+#define BINS 8
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
 
+using namespace std;
+using namespace cv;
 
 // CAPP_BSPDlg dialog
+IplImage *imgNames[NUM] = {CAPP_BSPDlg::ResultImage[0],CAPP_BSPDlg::Result_cap[0]}; // 이미지가 저장된 배열
 
 IMPLEMENT_DYNAMIC(CAPP_BSPDlg, CDialog)
 
@@ -82,6 +90,7 @@ BEGIN_MESSAGE_MAP(CAPP_BSPDlg, CDialog)
 	//}}AFX_MSG_MAP
 	ON_BN_CLICKED(IDC_VIEW, &CAPP_BSPDlg::OnBnClickedView)
 	ON_WM_ACTIVATE()
+	ON_WM_CREATE()
 END_MESSAGE_MAP()
 
 
@@ -117,6 +126,11 @@ BOOL CAPP_BSPDlg::OnInitDialog()
 	SetIcon(m_hIcon, FALSE);		// 작은 아이콘을 설정합니다.
 
 	// TODO: 여기에 추가 초기화 작업을 추가합니다.
+
+	CWinThread *p1 = NULL;
+	p1 = AfxBeginThread(ThreadFirst, this); // 여기까지 스레드
+	p1->m_bAutoDelete = FALSE;
+	ThreadFirst_running = true;	
 
 	return TRUE;  // 포커스를 컨트롤에 설정하지 않으면 TRUE를 반환합니다.
 }
@@ -188,4 +202,136 @@ void CAPP_BSPDlg::OnActivate(UINT nState, CWnd* pWndOther, BOOL bMinimized)
 
 	test = 1;
 
+}
+
+
+
+UINT CAPP_BSPDlg::ThreadFirst(LPVOID _mothod) // picture Control에 영상 띄우는 코드, OnActvie 이벤트에 스레드 실행 지정하였다.
+{
+    CAPP_BSPDlg *pMain = (CAPP_BSPDlg*)_mothod;
+
+	IplImage *pthImage=NULL; // 원본 이미지
+	CAPP_BSPDlg Main;
+
+	cout << "Thread First 실행" << endl;
+	
+	while(1)
+	{  
+		for(int x=0; x<10; x++) // 추후에 캠을 비교할때 2번째 배열에 이미지를 저장하고 1번째 배열에 있는 이미지를 Compare 하기위해 만들었다.
+			{
+				if (Main.ThreadFirst_running == false)
+					break;
+				
+					pthImage = cvQueryFrame(Main.cam); // 원본이미지 변수에 캠의 화면을 저장
+					//m_MainDlg->GetQueryFrame(&pthImage);// 원본이미지 변수에 캠의 화면을 저장
+					ResultImage[x] = cvCreateImage(cvGetSize(pthImage),pthImage->depth,pthImage->nChannels); // ResultImage 변수에 원본이미지를 넣는다
+					//cout << x << "번째 이미지 Load" << endl;
+
+					cvFlip(pthImage,ResultImage[x],1); // Main.ResultImage 변수에 넣은 원본 이미지를 좌우반전한다.
+					
+					//if(Compare_cam == NULL)
+					Compare_cam = cvCreateImage(cvGetSize(pthImage),pthImage->depth,pthImage->nChannels); // Compare_cam 변수에 원본이미지를 넣는다
+					
+					//if (ResultImage[x] != NULL)
+					//cvCopy(ResultImage[x], Compare_cam);
+
+		////////////////////// 이하 Compare 코드 /////////////////////////////
+					// Compare_cam을 Release 시켜야 해서 Button click event에 코드를 적지않고 이곳에 적어놓았다.
+
+					
+						if (compare[0] == 1)
+						{
+							//IplImage *imgNames[NUM] = {ResultImage[0],Result_cap[0]}; // 이미지가 저장된 배열
+
+							if (ResultImage[0] == NULL)
+							{
+								ResultImage[0] = cvCreateImage(cvGetSize(pthImage),pthImage->depth,pthImage->nChannels); // Main.ResultImage 변수에 원본이미지를 넣는다
+							}
+														
+							Mat imgs[NUM];
+							Mat imgsHLS[NUM];
+
+							for(int i=0;i<NUM;i++)
+								{
+									imgs[i] = cvarrToMat(imgNames[i]); // IplImage를 Mat형태로 변환
+
+									if(imgs[i].data==0)
+									{
+										cout << "Unable to read" << imgNames[i] <<endl;
+									}
+										cvtColor(imgs[i],imgsHLS[i], COLOR_BGR2HLS);
+								}
+
+							cout << "succeeded to read all image" << endl;
+
+							Mat histogram[NUM];
+
+							int channel_numbers[] = {0,1,2};
+							for (int i=0;i<NUM;i++)
+							{
+								int* number_bins=new int[imgsHLS[i].channels()];
+
+								for (int ch=0;ch<imgsHLS[i].channels();ch++)
+								{
+									number_bins[ch]=BINS;
+								}
+
+									float ch_range[] = {0.0,255.0};
+									const float *channel_ranges[] = {ch_range,ch_range,ch_range};
+									calcHist(&imgsHLS[i],1,channel_numbers,Mat(),histogram[i],imgsHLS[i].channels(),number_bins,channel_ranges);
+									normalize(histogram[i],histogram[i],1.0);
+									delete[] number_bins;
+							}
+								cout << "Image Comparison by HISTCMP_CORREL " << endl;
+
+								for(int i=0; i < NUM; i++)
+								{
+									for (int j = i+1 ; j<NUM ; j++)
+									{
+										double matching_score = compareHist(histogram[i], histogram[j],CV_COMP_CORREL);
+										cout << "캠쳐된 화면 " << ResultImage[0] << "캠 화면 " << &Compare_cam << "의 유사도는 " << matching_score << endl << endl;
+									}
+								}
+								compare[0] = 0;
+						}
+
+
+					////////////////////// 이상 Compare 코드 /////////////////////////////
+
+						
+					if ( x == 9)
+					{
+						for (int j=0 ; j<10 ; j++)
+						{
+							cvReleaseImage(&ResultImage[j]);
+							//if (j == 9)
+								//cout << "Clear" << endl;
+						}
+					}
+					
+					
+					cvReleaseImage(&Compare_cam); // 이 코드는 추후에 Compare Image 기능을 구현 한 후에 그곳으로 옮겨야할것같다.
+			} // for 문의 끝
+			
+			Sleep(3); // CPU의 과도한 점유를 막기위한 코드
+
+
+		
+	}
+
+	cout << "Thread First 종료" << endl;
+	
+	//g_pThread=NULL;
+	return 0;
+}
+int CAPP_BSPDlg::OnCreate(LPCREATESTRUCT lpCreateStruct)
+{
+	if (CDialog::OnCreate(lpCreateStruct) == -1)
+		return -1;
+
+	// TODO:  여기에 특수화된 작성 코드를 추가합니다.
+	
+	cam = cvCaptureFromCAM(0);
+
+	return 0;
 }

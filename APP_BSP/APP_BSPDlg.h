@@ -50,15 +50,20 @@ public:
 	afx_msg void OnInitMenu(CMenu* pMenu);
 
 	int sw_active; // 스레드가 한번만 실행되게 하는 스위치 변수
-	IplImage *Compare_cam; // Capture 1 ~ 8 에저장된 이미지와 캠을 비교한다.
-	IplImage *ResultImage[10]; // 캠으로 캡쳐중인 이미지들이 저장된 배열
-	IplImage *Result_cap[8]; // cap1 ~ cap 8까지 캡쳐된 이미지가 저장될 배열
-	CvCapture *cam; // 현재 입력받고 있는 cam
+	static IplImage *Compare_cam; // Capture 1 ~ 8 에저장된 이미지와 캠을 비교한다.
+	static IplImage *ResultImage[10]; // 캠으로 캡쳐중인 이미지들이 저장된 배열
+	static IplImage *Result_cap[8]; // cap1 ~ cap 8까지 캡쳐된 이미지가 저장될 배열
+	static CvCapture *cam; // 현재 입력받고 있는 cam
 	bool ThreadFirst_running;
 	bool Threadfirst_sw;
 	bool ThreadFirst_pause;
 	CWinThread *p1;
-	int compare[8]; // 몇번째의 이미지를 Compare 할 것인지	
+	static int compare[8]; // 몇번째의 이미지를 Compare 할 것인지 Compare 할것이면 1, 안할것이면 0으로 표시한다.
 	int test;
+	static bool thread_first_running;
 	afx_msg void OnBnClickedSetting();
+
+
+	static UINT ThreadFirst(LPVOID _mothod); // Main Dialog에서 돌아갈 스레드를 만든다, Cam으로 촬영만 하고 화면에 띄워주진않는다.
+	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
 };

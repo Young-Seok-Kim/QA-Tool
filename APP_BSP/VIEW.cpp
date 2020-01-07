@@ -128,15 +128,17 @@ UINT VIEW::ThreadSecond(LPVOID _mothod) // picture Control에 영상 띄우는 코드, O
 				
 					pDC = pMain->m_ctrCamView.GetDC();
 
+					/*
 					pthImage = cvQueryFrame(Main.cam); // 원본이미지 변수에 캠의 화면을 저장
-					//m_MainDlg->GetQueryFrame(&pthImage);// 원본이미지 변수에 캠의 화면을 저장
+					m_MainDlg->GetQueryFrame(&pthImage);// 원본이미지 변수에 캠의 화면을 저장
 					Main.ResultImage[x] = cvCreateImage(cvGetSize(pthImage),pthImage->depth,pthImage->nChannels); // Main.ResultImage 변수에 원본이미지를 넣는다
-					//cout << x << "번째 이미지 Load" << endl;
+					cout << x << "번째 이미지 Load" << endl;
 
 					cvFlip(pthImage,Main.ResultImage[x],1); // Main.ResultImage 변수에 넣은 원본 이미지를 좌우반전한다.
 					
-					//if(Main.Compare_cam == NULL)
+					if(Main.Compare_cam == NULL)
 					Main.Compare_cam = cvCreateImage(cvGetSize(pthImage),pthImage->depth,pthImage->nChannels); // Main.Compare_cam 변수에 원본이미지를 넣는다
+					*/
 					
 					pMain->m_viewcopy[x].CopyOf(Main.ResultImage[x]); // 좌우반전한 Main.ResultImage를 출력한다.
 					pMain->m_viewcopy[x].DrawToHDC(pDC->m_hDC,&rect);
@@ -149,16 +151,13 @@ UINT VIEW::ThreadSecond(LPVOID _mothod) // picture Control에 영상 띄우는 코드, O
 					
 					if ( x == 9)
 					{
-						for (j=0 ; j<10 ; j++)
+						for (j=0 ; j<9 ; j++)
 						{
 							cvReleaseImage(&Main.ResultImage[j]);
 							//if (j == 9)
 								//cout << "Clear" << endl;
 						}
 					}
-					
-					
-					cvReleaseImage(&Main.Compare_cam); // 이 코드는 추후에 Compare Image 기능을 구현 한 후에 그곳으로 옮겨야할것같다.
 					pMain->m_ctrCamView.ReleaseDC(pDC);
 			} // for 문의 끝
 			
@@ -270,20 +269,20 @@ int VIEW::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
 	// TODO:  여기에 특수화된 작성 코드를 추가합니다.
 	
-	Main.cam = cvCaptureFromCAM(0);
+	//Main.cam = cvCaptureFromCAM(0);
 	sel_cam = 0;
-	cout << "VIEW Dialog Create시의 sel_cam = " << sel_cam << endl;
+	//cout << "VIEW Dialog Create시의 sel_cam = " << sel_cam << endl;
 	thread_second_running = true;
 	sw_active = 0;
 	
 	
-	if (thread_second_running == true)
-		cout << "VIEW 실행" << endl;
+	//if (thread_second_running == true)
+	//	cout << "VIEW 실행 및 Thread Second 실행" << endl;
 
-	cout << "VIEW에서의 cam : " << Main.cam << endl;
+	//cout << "VIEW에서의 cam : " << Main.cam << endl;
 	Main.ThreadFirst_pause = true;
 
-	cout << "Main Dialog에서 정의한 test : " << Main.test << endl;
+	//cout << "Main Dialog에서 정의한 test : " << Main.test << endl;
 	return 0;
 }
 

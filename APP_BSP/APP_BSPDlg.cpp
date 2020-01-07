@@ -127,9 +127,6 @@ BOOL CAPP_BSPDlg::OnInitDialog()
 
 	// TODO: 여기에 추가 초기화 작업을 추가합니다.
 
-	CWinThread *p1 = NULL;
-	p1 = AfxBeginThread(ThreadFirst, this); // 여기까지 스레드
-	p1->m_bAutoDelete = FALSE;
 	ThreadFirst_running = true;	
 
 	return TRUE;  // 포커스를 컨트롤에 설정하지 않으면 TRUE를 반환합니다.
@@ -199,8 +196,6 @@ void CAPP_BSPDlg::OnActivate(UINT nState, CWnd* pWndOther, BOOL bMinimized)
 	CDialog::OnActivate(nState, pWndOther, bMinimized);
 
 	// TODO: 여기에 메시지 처리기 코드를 추가합니다.
-
-	test = 1;
 
 }
 
@@ -332,6 +327,9 @@ int CAPP_BSPDlg::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	// TODO:  여기에 특수화된 작성 코드를 추가합니다.
 	
 	cam = cvCaptureFromCAM(0);
+	CWinThread *p1 = NULL;
+	p1 = AfxBeginThread(ThreadFirst, this); // 여기까지 스레드
+	p1->m_bAutoDelete = FALSE;
 
 	return 0;
 }

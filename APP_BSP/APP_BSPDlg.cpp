@@ -21,6 +21,7 @@ using namespace cv;
 
 // CAPP_BSPDlg dialog
 IplImage *imgNames[NUM] = {CAPP_BSPDlg::ResultImage[0],CAPP_BSPDlg::Result_cap[0]}; // 이미지가 저장된 배열
+int CAPP_BSPDlg::Image_order = 0;
 
 IMPLEMENT_DYNAMIC(CAPP_BSPDlg, CDialog)
 
@@ -127,8 +128,6 @@ BOOL CAPP_BSPDlg::OnInitDialog()
 
 	// TODO: 여기에 추가 초기화 작업을 추가합니다.
 
-	ThreadFirst_running = true;	
-
 	return TRUE;  // 포커스를 컨트롤에 설정하지 않으면 TRUE를 반환합니다.
 }
 
@@ -201,28 +200,34 @@ void CAPP_BSPDlg::OnActivate(UINT nState, CWnd* pWndOther, BOOL bMinimized)
 
 
 
-UINT CAPP_BSPDlg::ThreadFirst(LPVOID _mothod) // picture Control에 영상 띄우는 코드, OnActvie 이벤트에 스레드 실행 지정하였다.
+UINT CAPP_BSPDlg::ThreadFirst(LPVOID _mothod) // Cam으로부터 이미지를 가져오는 스레드
 {
     CAPP_BSPDlg *pMain = (CAPP_BSPDlg*)_mothod;
 
 	IplImage *pthImage=NULL; // 원본 이미지
-	CAPP_BSPDlg Main;
+	CAPP_BSPDlg *Main = (CAPP_BSPDlg*)AfxGetMainWnd();
 
 	cout << "Thread First 실행" << endl;
 	
 	while(1)
 	{  
-		for(int x=0; x<10; x++) // 추후에 캠을 비교할때 2번째 배열에 이미지를 저장하고 1번째 배열에 있는 이미지를 Compare 하기위해 만들었다.
+		
+		while(1)
 			{
-				if (Main.ThreadFirst_running == false)
+				if (Main->ThreadFirst_running == false)
 					break;
+
+				for(Main->Image_order = 0;Main->Image_order < 10;Main->Image_order++)
+				{
+
+				cout << "Thread First의 Main->Image_order = " << Main->Image_order << endl;
 				
-					pthImage = cvQueryFrame(Main.cam); // 원본이미지 변수에 캠의 화면을 저장
+					pthImage = cvQueryFrame(Main->cam); // 원본이미지 변수에 캠의 화면을 저장
 					//m_MainDlg->GetQueryFrame(&pthImage);// 원본이미지 변수에 캠의 화면을 저장
-					ResultImage[x] = cvCreateImage(cvGetSize(pthImage),pthImage->depth,pthImage->nChannels); // ResultImage 변수에 원본이미지를 넣는다
+					ResultImage[Main->Image_order] = cvCreateImage(cvGetSize(pthImage),pthImage->depth,pthImage->nChannels); // ResultImage 변수에 원본이미지를 넣는다
 					//cout << x << "번째 이미지 Load" << endl;
 
-					cvFlip(pthImage,ResultImage[x],1); // Main.ResultImage 변수에 넣은 원본 이미지를 좌우반전한다.
+					cvFlip(pthImage,ResultImage[Main->Image_order],1); // Main.ResultImage 변수에 넣은 원본 이미지를 좌우반전한다.
 					
 					//if(Compare_cam == NULL)
 					Compare_cam = cvCreateImage(cvGetSize(pthImage),pthImage->depth,pthImage->nChannels); // Compare_cam 변수에 원본이미지를 넣는다
@@ -282,19 +287,20 @@ UINT CAPP_BSPDlg::ThreadFirst(LPVOID _mothod) // picture Control에 영상 띄우는 �
 								for(int i=0; i < NUM; i++)
 								{
 									for (int j = i+1 ; j<NUM ; j++)
-									{
+										{
 										double matching_score = compareHist(histogram[i], histogram[j],CV_COMP_CORREL);
-										cout << "캠쳐된 화면 " << ResultImage[0] << "캠 화면 " << &Compare_cam << "의 유사도는 " << matching_score << endl << endl;
+										cout << "캡쳐된 화면 " << ResultImage[0] << "캠 화면 " << &Compare_cam << "의 유사도는 " << matching_score << endl << endl;
 									}
 								}
 								compare[0] = 0;
 						}
+				}
 
 
 					////////////////////// 이상 Compare 코드 /////////////////////////////
 
 						
-					if ( x == 9)
+					if ( Main->Image_order == 9)
 					{
 						for (int j=0 ; j<10 ; j++)
 						{
@@ -302,16 +308,14 @@ UINT CAPP_BSPDlg::ThreadFirst(LPVOID _mothod) // picture Control에 영상 띄우는 �
 							//if (j == 9)
 								//cout << "Clear" << endl;
 						}
+						Main->Image_order = 0;
+						break;
 					}
 					
-					
 					cvReleaseImage(&Compare_cam); // 이 코드는 추후에 Compare Image 기능을 구현 한 후에 그곳으로 옮겨야할것같다.
-			} // for 문의 끝
+			} // 2번째 while 문의 끝
 			
 			Sleep(3); // CPU의 과도한 점유를 막기위한 코드
-
-
-		
 	}
 
 	cout << "Thread First 종료" << endl;
@@ -330,6 +334,9 @@ int CAPP_BSPDlg::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	CWinThread *p1 = NULL;
 	p1 = AfxBeginThread(ThreadFirst, this); // 여기까지 스레드
 	p1->m_bAutoDelete = FALSE;
+
+	ThreadFirst_running = true;	
+	Image_order = 0;
 
 	return 0;
 }

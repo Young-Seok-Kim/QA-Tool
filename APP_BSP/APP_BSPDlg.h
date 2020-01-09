@@ -55,14 +55,14 @@ public:
 	static IplImage *Result_cap[8]; // cap1 ~ cap 8까지 캡쳐된 이미지가 저장될 배열
 	static CvCapture *cam; // 현재 입력받고 있는 cam
 	bool ThreadFirst_running;
-	bool Threadfirst_sw;
+	bool Threadfirst_sw;// sw == switch
 	bool ThreadFirst_pause;
+	bool Thread_second_running;
 	CWinThread *p1;
 	static int compare[8]; // 몇번째의 이미지를 Compare 할 것인지 Compare 할것이면 1, 안할것이면 0으로 표시한다.
-	int test;
-	static bool thread_first_running;
+	static int Image_order;
+	
 	afx_msg void OnBnClickedSetting();
-
 
 	static UINT ThreadFirst(LPVOID _mothod); // Main Dialog에서 돌아갈 스레드를 만든다, Cam으로 촬영만 하고 화면에 띄워주진않는다.
 	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);

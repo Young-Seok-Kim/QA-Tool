@@ -49,20 +49,15 @@ private:
 
 public: 
 	int mREC;
-	CvvImage m_viewcopy[10];
 	int sw_active; // 스레드가 한번만 실행되게 하는 스위치 변수
 	
 	static UINT ThreadSecond(LPVOID _mothod); // 캠 영상을 Picture Control에 계속 띄워주기 위해 사용하는 쓰레드
 	
-	
-	
 	////////////////////////////
 	int sel_cam; // 몇번째 카메라로 녹화할것인지 선택한다.
 	int sel_cap; // 이미지를 몇개나 Compare 할것인지 선택한다.
-	
 	////////////////////////////
-	
-	
+		
 	CStatic m_ctrCamView; // 캠영상이 출력될 Picture Control
 	CComboBox sel; // 몇번째 캠을 선택할것인지 고르는 Combobox
 

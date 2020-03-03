@@ -1,12 +1,14 @@
 #pragma once
 // APP_BSPDlg.cpp : 구현 파일
-//
+
+
 
 #include "stdafx.h"
 #include "APP_BSP.h"
 #include "APP_BSPDlg.h"
 #include "VIEW.h"
 #include "stdio.h"
+
 
 #define SCALE 02
 #define NUM 2 // 비교할 이미지의 갯수 이 코드에서는 캡처된 (런처,부트로더)화면과 비교할 화면 총 2개가 있으므로 2로 지정
@@ -22,6 +24,9 @@ using namespace cv;
 // CAPP_BSPDlg dialog
 IplImage *imgNames[NUM] = {CAPP_BSPDlg::ResultImage[0],CAPP_BSPDlg::Result_cap[0]}; // 이미지가 저장된 배열
 int CAPP_BSPDlg::Image_order = 0;
+bool VIEW::draw;
+CvvImage VIEW::m_viewcopy[10];
+CCriticalSection CAPP_BSPDlg::cs; // 스레드 동기화를 위한 변수
 
 IMPLEMENT_DYNAMIC(CAPP_BSPDlg, CDialog)
 
@@ -43,6 +48,7 @@ CAPP_BSPDlg::CAPP_BSPDlg(UINT nIDTemplate, CWnd* pParent)
 
 CAPP_BSPDlg::~CAPP_BSPDlg()
 {
+
 }
 
 // 응용 프로그램 정보에 사용되는 CAboutDlg 대화 상자입니다.
@@ -123,8 +129,10 @@ BOOL CAPP_BSPDlg::OnInitDialog()
 
 	// 이 대화 상자의 아이콘을 설정합니다. 응용 프로그램의 주 창이 대화 상자가 아닐 경우에는
 	//  프레임워크가 이 작업을 자동으로 수행합니다.
+	
 	SetIcon(m_hIcon, TRUE);			// 큰 아이콘을 설정합니다.
 	SetIcon(m_hIcon, FALSE);		// 작은 아이콘을 설정합니다.
+	m_pDlg = NULL;
 
 	// TODO: 여기에 추가 초기화 작업을 추가합니다.
 
@@ -167,6 +175,7 @@ void CAPP_BSPDlg::OnPaint()
 		// 아이콘을 그립니다.
 		dc.DrawIcon(x, y, m_hIcon);
 	}
+
 	else
 	{
 		CDialog::OnPaint();
@@ -183,8 +192,28 @@ HCURSOR CAPP_BSPDlg::OnQueryDragIcon()
 
 void CAPP_BSPDlg::OnBnClickedView()
 {
-	VIEW dlg;
-	dlg.DoModal();
+	//VIEW m_pDlg;
+	//Dlg.DoModal();
+
+	/*
+	m_pDlg =  new CModalDialog;
+	m_pDlg.Create(IDD_VIEW, this );
+	m_pDlg.ShowWindow( SW_SHOW );
+	*/
+
+	CAPP_BSPDlg *Main = (CAPP_BSPDlg*)AfxGetApp()->GetMainWnd();
+
+	//Main->ThreadFirst_running = false;
+
+	if(m_pDlg != NULL){
+		m_pDlg->SetFocus();	
+	}
+	else
+	{
+		m_pDlg = new VIEW;
+		m_pDlg->Create(IDD_VIEW,this);
+		m_pDlg->ShowWindow(SW_SHOW);
+	}
 	
 	VIEW sw_active = 0;
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
@@ -195,33 +224,41 @@ void CAPP_BSPDlg::OnActivate(UINT nState, CWnd* pWndOther, BOOL bMinimized)
 	CDialog::OnActivate(nState, pWndOther, bMinimized);
 
 	// TODO: 여기에 메시지 처리기 코드를 추가합니다.
-
+		
+	
 }
 
 
 
 UINT CAPP_BSPDlg::ThreadFirst(LPVOID _mothod) // Cam으로부터 이미지를 가져오는 스레드
 {
-    CAPP_BSPDlg *pMain = (CAPP_BSPDlg*)_mothod;
-
+	CAPP_BSPDlg *pMain = (CAPP_BSPDlg*)_mothod;
+	
 	IplImage *pthImage=NULL; // 원본 이미지
-	CAPP_BSPDlg *Main = (CAPP_BSPDlg*)AfxGetMainWnd();
-
+	CAPP_BSPDlg *Main = (CAPP_BSPDlg*)AfxGetApp()->GetMainWnd();
+	
+	CDC *pDC;
+	CRect rect;
+	VIEW View;
+	VIEW *pView = (VIEW*)AfxGetApp()->GetMainWnd();//(VIEW*)_mothod;
+	
 	cout << "Thread First 실행" << endl;
 	
 	while(1)
 	{  
 		
-		while(1)
-			{
 				if (Main->ThreadFirst_running == false)
 					break;
 
-				for(Main->Image_order = 0;Main->Image_order < 10;Main->Image_order++)
-				{
-
-				cout << "Thread First의 Main->Image_order = " << Main->Image_order << endl;
 				
+				cs.Lock();
+
+				for(Main->Image_order = 0 ; Main->Image_order < 10;Main->Image_order++)
+				{
+					
+
+					cout << "Thread First의 Main->Image_order = " << Main->Image_order << endl;
+					
 					pthImage = cvQueryFrame(Main->cam); // 원본이미지 변수에 캠의 화면을 저장
 					//m_MainDlg->GetQueryFrame(&pthImage);// 원본이미지 변수에 캠의 화면을 저장
 					ResultImage[Main->Image_order] = cvCreateImage(cvGetSize(pthImage),pthImage->depth,pthImage->nChannels); // ResultImage 변수에 원본이미지를 넣는다
@@ -235,7 +272,7 @@ UINT CAPP_BSPDlg::ThreadFirst(LPVOID _mothod) // Cam으로부터 이미지를 가져오는 �
 					//if (ResultImage[x] != NULL)
 					//cvCopy(ResultImage[x], Compare_cam);
 
-		////////////////////// 이하 Compare 코드 /////////////////////////////
+					////////////////////// 이하 Compare 코드 /////////////////////////////
 					// Compare_cam을 Release 시켜야 해서 Button click event에 코드를 적지않고 이곳에 적어놓았다.
 
 					
@@ -282,47 +319,103 @@ UINT CAPP_BSPDlg::ThreadFirst(LPVOID _mothod) // Cam으로부터 이미지를 가져오는 �
 									normalize(histogram[i],histogram[i],1.0);
 									delete[] number_bins;
 							}
-								cout << "Image Comparison by HISTCMP_CORREL " << endl;
 
-								for(int i=0; i < NUM; i++)
+							cout << "Image Comparison by HISTCMP_CORREL " << endl;
+
+							for(int i=0; i < NUM; i++)
+							{
+								for (int j = i+1 ; j<NUM ; j++)
 								{
-									for (int j = i+1 ; j<NUM ; j++)
-										{
-										double matching_score = compareHist(histogram[i], histogram[j],CV_COMP_CORREL);
-										cout << "캡쳐된 화면 " << ResultImage[0] << "캠 화면 " << &Compare_cam << "의 유사도는 " << matching_score << endl << endl;
-									}
+									double matching_score = compareHist(histogram[i], histogram[j],CV_COMP_CORREL);
+									cout << "캡쳐된 화면 " << ResultImage[0] << "캠 화면 " << &Compare_cam << "의 유사도는 " << matching_score << endl << endl;
 								}
-								compare[0] = 0;
+							}
+
+							compare[0] = 0;
 						}
-				}
+				
 
 
-					////////////////////// 이상 Compare 코드 /////////////////////////////
+				////////////////////// 이상 Compare 코드 /////////////////////////////
 
-						
-					if ( Main->Image_order == 9)
+				///////////////////////////이하 VIEW Dialog에 Cam화면을 그려주는 코드 //////////////////////////////
+				/*
+				if(draw == true)
+				{
+					cout << "그리는중" << endl;
+					//CWnd* cam_dialog = GetDlgItem(pView->m_ctrCamView); // pic1_cap의 포인터를 GetDlgItem 함수를 이용해 pWnd에 저장한다.
+					//CClientDC dc(pView->m_ctrCamView);// CClientDC는 Window영역의 캡션바, 메뉴바, 상태바 등을 제외한 클라이언트 영역만을 관리하는 DC를 뜻한다.
+					
+					//VIEW* pFrame = (VIEW*)GetParentFrame();
+					VIEW *pView_rect = (VIEW*)_mothod;
+					pView_rect->m_ctrCamView.GetClientRect(rect);
+
+					//pView_rect->m_ctrCamView.GetClientRect(rect);
+					
+
+
+					// 이쪽에 있던 while문을 삭제했다.
+					if (View.Thread_second_running== false)
+								break;
+
+					//cout << "Main->Image_order = " << Main->Image_order << endl;
+
+					for(int i=0 ; i < Image_order ; i++ )
 					{
+						//cout << "Image_order = " << Image_order << endl;
+							pDC = pView->m_ctrCamView.GetDC();
+						
+						if(Main->ResultImage)
+						{
+							m_viewcopy[i].CopyOf(ResultImage[i]);
+							m_viewcopy[i].DrawToHDC(pDC->m_hDC,&rect); // pDC에 그려준다
+						}
+						pView->m_ctrCamView.ReleaseDC(pDC); // DC를 Release 해준다
+					} // for 문의 끝
+				}
+				*/
+
+				///////////////////////////이상 VIEW Dialog에 Cam화면을 그려주는 코드 //////////////////////////////
+
+
+					
+					
+					cvReleaseImage(&Compare_cam); // 이 코드는 추후에 Compare Image 기능을 구현 한 후에 그곳으로 옮겨야할것같다.
+					
+					if (Main->Image_order == 9)
+					cout << "-----------------------------------------------------------------------" << endl;
+					/*
+					if (Image_order == 9)
+					{
+						cout << "Image Release" << endl;
 						for (int j=0 ; j<10 ; j++)
 						{
 							cvReleaseImage(&ResultImage[j]);
 							//if (j == 9)
-								//cout << "Clear" << endl;
+								//cout << "Clear" << endl;							
 						}
 						Main->Image_order = 0;
+						cout << "-----------------------------------------------------------------------" << endl;
 						break;
 					}
-					
-					cvReleaseImage(&Compare_cam); // 이 코드는 추후에 Compare Image 기능을 구현 한 후에 그곳으로 옮겨야할것같다.
-			} // 2번째 while 문의 끝
+					*/
+			cs.Unlock();		
+			} // 1번째 for문의 끝
 			
-			Sleep(3); // CPU의 과도한 점유를 막기위한 코드
+			
+			
+		Sleep(3); // CPU의 과도한 점유를 막기위한 코드
+		
 	}
 
 	cout << "Thread First 종료" << endl;
-	
+
 	//g_pThread=NULL;
+	
+
 	return 0;
 }
+
 int CAPP_BSPDlg::OnCreate(LPCREATESTRUCT lpCreateStruct)
 {
 	if (CDialog::OnCreate(lpCreateStruct) == -1)
@@ -331,12 +424,12 @@ int CAPP_BSPDlg::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	// TODO:  여기에 특수화된 작성 코드를 추가합니다.
 	
 	cam = cvCaptureFromCAM(0);
-	CWinThread *p1 = NULL;
+	CWinThread static *p1 = NULL;
 	p1 = AfxBeginThread(ThreadFirst, this); // 여기까지 스레드
 	p1->m_bAutoDelete = FALSE;
-
-	ThreadFirst_running = true;	
+	ThreadFirst_running = true;
 	Image_order = 0;
+	draw = false;
 
 	return 0;
 }

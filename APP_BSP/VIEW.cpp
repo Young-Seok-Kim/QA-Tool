@@ -3,6 +3,7 @@
 // VIEW.cpp : 구현 파일입니다.
 //
 
+//#include "mutex"
 #include "stdafx.h"
 #include "VIEW.h"
 #include "APP_BSP.h"
@@ -15,7 +16,8 @@ using namespace cv;
 #define NUM 2 // 비교할 이미지의 갯수
 #define BINS 8
 
-CAPP_BSPDlg *Main = (CAPP_BSPDlg*)AfxGetMainWnd();
+CAPP_BSPDlg *Main = (CAPP_BSPDlg*)AfxGetApp()->GetMainWnd();
+
 int CAPP_BSPDlg::compare[8];
 IplImage* CAPP_BSPDlg::Compare_cam;
 IplImage* CAPP_BSPDlg::ResultImage[10];
@@ -89,13 +91,12 @@ ON_WM_INITMENU()
 ON_BN_CLICKED(IDC_COM_BTN1, &VIEW::OnBnClickedComBtn1)
 END_MESSAGE_MAP()
 
-
-
 UINT VIEW::ThreadSecond(LPVOID _mothod) // picture Control에 영상 띄우는 코드, OnActvie 이벤트에 스레드 실행 지정하였다.
 {
+	
     VIEW *pMain = (VIEW*)_mothod;
-	//CAPP_BSPDlg *Main = (CAPP_BSPDlg*)AfxGetApp(); // 이 코드를 쓰면 Image_order의 값이 0으로 나옴
-	CAPP_BSPDlg *Main = (CAPP_BSPDlg*)AfxGetMainWnd(); // 이코드를 쓰면 Image_order 값이 1302534(?) 와같이 값이 크게나옴
+	//CAPP_BSPDlg *Main = (CAPP_BSPDlg*)AfxGetApp(); // 이 코드를 쓰면 Image_order의 값이 0으로 나옴 // 사용X 사용하면 Thread Second가 바로 종료됨
+	CAPP_BSPDlg *Main = (CAPP_BSPDlg*)AfxGetApp()->GetMainWnd(); // 이코드를 쓰면 Image_order 값이 1302534(?) 와같이 값이 크게나옴
 
 	IplImage *pthImage=NULL; // 원본 이미지
 	CDC *pDC;
@@ -105,8 +106,9 @@ UINT VIEW::ThreadSecond(LPVOID _mothod) // picture Control에 영상 띄우는 코드, O
 
 	cout << "Thread Second 실행" << endl;
 	cout << "Main->Image_order = " << Main->Image_order << endl;
-	
 	/*
+	int x;
+	
 	for (x=0 ; x<10 ; x++) // 간혹 Rlease 되지않은 이미지가 있어서 추가함
 		{
 			if(Main->ResultImage[x] != NULL)
@@ -116,34 +118,41 @@ UINT VIEW::ThreadSecond(LPVOID _mothod) // picture Control에 영상 띄우는 코드, O
 			}
 		}
 	*/
+	
 
 	while(1)
 		{
+			
+
 			if (Main->Thread_second_running == false)
 					break;
 
 			cout << "Main->Image_order = " << Main->Image_order << endl;
 
-			for(int i=0 ; i < Main->Image_order ; i++ )
+			
+
+			for(int i=0 ; i <= Main->Image_order -1 ; i++ )
 			{
+				cs.Lock();
+
 				if (Main->Thread_second_running == false)
 					break;
 
-				cout << "i = " << i << endl;
+					cout << "i = " << i << endl;
 
 					pDC = pMain->m_ctrCamView.GetDC();
 
-					/* 해당 코드는 이미지를 받아오는 
+					//해당 코드는 이미지를 받아오는
 					pthImage = cvQueryFrame(Main->cam); // 원본이미지 변수에 캠의 화면을 저장
-					m_MainDlg->GetQueryFrame(&pthImage);// 원본이미지 변수에 캠의 화면을 저장
-					Main->ResultImage[x] = cvCreateImage(cvGetSize(pthImage),pthImage->depth,pthImage->nChannels); // Main->ResultImage 변수에 원본이미지를 넣는다
-					cout << x << "번째 이미지 Load" << endl;
+					//m_MainDlg->GetQueryFrame(&pthImage);// 원본이미지 변수에 캠의 화면을 저장
+					Main->ResultImage[Main->Image_order] = cvCreateImage(cvGetSize(pthImage),pthImage->depth,pthImage->nChannels); // Main->ResultImage 변수에 원본이미지를 넣는다
+					//cout << Main->Image_order << "번째 이미지 Load" << endl;
 
-					cvFlip(pthImage,Main->ResultImage[x],1); // Main->ResultImage 변수에 넣은 원본 이미지를 좌우반전한다.
+					cvFlip(pthImage,Main->ResultImage[Main->Image_order],1); // Main->ResultImage 변수에 넣은 원본 이미지를 좌우반전한다.
 
 					if(Main->Compare_cam == NULL)
 					Main->Compare_cam = cvCreateImage(cvGetSize(pthImage),pthImage->depth,pthImage->nChannels); // Main->Compare_cam 변수에 원본이미지를 넣는다
-					*/
+					
 
 					if(Main->ResultImage != NULL)
 					{
@@ -157,24 +166,33 @@ UINT VIEW::ThreadSecond(LPVOID _mothod) // picture Control에 영상 띄우는 코드, O
 
 					pMain->m_ctrCamView.ReleaseDC(pDC); // DC를 Release 해준다
 
-					/*
-					if ( x == 9)
+					
+					if ( i == 9)
 					{
-						for (j=0 ; j<9 ; j++)
+						for (int j=0 ; j<9 ; j++)
 						{
-							//cvReleaseImage(&Main->ResultImage[j]);
-							//if (j == 9)
-								//cout << "Clear" << endl;
+							cvReleaseImage(&Main->ResultImage[j]);
+							if (j == 9)
+								cout << "Clear" << endl;
 						}
 					}
-					*/
+					if(Main->Image_order == 10)
+					{
+						cs.Unlock();
+						break;
+					}
 
+					
 			} // for 문의 끝
 			
-			Sleep(3); // CPU의 과도한 점유를 막기위한 코드
-
 			
+			Sleep(3); // CPU의 과도한 점유를 막기위한 코드
+			
+			//for(int i=0;i<10;i++)
+			cout << "VIEW의 for문 끝" << endl;
+
 		} // while문의 끝
+	
 
 	cout << "Thread Second 종료" << endl;
 	return 0;
@@ -193,7 +211,7 @@ void VIEW::OnClose()
 	if ( Thread_second_running == false )
 		cout << "VIEW 종료" << endl;
 	
-	Main->ThreadFirst_pause = true;
+	//Main->ThreadFirst_pause = true;
 	
 	/*
 	int z;
@@ -223,7 +241,6 @@ void VIEW::OnClose()
 	//WaitForSingleObject(ThreadFirst,INFINITE);
 
 	CDialog::OnClose();
-
 }
 void VIEW::OnBnClickedCamsel()
 {
@@ -243,6 +260,8 @@ void VIEW::OnBnClickedCamsel()
 	else
 		MessageBox(L"캠이 연결되어있지 않습니다.");
 
+	
+
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
 }
 
@@ -253,8 +272,8 @@ void VIEW::OnActivate(UINT nState, CWnd* pWndOther, BOOL bMinimized)
 	//cout << "Active" << endl;
 	//cout << sw_active << endl;
 	
-	m_sel_cap.SetCurSel(0);
-	
+
+
 if (sw_active == 0)
 	{
 		sel.SetCurSel(0); //  캠의 ComboBox에 기본값을 지정한다.
@@ -266,7 +285,9 @@ if (sw_active == 0)
 
 		sw_active = 1;
 	}
-	
+
+
+	Main->draw=true;
 	
 }
 
@@ -282,6 +303,9 @@ int VIEW::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	
 	sel_cam = 0;
 	sw_active = 0;
+	
+	//m_sel_cap.SetCurSel(0);
+	
 
 	return 0;
 }
@@ -290,7 +314,7 @@ void VIEW::OnBnClickedCapBtn1()
 {
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
 
-		CWnd* pic1 = GetDlgItem(IDC_CAP_PIC1); // pic1_cap의 포인터를 GetDlgItem 함수를 이용해 pWnd에 저장한다.
+	CWnd* pic1 = GetDlgItem(IDC_CAP_PIC1); // pic1_cap의 포인터를 GetDlgItem 함수를 이용해 pWnd에 저장한다.
 	// pic1는 캡처된 런처 화면의 포인터, 화면이 어디에 출력될지를 위한 변수
 	
 	CvvImage m_cImage; // 좌우반전된 Result_cap[1]를 복사할 변수
@@ -815,9 +839,11 @@ void VIEW::OnInitMenu(CMenu* pMenu)
 	{
 		Main->compare[i] = 0;
 	}
-	Main->Thread_second_running = true;
 
+	Main->Thread_second_running = true;
+	
 	sel_cap = m_sel_cap.SetCurSel(0);
+	
 }
 
 void VIEW::OnBnClickedComBtn1()

@@ -266,6 +266,10 @@ UINT CAPP_BSPDlg::ThreadFirst(LPVOID _mothod) // CamÀ¸·ÎºÎÅÍ ÀÌ¹ÌÁö¸¦ °¡Á®¿À´Â ½
 	{  
 				if (Main->ThreadFirst_running == false)
 					break;
+				/*
+				ResultImage°¡ 10°³ÀÇ ¹è¿­ÀÎµ¥ 0¹ø¸¸ »ç¿ëÇÏ´Â ÀÌÀ¯´Â Ã³À½ ¼³°è ÇÑ°ÍÀÌ ¹è¿­ 10°³¸¦ ÀÌ¿ëÇØ¼­ Ãâ·Â, ºñ±³ ÇÏ´Â°ÍÀÌ¾ú´Âµ¥ ¹è¿­ 10°³¸¦ »ç¿ëÇÏ¸é ¿µ»óÀÌ Ãâ·Â µÇ´Â°ÍÀÌ ¹ö¹÷°Å¸®¸ç³ª¿Í¼­
+				¹è¿­ÀÇ Ã¹¹øÂ° Ä­¸¸ »ç¿ëÇÏ¿´´Ù.
+				*/
 
 				//for(Main->Image_order = 0 ; Main->Image_order <= 9 ;Main->Image_order++)
 				{
@@ -293,7 +297,7 @@ UINT CAPP_BSPDlg::ThreadFirst(LPVOID _mothod) // CamÀ¸·ÎºÎÅÍ ÀÌ¹ÌÁö¸¦ °¡Á®¿À´Â ½
 					
 						if (compare_order[0] == 1)
 						{
-							//IplImage *imgNames[NUM] = {ResultImage[0],Result_cap[0]}; // ÀÌ¹ÌÁö°¡ ÀúÀåµÈ ¹è¿­
+							IplImage *imgNames[NUM] = {ResultImage[0],Result_cap[0]}; // ÀÌ¹ÌÁö°¡ ÀúÀåµÈ ¹è¿­
 
 							if (Main->ResultImage[0] == NULL)
 							{
@@ -306,6 +310,8 @@ UINT CAPP_BSPDlg::ThreadFirst(LPVOID _mothod) // CamÀ¸·ÎºÎÅÍ ÀÌ¹ÌÁö¸¦ °¡Á®¿À´Â ½
 							for(int i=0;i<NUM;i++)
 								{
 									imgs[i] = cvarrToMat(imgNames[i]); // IplImage¸¦ MatÇüÅÂ·Î º¯È¯
+									
+									//imgs[i] = imread(imgNames[i], IMREAD_COLOR);
 
 									if(imgs[i].data==0)
 									{

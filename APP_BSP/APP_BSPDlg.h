@@ -51,7 +51,8 @@ public:
 	afx_msg void OnInitMenu(CMenu* pMenu);
 
 	//int sw_active; // 스레드가 한번만 실행되게 하는 스위치 변수
-	static IplImage *Compare_cam; // Capture 1 ~ 8 에저장된 이미지와 캠을 비교한다.
+	static int compare_order[8]; // 몇번째의 이미지를 Compare 할 것인지 Compare 할것이면 1, 안할것이면 0으로 표시한다.
+	static IplImage *Compare_cam[8]; // Capture 1 ~ 8 에저장된 이미지와 캠을 비교한다.
 	static IplImage *ResultImage[10]; // 캠으로 캡쳐중인 이미지들이 저장된 배열
 	static IplImage *Result_cap[8]; // cap1 ~ cap 8까지 캡쳐된 이미지가 저장될 배열
 	static CvCapture *cam; // 현재 입력받고 있는 cam
@@ -61,10 +62,10 @@ public:
 	bool ThreadFirst_pause;
 	bool Thread_second_running;
 	CWinThread *p1;
-	static int compare[8]; // 몇번째의 이미지를 Compare 할 것인지 Compare 할것이면 1, 안할것이면 0으로 표시한다.
 	static int Image_order;
 	static CvvImage m_viewcopy[10];
 	CModalDialog *m_pDlg; // 모달리스로 VIEW를 열기 위한 변수
+	static IplImage *pthImage; // 원본 이미지
 	
 	afx_msg void OnBnClickedSetting();
 	static CCriticalSection cs; // 스레드 동기화를 위한 변수

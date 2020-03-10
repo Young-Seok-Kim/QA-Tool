@@ -16,10 +16,20 @@ using namespace cv;
 #define NUM 2 // 비교할 이미지의 갯수
 #define BINS 8
 
+#define CAP0 0
+#define CAP1 1
+#define CAP2 2
+#define CAP3 3
+#define CAP4 4
+#define CAP5 5
+#define CAP6 6
+#define CAP7 7
+
+
 CAPP_BSPDlg *Main = (CAPP_BSPDlg*)AfxGetApp()->GetMainWnd();
 
-int CAPP_BSPDlg::compare[8];
-IplImage* CAPP_BSPDlg::Compare_cam;
+int CAPP_BSPDlg::compare_order[8];
+IplImage* CAPP_BSPDlg::Compare_cam[8];
 IplImage* CAPP_BSPDlg::ResultImage[10];
 IplImage* CAPP_BSPDlg::Result_cap[8];
 CvCapture *CAPP_BSPDlg::cam;
@@ -95,17 +105,20 @@ UINT VIEW::ThreadSecond(LPVOID _mothod) // picture Control에 영상 띄우는 코드, O
 {
 	
     VIEW *pMain = (VIEW*)_mothod;
-	//CAPP_BSPDlg *Main = (CAPP_BSPDlg*)AfxGetApp(); // 이 코드를 쓰면 Image_order의 값이 0으로 나옴 // 사용X 사용하면 Thread Second가 바로 종료됨
-	CAPP_BSPDlg *Main = (CAPP_BSPDlg*)AfxGetApp()->GetMainWnd(); // 이코드를 쓰면 Image_order 값이 1302534(?) 와같이 값이 크게나옴
+	CAPP_BSPDlg *Main = (CAPP_BSPDlg*)AfxGetApp()->GetMainWnd();
 
-	IplImage *pthImage=NULL; // 원본 이미지
+	//Main->pthImage=NULL; // 원본 이미지
 	CDC *pDC;
 	CRect rect;
 	
 	pMain->m_ctrCamView.GetClientRect(rect);
+	
+	
+	Main->Thread_second_running = true;
 
 	cout << "Thread Second 실행" << endl;
 	cout << "Main->Image_order = " << Main->Image_order << endl;
+
 	/*
 	int x;
 	
@@ -119,45 +132,50 @@ UINT VIEW::ThreadSecond(LPVOID _mothod) // picture Control에 영상 띄우는 코드, O
 		}
 	*/
 	
-
 	while(1)
 		{
-			
+			cs.Lock();
+			//cout << "Thread Second Lock 시작" << endl;
+			/*
+			Main->Image_order가 배열인 이유는 처음 설계 한것이 배열 10개를 이용해서 출력, 비교 하는것이었는데 배열 10개를 사용하면 영상이 출력 되는것이 버벅거리며나와서
+			배열의 첫번째 칸만 사용하였다.
+			*/
 
+			
+			
 			if (Main->Thread_second_running == false)
 					break;
 
-			cout << "Main->Image_order = " << Main->Image_order << endl;
+			if(Main->Image_order < 0)
+					Main->Image_order = 0;
 
-			
+			//cout << "Main->Image_order = " << Main->Image_order << endl;
 
-			for(int i=0 ; i <= Main->Image_order -1 ; i++ )
+			//for(int i = 0 ; i <= Main->Image_order ; i++ )
 			{
-				cs.Lock();
-
-				if (Main->Thread_second_running == false)
-					break;
-
-					cout << "i = " << i << endl;
+				//if(Main->Image_order == 9)
+				//	cout << "test" << endl;
+				
+					//cout << "i = " << i << endl;
 
 					pDC = pMain->m_ctrCamView.GetDC();
 
 					//해당 코드는 이미지를 받아오는
-					pthImage = cvQueryFrame(Main->cam); // 원본이미지 변수에 캠의 화면을 저장
+					//pthImage = cvQueryFrame(Main->cam); // 원본이미지 변수에 캠의 화면을 저장
 					//m_MainDlg->GetQueryFrame(&pthImage);// 원본이미지 변수에 캠의 화면을 저장
-					Main->ResultImage[Main->Image_order] = cvCreateImage(cvGetSize(pthImage),pthImage->depth,pthImage->nChannels); // Main->ResultImage 변수에 원본이미지를 넣는다
+					//Main->ResultImage[Main->Image_order] = cvCreateImage(cvGetSize(Main->pthImage),Main->pthImage->depth,Main->pthImage->nChannels); // Main->ResultImage 변수에 원본이미지를 넣는다
 					//cout << Main->Image_order << "번째 이미지 Load" << endl;
 
-					cvFlip(pthImage,Main->ResultImage[Main->Image_order],1); // Main->ResultImage 변수에 넣은 원본 이미지를 좌우반전한다.
-
-					if(Main->Compare_cam == NULL)
-					Main->Compare_cam = cvCreateImage(cvGetSize(pthImage),pthImage->depth,pthImage->nChannels); // Main->Compare_cam 변수에 원본이미지를 넣는다
+					//cvFlip(Main->pthImage,Main->ResultImage[Main->Image_order],1); // Main->ResultImage 변수에 넣은 원본 이미지를 좌우반전한다.
+					
+					//if(Main->Compare_cam == NULL)
+					//Main->Compare_cam = cvCreateImage(cvGetSize(Main->pthImage),Main->pthImage->depth,Main->pthImage->nChannels); // Main->Compare_cam 변수에 원본이미지를 넣는다
 					
 
-					if(Main->ResultImage != NULL)
+					if(Main->ResultImage[0] != NULL)
 					{
-						pMain->m_viewcopy[i].CopyOf(Main->ResultImage[i]);
-						pMain->m_viewcopy[i].DrawToHDC(pDC->m_hDC,&rect);// 좌우반전한 Main->ResultImage를 출력한다.
+						pMain->m_viewcopy[0].CopyOf(Main->ResultImage[0]);
+						pMain->m_viewcopy[0].DrawToHDC(pDC->m_hDC,&rect);// 좌우반전한 Main->ResultImage를 출력한다.
 						//Main->ResultImage[i].DrawToHDC(pDC->m_hDC,&rect);// DrawToHDC 왼쪽에는 클래스/구조체/공용구조체가 있어야 합니다. 에러가 나옴
 					}
 
@@ -167,33 +185,29 @@ UINT VIEW::ThreadSecond(LPVOID _mothod) // picture Control에 영상 띄우는 코드, O
 					pMain->m_ctrCamView.ReleaseDC(pDC); // DC를 Release 해준다
 
 					
-					if ( i == 9)
+					//if (Main->Image_order == 9 && i == Main->Image_order)
 					{
-						for (int j=0 ; j<9 ; j++)
+						//for (int j=0 ; j<=9 ; j++)
 						{
-							cvReleaseImage(&Main->ResultImage[j]);
-							if (j == 9)
-								cout << "Clear" << endl;
+							cvReleaseImage(&Main->ResultImage[0]);
+							//if (j == 9)
+							//	cout << "Clear" << endl;
 						}
 					}
-					if(Main->Image_order == 10)
-					{
-						cs.Unlock();
-						break;
-					}
-
 					
 			} // for 문의 끝
 			
+			//Sleep(3); // CPU의 과도한 점유를 막기위한 코드
+		
+			//cout << "Thread Second Unlock" << endl;
+			cs.Unlock();
 			
-			Sleep(3); // CPU의 과도한 점유를 막기위한 코드
+
 			
-			//for(int i=0;i<10;i++)
-			cout << "VIEW의 for문 끝" << endl;
+
 
 		} // while문의 끝
 	
-
 	cout << "Thread Second 종료" << endl;
 	return 0;
 }
@@ -201,10 +215,10 @@ UINT VIEW::ThreadSecond(LPVOID _mothod) // picture Control에 영상 띄우는 코드, O
 void VIEW::OnClose()
 {
 	// TODO: 여기에 메시지 처리기 코드를 추가 및/또는 기본값을 호출합니다.
-	
+	CAPP_BSPDlg *Main = (CAPP_BSPDlg*)AfxGetApp()->GetMainWnd();
 	
 
-	Thread_second_running = false;
+	Main->Thread_second_running = false;
 
 	sw_active = 0; // Thread second를 종료시키는 코드
 
@@ -269,23 +283,15 @@ void VIEW::OnActivate(UINT nState, CWnd* pWndOther, BOOL bMinimized)
 {
 	CDialog::OnActivate(nState, pWndOther, bMinimized);
 
-	//cout << "Active" << endl;
-	//cout << sw_active << endl;
-	
-
-
-if (sw_active == 0)
-	{
-		sel.SetCurSel(0); //  캠의 ComboBox에 기본값을 지정한다.
-		
-		CWinThread *p1;
-		p1 = AfxBeginThread(ThreadSecond, this); // 여기까지 스레드
-
-		p1->m_bAutoDelete = FALSE;
-
-		sw_active = 1;
-	}
-
+	if (sw_active == 0)
+		{
+			sel.SetCurSel(0); //  캠의 ComboBox에 기본값을 지정한다.
+			
+			CWinThread *p1;
+			p1 = AfxBeginThread(ThreadSecond, this); // 여기까지 스레드
+			p1->m_bAutoDelete = FALSE;
+			sw_active = 1;
+		}
 
 	Main->draw=true;
 	
@@ -333,14 +339,14 @@ void VIEW::OnBnClickedCapBtn1()
 		cvGrabFrame( Main->cam ); // 캠화면의 프레임을 잡아준다. cvGrabFrame으로 프레임을 잡고 cvRetrieveFrame()을 이용하여 뿌린다
 		pic1_cap = cvRetrieveFrame(Main->cam);
 
-		Main->Result_cap[0] = cvCreateImage(cvGetSize(pic1_cap),pic1_cap->depth,pic1_cap->nChannels); // ResultImage 변수에 원본이미지를 넣는다
+		Main->Result_cap[CAP0] = cvCreateImage(cvGetSize(pic1_cap),pic1_cap->depth,pic1_cap->nChannels); // ResultImage 변수에 원본이미지를 넣는다
 		// 위 코드에서 Create 한 이미지는 Image Compare를 한 후에 Release 해준다.
-		cvFlip(pic1_cap,Main->Result_cap[0],1); // ResultImage 변수에 넣은 원본 이미지를 좌우반전한다.
+		cvFlip(pic1_cap,Main->Result_cap[CAP0],1); // ResultImage 변수에 넣은 원본 이미지를 좌우반전한다.
 
-		m_cImage.CopyOf(Main->Result_cap[0]); // DrawToHDC 1번째 파라미터값이 CvvImage가 들어가야 하므로 m_cImage에 Result_cap[1]를 형변환해서 넣는다.
+		m_cImage.CopyOf(Main->Result_cap[CAP0]); // DrawToHDC 1번째 파라미터값이 CvvImage가 들어가야 하므로 m_cImage에 Result_cap[1]를 형변환해서 넣는다.
 		m_cImage.DrawToHDC(dc.m_hDC,&rect); //CvvImage 클래수의 함수중 하나로 rect에 그린다.
 		
-		Main->Compare_cam = Main->Result_cap[0];
+		Main->Compare_cam[CAP0] = Main->Result_cap[CAP0];
 		//cvShowImage("Main->Compare_cam",&Main->Compare_cam);
 	}
 	
@@ -373,12 +379,12 @@ void VIEW::OnBnClickedCapBtn2()
 
 		Result_cap[1] = cvCreateImage(cvGetSize(pic2_cap),pic2_cap->depth,pic2_cap->nChannels); // ResultImage 변수에 원본이미지를 넣는다
 		// 위 코드에서 Create 한 이미지는 Image Compare를 한 후에 Release 해준다.
-		cvFlip(pic2_cap,Result_cap[1],1); // ResultImage 변수에 넣은 원본 이미지를 좌우반전한다.
+		cvFlip(pic2_cap,Result_cap[CAP1],1); // ResultImage 변수에 넣은 원본 이미지를 좌우반전한다.
 
-		m_cImage.CopyOf(Result_cap[1]); // DrawToHDC 2번째 파라미터값이 CvvImage가 들어가야 하므로 m_cImage에 Result_cap[2]를 형변환해서 넣는다.
+		m_cImage.CopyOf(Result_cap[CAP1]); // DrawToHDC 2번째 파라미터값이 CvvImage가 들어가야 하므로 m_cImage에 Result_cap[2]를 형변환해서 넣는다.
 		m_cImage.DrawToHDC(dc.m_hDC,&rect); //CvvImage 클래수의 함수중 하나로 rect에 그린다.
 		
-		Main->Compare_cam = Main->Result_cap[1];
+		Main->Compare_cam[CAP1] = Main->Result_cap[CAP1];
 		//cvShowImage("Main->Compare_cam",&Main->Compare_cam);
 	}
 
@@ -409,12 +415,12 @@ void VIEW::OnBnClickedCapBtn3()
 
 		Result_cap[2] = cvCreateImage(cvGetSize(pic3_cap),pic3_cap->depth,pic3_cap->nChannels); // ResultImage 변수에 원본이미지를 넣는다
 		// 위 코드에서 Create 한 이미지는 Image Compare를 한 후에 Release 해준다.
-		cvFlip(pic3_cap,Result_cap[2],1); // ResultImage 변수에 넣은 원본 이미지를 좌우반전한다.
+		cvFlip(pic3_cap,Result_cap[CAP2],1); // ResultImage 변수에 넣은 원본 이미지를 좌우반전한다.
 
-		m_cImage.CopyOf(Result_cap[2]); // DrawToHDC 3번째 파라미터값이 CvvImage가 들어가야 하므로 m_cImage에 Result_cap[3]를 형변환해서 넣는다.
+		m_cImage.CopyOf(Result_cap[CAP2]); // DrawToHDC 3번째 파라미터값이 CvvImage가 들어가야 하므로 m_cImage에 Result_cap[3]를 형변환해서 넣는다.
 		m_cImage.DrawToHDC(dc.m_hDC,&rect); //CvvImage 클래수의 함수중 하나로 rect에 그린다.
 		
-		Main->Compare_cam = Main->Result_cap[2];
+		Main->Compare_cam[CAP2] = Main->Result_cap[CAP2];
 		//cvShowImage("Main->Compare_cam",&Main->Compare_cam);
 	}
 	GetDlgItem(IDC_COM_BTN3)->EnableWindow(TRUE);
@@ -444,14 +450,14 @@ void VIEW::OnBnClickedCapBtn4()
 		cvGrabFrame( Main->cam ); // 캠화면의 프레임을 잡아준다. cvGrabFrame으로 프레임을 잡고 cvRetrieveFrame()을 이용하여 뿌린다
 		pic4_cap = cvRetrieveFrame(Main->cam);
 
-		Result_cap[3] = cvCreateImage(cvGetSize(pic4_cap),pic4_cap->depth,pic4_cap->nChannels); // ResultImage 변수에 원본이미지를 넣는다
+		Result_cap[CAP3] = cvCreateImage(cvGetSize(pic4_cap),pic4_cap->depth,pic4_cap->nChannels); // ResultImage 변수에 원본이미지를 넣는다
 		// 위 코드에서 Create 한 이미지는 Image Compare를 한 후에 Release 해준다.
-		cvFlip(pic4_cap,Result_cap[3],1); // ResultImage 변수에 넣은 원본 이미지를 좌우반전한다.
+		cvFlip(pic4_cap,Result_cap[CAP3],1); // ResultImage 변수에 넣은 원본 이미지를 좌우반전한다.
 
-		m_cImage.CopyOf(Result_cap[3]); // DrawToHDC 4번째 파라미터값이 CvvImage가 들어가야 하므로 m_cImage에 Result_cap[4]를 형변환해서 넣는다.
+		m_cImage.CopyOf(Result_cap[CAP3]); // DrawToHDC 4번째 파라미터값이 CvvImage가 들어가야 하므로 m_cImage에 Result_cap[4]를 형변환해서 넣는다.
 		m_cImage.DrawToHDC(dc.m_hDC,&rect); //CvvImage 클래수의 함수중 하나로 rect에 그린다.
 		
-		Main->Compare_cam = Main->Result_cap[3];
+		Main->Compare_cam[CAP3] = Main->Result_cap[CAP3];
 		//cvShowImage("Main->Compare_cam",&Main->Compare_cam);
 	}
 
@@ -481,14 +487,14 @@ void VIEW::OnBnClickedCapBtn5()
 		cvGrabFrame( Main->cam ); // 캠화면의 프레임을 잡아준다. cvGrabFrame으로 프레임을 잡고 cvRetrieveFrame()을 이용하여 뿌린다
 		pic5_cap = cvRetrieveFrame(Main->cam);
 
-		Result_cap[4] = cvCreateImage(cvGetSize(pic5_cap),pic5_cap->depth,pic5_cap->nChannels); // Result_cap 변수에 원본이미지를 넣는다
+		Result_cap[CAP4] = cvCreateImage(cvGetSize(pic5_cap),pic5_cap->depth,pic5_cap->nChannels); // Result_cap 변수에 원본이미지를 넣는다
 		// 위 코드에서 Create 한 이미지는 Image Compare를 한 후에 Release 해준다.
-		cvFlip(pic5_cap,Result_cap[4],1); // ResultImage 변수에 넣은 원본 이미지를 좌우반전한다.
+		cvFlip(pic5_cap,Result_cap[CAP4],1); // ResultImage 변수에 넣은 원본 이미지를 좌우반전한다.
 
-		m_cImage.CopyOf(Result_cap[4]); // DrawToHDC 5번째 파라미터값이 CvvImage가 들어가야 하므로 m_cImage에 Result_cap[5]를 형변환해서 넣는다.
+		m_cImage.CopyOf(Result_cap[CAP4]); // DrawToHDC 5번째 파라미터값이 CvvImage가 들어가야 하므로 m_cImage에 Result_cap[5]를 형변환해서 넣는다.
 		m_cImage.DrawToHDC(dc.m_hDC,&rect); //CvvImage 클래수의 함수중 하나로 rect에 그린다.
 		
-		Main->Compare_cam = Main->Result_cap[4];
+		Main->Compare_cam[CAP4] = Main->Result_cap[CAP4];
 		//cvShowImage("Main->Compare_cam",&Main->Compare_cam);
 	}
 
@@ -518,14 +524,14 @@ void VIEW::OnBnClickedCapBtn6()
 		cvGrabFrame( Main->cam ); // 캠화면의 프레임을 잡아준다. cvGrabFrame으로 프레임을 잡고 cvRetrieveFrame()을 이용하여 뿌린다
 		pic6_cap = cvRetrieveFrame(Main->cam);
 
-		Result_cap[5] = cvCreateImage(cvGetSize(pic6_cap),pic6_cap->depth,pic6_cap->nChannels); // ResultImage 변수에 원본이미지를 넣는다
+		Result_cap[CAP5] = cvCreateImage(cvGetSize(pic6_cap),pic6_cap->depth,pic6_cap->nChannels); // ResultImage 변수에 원본이미지를 넣는다
 		// 위 코드에서 Create 한 이미지는 Image Compare를 한 후에 Release 해준다.
-		cvFlip(pic6_cap,Result_cap[5],1); // ResultImage 변수에 넣은 원본 이미지를 좌우반전한다.
+		cvFlip(pic6_cap,Result_cap[CAP5],1); // ResultImage 변수에 넣은 원본 이미지를 좌우반전한다.
 
-		m_cImage.CopyOf(Result_cap[5]); // DrawToHDC 6번째 파라미터값이 CvvImage가 들어가야 하므로 m_cImage에 Result_cap[6]를 형변환해서 넣는다.
+		m_cImage.CopyOf(Result_cap[CAP5]); // DrawToHDC 6번째 파라미터값이 CvvImage가 들어가야 하므로 m_cImage에 Result_cap[6]를 형변환해서 넣는다.
 		m_cImage.DrawToHDC(dc.m_hDC,&rect); //CvvImage 클래수의 함수중 하나로 rect에 그린다.
 		
-		Main->Compare_cam = Main->Result_cap[5];
+		Main->Compare_cam[CAP5] = Main->Result_cap[CAP5];
 		//cvShowImage("Main->Compare_cam",&Main->Compare_cam);
 	}
 
@@ -554,14 +560,14 @@ void VIEW::OnBnClickedCapBtn7()
 		cvGrabFrame( Main->cam ); // 캠화면의 프레임을 잡아준다. cvGrabFrame으로 프레임을 잡고 cvRetrieveFrame()을 이용하여 뿌린다
 		pic7_cap = cvRetrieveFrame(Main->cam);
 
-		Result_cap[6] = cvCreateImage(cvGetSize(pic7_cap),pic7_cap->depth,pic7_cap->nChannels); // ResultImage 변수에 원본이미지를 넣는다
+		Result_cap[CAP6] = cvCreateImage(cvGetSize(pic7_cap),pic7_cap->depth,pic7_cap->nChannels); // ResultImage 변수에 원본이미지를 넣는다
 		// 위 코드에서 Create 한 이미지는 Image Compare를 한 후에 Release 해준다.
-		cvFlip(pic7_cap,Result_cap[6],1); // ResultImage 변수에 넣은 원본 이미지를 좌우반전한다.
+		cvFlip(pic7_cap,Result_cap[CAP6],1); // ResultImage 변수에 넣은 원본 이미지를 좌우반전한다.
 
-		m_cImage.CopyOf(Result_cap[6]); // DrawToHDC 7번째 파라미터값이 CvvImage가 들어가야 하므로 m_cImage에 Result_cap[7]를 형변환해서 넣는다.
+		m_cImage.CopyOf(Result_cap[CAP6]); // DrawToHDC 7번째 파라미터값이 CvvImage가 들어가야 하므로 m_cImage에 Result_cap[7]를 형변환해서 넣는다.
 		m_cImage.DrawToHDC(dc.m_hDC,&rect); //CvvImage 클래수의 함수중 하나로 rect에 그린다.
 		
-		Main->Compare_cam = Main->Result_cap[6];
+		Main->Compare_cam[CAP6] = Main->Result_cap[CAP6];
 		//cvShowImage("Main->Compare_cam",&Main->Compare_cam);
 	}
 
@@ -593,12 +599,12 @@ void VIEW::OnBnClickedCapBtn8()
 
 		Result_cap[7] = cvCreateImage(cvGetSize(pic8_cap),pic8_cap->depth,pic8_cap->nChannels); // ResultImage 변수에 원본이미지를 넣는다
 		// 위 코드에서 Create 한 이미지는 Image Compare를 한 후에 Release 해준다.
-		cvFlip(pic8_cap,Result_cap[7],1); // ResultImage 변수에 넣은 원본 이미지를 좌우반전한다.
+		cvFlip(pic8_cap,Result_cap[CAP7],1); // ResultImage 변수에 넣은 원본 이미지를 좌우반전한다.
 
-		m_cImage.CopyOf(Result_cap[7]); // DrawToHDC 8번째 파라미터값이 CvvImage가 들어가야 하므로 m_cImage에 Result_cap[8]를 형변환해서 넣는다.
+		m_cImage.CopyOf(Result_cap[CAP7]); // DrawToHDC 8번째 파라미터값이 CvvImage가 들어가야 하므로 m_cImage에 Result_cap[8]를 형변환해서 넣는다.
 		m_cImage.DrawToHDC(dc.m_hDC,&rect); //CvvImage 클래수의 함수중 하나로 rect에 그린다.
 		
-		Main->Compare_cam = Main->Result_cap[7];
+		Main->Compare_cam[CAP7] = Main->Result_cap[CAP7];
 		//cvShowImage("Main->Compare_cam",&Main->Compare_cam);
 	}
 	GetDlgItem(IDC_COM_BTN8)->EnableWindow(TRUE);
@@ -837,7 +843,7 @@ void VIEW::OnInitMenu(CMenu* pMenu)
 	
 	for(int i=0;i<8;i++)
 	{
-		Main->compare[i] = 0;
+		Main->compare_order[i] = 0;
 	}
 
 	Main->Thread_second_running = true;
@@ -850,7 +856,7 @@ void VIEW::OnBnClickedComBtn1()
 {
 	// cout << Main->Result_cap[0] << endl;
 
-	Main->compare[0] = 1;
+	Main->compare_order[0] = 1;
 
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
 }

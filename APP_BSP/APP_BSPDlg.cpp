@@ -14,6 +14,15 @@
 #define NUM 2 // ºñ±³ÇÒ ÀÌ¹ÌÁöÀÇ °¹¼ö ÀÌ ÄÚµå¿¡¼­´Â Ä¸Ã³µÈ (·±Ã³,ºÎÆ®·Î´õ)È­¸é°ú ºñ±³ÇÒ È­¸é ÃÑ 2°³°¡ ÀÖÀ¸¹Ç·Î 2·Î ÁöÁ¤
 #define BINS 8
 
+#define CAP0 0
+#define CAP1 1
+#define CAP2 2
+#define CAP3 3
+#define CAP4 4
+#define CAP5 5
+#define CAP6 6
+#define CAP7 7
+
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
@@ -27,6 +36,7 @@ int CAPP_BSPDlg::Image_order = 0;
 bool VIEW::draw;
 CvvImage VIEW::m_viewcopy[10];
 CCriticalSection CAPP_BSPDlg::cs; // ½º·¹µå µ¿±âÈ­¸¦ À§ÇÑ º¯¼ö
+IplImage *pthImage = NULL;
 
 IMPLEMENT_DYNAMIC(CAPP_BSPDlg, CDialog)
 
@@ -129,6 +139,9 @@ BOOL CAPP_BSPDlg::OnInitDialog()
 
 	// ÀÌ ´ëÈ­ »óÀÚÀÇ ¾ÆÀÌÄÜÀ» ¼³Á¤ÇÕ´Ï´Ù. ÀÀ¿ë ÇÁ·Î±×·¥ÀÇ ÁÖ Ã¢ÀÌ ´ëÈ­ »óÀÚ°¡ ¾Æ´Ò °æ¿ì¿¡´Â
 	//  ÇÁ·¹ÀÓ¿öÅ©°¡ ÀÌ ÀÛ¾÷À» ÀÚµ¿À¸·Î ¼öÇàÇÕ´Ï´Ù.
+
+	CAPP_BSPDlg *Main = (CAPP_BSPDlg*)AfxGetApp()->GetMainWnd();
+	Main->Thread_second_running = false;
 	
 	SetIcon(m_hIcon, TRUE);			// Å« ¾ÆÀÌÄÜÀ» ¼³Á¤ÇÕ´Ï´Ù.
 	SetIcon(m_hIcon, FALSE);		// ÀÛÀº ¾ÆÀÌÄÜÀ» ¼³Á¤ÇÕ´Ï´Ù.
@@ -204,9 +217,13 @@ void CAPP_BSPDlg::OnBnClickedView()
 	CAPP_BSPDlg *Main = (CAPP_BSPDlg*)AfxGetApp()->GetMainWnd();
 
 	//Main->ThreadFirst_running = false;
+	
+	//Main->Thread_second_running = true;
 
-	if(m_pDlg != NULL){
-		m_pDlg->SetFocus();	
+	if(m_pDlg != NULL)
+	{
+		m_pDlg->SetFocus();
+		m_pDlg->ShowWindow(SW_SHOW);
 	}
 	else
 	{
@@ -242,32 +259,30 @@ UINT CAPP_BSPDlg::ThreadFirst(LPVOID _mothod) // CamÀ¸·ÎºÎÅÍ ÀÌ¹ÌÁö¸¦ °¡Á®¿À´Â ½
 	VIEW View;
 	VIEW *pView = (VIEW*)AfxGetApp()->GetMainWnd();//(VIEW*)_mothod;
 	
-	cout << "Thread First ½ÇÇà" << endl;
+	
+	 cout << "Thread First ½ÇÇà" << endl;
 	
 	while(1)
 	{  
-		
 				if (Main->ThreadFirst_running == false)
 					break;
 
-				
-				cs.Lock();
-
-				for(Main->Image_order = 0 ; Main->Image_order < 10;Main->Image_order++)
+				//for(Main->Image_order = 0 ; Main->Image_order <= 9 ;Main->Image_order++)
 				{
+					cs.Lock();
+					//cout << "Thread First Lock ½ÃÀÛ" << endl;
 					
-
-					cout << "Thread FirstÀÇ Main->Image_order = " << Main->Image_order << endl;
+					//cout << "Thread FirstÀÇ Main->Image_order = " << Main->Image_order << endl;
 					
 					pthImage = cvQueryFrame(Main->cam); // ¿øº»ÀÌ¹ÌÁö º¯¼ö¿¡ Ä·ÀÇ È­¸éÀ» ÀúÀå
 					//m_MainDlg->GetQueryFrame(&pthImage);// ¿øº»ÀÌ¹ÌÁö º¯¼ö¿¡ Ä·ÀÇ È­¸éÀ» ÀúÀå
-					ResultImage[Main->Image_order] = cvCreateImage(cvGetSize(pthImage),pthImage->depth,pthImage->nChannels); // ResultImage º¯¼ö¿¡ ¿øº»ÀÌ¹ÌÁö¸¦ ³Ö´Â´Ù
+					ResultImage[0] = cvCreateImage(cvGetSize(pthImage),pthImage->depth,pthImage->nChannels); // ResultImage º¯¼ö¿¡ ¿øº»ÀÌ¹ÌÁö¸¦ ³Ö´Â´Ù
 					//cout << x << "¹øÂ° ÀÌ¹ÌÁö Load" << endl;
 
-					cvFlip(pthImage,ResultImage[Main->Image_order],1); // Main.ResultImage º¯¼ö¿¡ ³ÖÀº ¿øº» ÀÌ¹ÌÁö¸¦ ÁÂ¿ì¹ÝÀüÇÑ´Ù.
+					cvFlip(pthImage,ResultImage[0],1); // Main.ResultImage º¯¼ö¿¡ ³ÖÀº ¿øº» ÀÌ¹ÌÁö¸¦ ÁÂ¿ì¹ÝÀüÇÑ´Ù.
 					
 					//if(Compare_cam == NULL)
-					Compare_cam = cvCreateImage(cvGetSize(pthImage),pthImage->depth,pthImage->nChannels); // Compare_cam º¯¼ö¿¡ ¿øº»ÀÌ¹ÌÁö¸¦ ³Ö´Â´Ù
+					Compare_cam[CAP0] = cvCreateImage(cvGetSize(pthImage),pthImage->depth,pthImage->nChannels); // Compare_cam º¯¼ö¿¡ ¿øº»ÀÌ¹ÌÁö¸¦ ³Ö´Â´Ù
 					
 					//if (ResultImage[x] != NULL)
 					//cvCopy(ResultImage[x], Compare_cam);
@@ -276,13 +291,13 @@ UINT CAPP_BSPDlg::ThreadFirst(LPVOID _mothod) // CamÀ¸·ÎºÎÅÍ ÀÌ¹ÌÁö¸¦ °¡Á®¿À´Â ½
 					// Compare_camÀ» Release ½ÃÄÑ¾ß ÇØ¼­ Button click event¿¡ ÄÚµå¸¦ ÀûÁö¾Ê°í ÀÌ°÷¿¡ Àû¾î³õ¾Ò´Ù.
 
 					
-						if (compare[0] == 1)
+						if (compare_order[0] == 1)
 						{
 							//IplImage *imgNames[NUM] = {ResultImage[0],Result_cap[0]}; // ÀÌ¹ÌÁö°¡ ÀúÀåµÈ ¹è¿­
 
-							if (ResultImage[0] == NULL)
+							if (Main->ResultImage[0] == NULL)
 							{
-								ResultImage[0] = cvCreateImage(cvGetSize(pthImage),pthImage->depth,pthImage->nChannels); // Main.ResultImage º¯¼ö¿¡ ¿øº»ÀÌ¹ÌÁö¸¦ ³Ö´Â´Ù
+								Main->ResultImage[0] = cvCreateImage(cvGetSize(pthImage),pthImage->depth,pthImage->nChannels); // Main.ResultImage º¯¼ö¿¡ ¿øº»ÀÌ¹ÌÁö¸¦ ³Ö´Â´Ù
 							}
 														
 							Mat imgs[NUM];
@@ -313,11 +328,11 @@ UINT CAPP_BSPDlg::ThreadFirst(LPVOID _mothod) // CamÀ¸·ÎºÎÅÍ ÀÌ¹ÌÁö¸¦ °¡Á®¿À´Â ½
 									number_bins[ch]=BINS;
 								}
 
-									float ch_range[] = {0.0,255.0};
-									const float *channel_ranges[] = {ch_range,ch_range,ch_range};
-									calcHist(&imgsHLS[i],1,channel_numbers,Mat(),histogram[i],imgsHLS[i].channels(),number_bins,channel_ranges);
-									normalize(histogram[i],histogram[i],1.0);
-									delete[] number_bins;
+								float ch_range[] = {0.0,255.0};
+								const float *channel_ranges[] = {ch_range,ch_range,ch_range};
+								calcHist(&imgsHLS[i],1,channel_numbers,Mat(),histogram[i],imgsHLS[i].channels(),number_bins,channel_ranges);
+								normalize(histogram[i],histogram[i],1.0);
+								delete[] number_bins;
 							}
 
 							cout << "Image Comparison by HISTCMP_CORREL " << endl;
@@ -331,7 +346,7 @@ UINT CAPP_BSPDlg::ThreadFirst(LPVOID _mothod) // CamÀ¸·ÎºÎÅÍ ÀÌ¹ÌÁö¸¦ °¡Á®¿À´Â ½
 								}
 							}
 
-							compare[0] = 0;
+							compare_order[0] = 0;
 						}
 				
 
@@ -380,33 +395,34 @@ UINT CAPP_BSPDlg::ThreadFirst(LPVOID _mothod) // CamÀ¸·ÎºÎÅÍ ÀÌ¹ÌÁö¸¦ °¡Á®¿À´Â ½
 
 					
 					
-					cvReleaseImage(&Compare_cam); // ÀÌ ÄÚµå´Â ÃßÈÄ¿¡ Compare Image ±â´ÉÀ» ±¸Çö ÇÑ ÈÄ¿¡ ±×°÷À¸·Î ¿Å°Ü¾ßÇÒ°Í°°´Ù.
+					cvReleaseImage(&Compare_cam[CAP0]); // ÀÌ ÄÚµå´Â ÃßÈÄ¿¡ Compare Image ±â´ÉÀ» ±¸Çö ÇÑ ÈÄ¿¡ ±×°÷À¸·Î ¿Å°Ü¾ßÇÒ°Í°°´Ù.
 					
-					if (Main->Image_order == 9)
-					cout << "-----------------------------------------------------------------------" << endl;
-					/*
-					if (Image_order == 9)
+					//if (Main->Image_order == 9)
+					//cout << "-----------------------------------------------------------------------" << endl;
+					
+
+					if (Main->Thread_second_running == false)
 					{
-						cout << "Image Release" << endl;
-						for (int j=0 ; j<10 ; j++)
+					//	for (int j=0 ; j<9 ; j++)
 						{
-							cvReleaseImage(&ResultImage[j]);
+							cvReleaseImage(&Main->ResultImage[0]);
 							//if (j == 9)
-								//cout << "Clear" << endl;							
+							//	cout << "Clear" << endl;
 						}
-						Main->Image_order = 0;
-						cout << "-----------------------------------------------------------------------" << endl;
-						break;
 					}
-					*/
-			cs.Unlock();		
+
+
+					//cout << "Thread First Unlock" << endl;
+					
+					cs.Unlock();
+
+					Sleep(3);
+
+				
 			} // 1¹øÂ° for¹®ÀÇ ³¡
-			
-			
-			
-		Sleep(3); // CPUÀÇ °úµµÇÑ Á¡À¯¸¦ ¸·±âÀ§ÇÑ ÄÚµå
+
 		
-	}
+	}// while¹®ÀÇ ³¡
 
 	cout << "Thread First Á¾·á" << endl;
 
@@ -423,13 +439,17 @@ int CAPP_BSPDlg::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
 	// TODO:  ¿©±â¿¡ Æ¯¼öÈ­µÈ ÀÛ¼º ÄÚµå¸¦ Ãß°¡ÇÕ´Ï´Ù.
 	
+	CAPP_BSPDlg *Main = (CAPP_BSPDlg*)AfxGetApp()->GetMainWnd();
+	Main->Thread_second_running = false;
+
 	cam = cvCaptureFromCAM(0);
 	CWinThread static *p1 = NULL;
 	p1 = AfxBeginThread(ThreadFirst, this); // ¿©±â±îÁö ½º·¹µå
 	p1->m_bAutoDelete = FALSE;
+	draw = false;
+
 	ThreadFirst_running = true;
 	Image_order = 0;
-	draw = false;
 
 	return 0;
 }

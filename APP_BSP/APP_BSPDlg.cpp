@@ -31,12 +31,14 @@ using namespace std;
 using namespace cv;
 
 // CAPP_BSPDlg dialog
-IplImage *imgNames[NUM] = {CAPP_BSPDlg::ResultImage[0],CAPP_BSPDlg::Result_cap[0]}; // ÀÌ¹ÌÁö°¡ ÀúÀåµÈ ¹è¿­
+IplImage *imgNames[NUM] = {CAPP_BSPDlg::ResultImage,CAPP_BSPDlg::Result_cap[0]}; // ÀÌ¹ÌÁö°¡ ÀúÀåµÈ ¹è¿­
 int CAPP_BSPDlg::Image_order = 0;
 bool VIEW::draw;
 CvvImage VIEW::m_viewcopy[10];
 CCriticalSection CAPP_BSPDlg::cs; // ½º·¹µå µ¿±âÈ­¸¦ À§ÇÑ º¯¼ö
 IplImage *pthImage = NULL;
+
+
 
 IMPLEMENT_DYNAMIC(CAPP_BSPDlg, CDialog)
 
@@ -98,6 +100,7 @@ END_MESSAGE_MAP()
 void CAPP_BSPDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialog::DoDataExchange(pDX);
+	DDX_Control(pDX, IDC_START_TIME2, Loop);
 }
 
 BEGIN_MESSAGE_MAP(CAPP_BSPDlg, CDialog)
@@ -141,7 +144,10 @@ BOOL CAPP_BSPDlg::OnInitDialog()
 	//  ÇÁ·¹ÀÓ¿öÅ©°¡ ÀÌ ÀÛ¾÷À» ÀÚµ¿À¸·Î ¼öÇàÇÕ´Ï´Ù.
 
 	CAPP_BSPDlg *Main = (CAPP_BSPDlg*)AfxGetApp()->GetMainWnd();
-	Main->Thread_second_running = false;
+
+	//Main->Thread_second_running = false;
+
+	
 	
 	SetIcon(m_hIcon, TRUE);			// Å« ¾ÆÀÌÄÜÀ» ¼³Á¤ÇÕ´Ï´Ù.
 	SetIcon(m_hIcon, FALSE);		// ÀÛÀº ¾ÆÀÌÄÜÀ» ¼³Á¤ÇÕ´Ï´Ù.
@@ -218,7 +224,11 @@ void CAPP_BSPDlg::OnBnClickedView()
 
 	//Main->ThreadFirst_running = false;
 	
-	//Main->Thread_second_running = true;
+	Main->Thread_second_running = true;
+	Main->sw_active = 1;
+
+	//if (Thread_second_running_count >0)
+		//p1->ResumeThread();
 
 	if(m_pDlg != NULL)
 	{
@@ -232,7 +242,8 @@ void CAPP_BSPDlg::OnBnClickedView()
 		m_pDlg->ShowWindow(SW_SHOW);
 	}
 	
-	VIEW sw_active = 0;
+	
+	
 	// TODO: ¿©±â¿¡ ÄÁÆ®·Ñ ¾Ë¸² Ã³¸®±â ÄÚµå¸¦ Ãß°¡ÇÕ´Ï´Ù.
 }
 
@@ -258,6 +269,8 @@ UINT CAPP_BSPDlg::ThreadFirst(LPVOID _mothod) // CamÀ¸·ÎºÎÅÍ ÀÌ¹ÌÁö¸¦ °¡Á®¿À´Â ½
 	CRect rect;
 	VIEW View;
 	VIEW *pView = (VIEW*)AfxGetApp()->GetMainWnd();//(VIEW*)_mothod;
+
+	Main->Thread_second_running = false;
 	
 	
 	 cout << "Thread First ½ÇÇà" << endl;
@@ -280,13 +293,13 @@ UINT CAPP_BSPDlg::ThreadFirst(LPVOID _mothod) // CamÀ¸·ÎºÎÅÍ ÀÌ¹ÌÁö¸¦ °¡Á®¿À´Â ½
 					
 					pthImage = cvQueryFrame(Main->cam); // ¿øº»ÀÌ¹ÌÁö º¯¼ö¿¡ Ä·ÀÇ È­¸éÀ» ÀúÀå
 					//m_MainDlg->GetQueryFrame(&pthImage);// ¿øº»ÀÌ¹ÌÁö º¯¼ö¿¡ Ä·ÀÇ È­¸éÀ» ÀúÀå
-					ResultImage[0] = cvCreateImage(cvGetSize(pthImage),pthImage->depth,pthImage->nChannels); // ResultImage º¯¼ö¿¡ ¿øº»ÀÌ¹ÌÁö¸¦ ³Ö´Â´Ù
+					ResultImage = cvCreateImage(cvGetSize(pthImage),pthImage->depth,pthImage->nChannels); // ResultImage º¯¼ö¿¡ ¿øº»ÀÌ¹ÌÁö¸¦ ³Ö´Â´Ù
 					//cout << x << "¹øÂ° ÀÌ¹ÌÁö Load" << endl;
 
-					cvFlip(pthImage,ResultImage[0],1); // Main.ResultImage º¯¼ö¿¡ ³ÖÀº ¿øº» ÀÌ¹ÌÁö¸¦ ÁÂ¿ì¹ÝÀüÇÑ´Ù.
+					cvFlip(pthImage,ResultImage,1); // Main.ResultImage º¯¼ö¿¡ ³ÖÀº ¿øº» ÀÌ¹ÌÁö¸¦ ÁÂ¿ì¹ÝÀüÇÑ´Ù.
 					
 					//if(Compare_cam == NULL)
-					Compare_cam[CAP0] = cvCreateImage(cvGetSize(pthImage),pthImage->depth,pthImage->nChannels); // Compare_cam º¯¼ö¿¡ ¿øº»ÀÌ¹ÌÁö¸¦ ³Ö´Â´Ù
+					
 					
 					//if (ResultImage[x] != NULL)
 					//cvCopy(ResultImage[x], Compare_cam);
@@ -294,14 +307,16 @@ UINT CAPP_BSPDlg::ThreadFirst(LPVOID _mothod) // CamÀ¸·ÎºÎÅÍ ÀÌ¹ÌÁö¸¦ °¡Á®¿À´Â ½
 					////////////////////// ÀÌÇÏ Compare ÄÚµå /////////////////////////////
 					// Compare_camÀ» Release ½ÃÄÑ¾ß ÇØ¼­ Button click event¿¡ ÄÚµå¸¦ ÀûÁö¾Ê°í ÀÌ°÷¿¡ Àû¾î³õ¾Ò´Ù.
 
-					
-						if (compare_order[0] == 1)
+					for(int CAP = 0 ; CAP < 8 ; CAP++)
+					{
+						Compare_cam[CAP] = cvCreateImage(cvGetSize(pthImage),pthImage->depth,pthImage->nChannels); // Compare_cam º¯¼ö¿¡ ¿øº»ÀÌ¹ÌÁö¸¦ ³Ö´Â´Ù
+						if (compare_order[CAP] == 1)
 						{
-							IplImage *imgNames[NUM] = {ResultImage[0],Result_cap[0]}; // ÀÌ¹ÌÁö°¡ ÀúÀåµÈ ¹è¿­
+							IplImage *imgNames[NUM] = {ResultImage,Result_cap[CAP]}; // ÀÌ¹ÌÁö°¡ ÀúÀåµÈ ¹è¿­
 
-							if (Main->ResultImage[0] == NULL)
+							if (Main->ResultImage == NULL)
 							{
-								Main->ResultImage[0] = cvCreateImage(cvGetSize(pthImage),pthImage->depth,pthImage->nChannels); // Main.ResultImage º¯¼ö¿¡ ¿øº»ÀÌ¹ÌÁö¸¦ ³Ö´Â´Ù
+								Main->ResultImage = cvCreateImage(cvGetSize(pthImage),pthImage->depth,pthImage->nChannels); // Main.ResultImage º¯¼ö¿¡ ¿øº»ÀÌ¹ÌÁö¸¦ ³Ö´Â´Ù
 							}
 														
 							Mat imgs[NUM];
@@ -348,12 +363,17 @@ UINT CAPP_BSPDlg::ThreadFirst(LPVOID _mothod) // CamÀ¸·ÎºÎÅÍ ÀÌ¹ÌÁö¸¦ °¡Á®¿À´Â ½
 								for (int j = i+1 ; j<NUM ; j++)
 								{
 									double matching_score = compareHist(histogram[i], histogram[j],CV_COMP_CORREL);
-									cout << "Ä¸ÃÄµÈ È­¸é " << ResultImage[0] << "Ä· È­¸é " << &Compare_cam << "ÀÇ À¯»çµµ´Â " << matching_score << endl << endl;
+									cout << "Ä¸ÃÄµÈ È­¸é CAP[" << CAP << "] Ä· È­¸é " << &Compare_cam << "ÀÇ À¯»çµµ´Â " << matching_score << endl << endl;
 								}
 							}
 
-							compare_order[0] = 0;
-						}
+							compare_order[CAP] = 0;
+
+						} //if¹®ÀÇ ³¡
+
+						cvReleaseImage(&Compare_cam[CAP]); // ÀÌ ÄÚµå´Â ÃßÈÄ¿¡ Compare Image ±â´ÉÀ» ±¸Çö ÇÑ ÈÄ¿¡ ±×°÷À¸·Î ¿Å°Ü¾ßÇÒ°Í°°´Ù.
+
+					} // for¹®ÀÇ ³¡
 				
 
 
@@ -401,7 +421,7 @@ UINT CAPP_BSPDlg::ThreadFirst(LPVOID _mothod) // CamÀ¸·ÎºÎÅÍ ÀÌ¹ÌÁö¸¦ °¡Á®¿À´Â ½
 
 					
 					
-					cvReleaseImage(&Compare_cam[CAP0]); // ÀÌ ÄÚµå´Â ÃßÈÄ¿¡ Compare Image ±â´ÉÀ» ±¸Çö ÇÑ ÈÄ¿¡ ±×°÷À¸·Î ¿Å°Ü¾ßÇÒ°Í°°´Ù.
+					
 					
 					//if (Main->Image_order == 9)
 					//cout << "-----------------------------------------------------------------------" << endl;
@@ -409,11 +429,10 @@ UINT CAPP_BSPDlg::ThreadFirst(LPVOID _mothod) // CamÀ¸·ÎºÎÅÍ ÀÌ¹ÌÁö¸¦ °¡Á®¿À´Â ½
 
 					if (Main->Thread_second_running == false)
 					{
-					//	for (int j=0 ; j<9 ; j++)
+						//for (int j=0 ; j<9 ; j++)
 						{
-							cvReleaseImage(&Main->ResultImage[0]);
-							//if (j == 9)
-							//	cout << "Clear" << endl;
+							cvReleaseImage(&Main->ResultImage);
+							
 						}
 					}
 
@@ -446,13 +465,14 @@ int CAPP_BSPDlg::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	// TODO:  ¿©±â¿¡ Æ¯¼öÈ­µÈ ÀÛ¼º ÄÚµå¸¦ Ãß°¡ÇÕ´Ï´Ù.
 	
 	CAPP_BSPDlg *Main = (CAPP_BSPDlg*)AfxGetApp()->GetMainWnd();
-	Main->Thread_second_running = false;
+	//Main->Thread_second_running = false;
 
 	cam = cvCaptureFromCAM(0);
 	CWinThread static *p1 = NULL;
 	p1 = AfxBeginThread(ThreadFirst, this); // ¿©±â±îÁö ½º·¹µå
 	p1->m_bAutoDelete = FALSE;
 	draw = false;
+	Main->Thread_second_running_count = 0;
 
 	ThreadFirst_running = true;
 	Image_order = 0;

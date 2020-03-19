@@ -49,13 +49,13 @@ private:
 
 public: 
 	int mREC;
-	int sw_active; // 스레드가 한번만 실행되게 하는 스위치 변수
+	
 	
 	static UINT ThreadSecond(LPVOID _mothod); // 캠 영상을 Picture Control에 계속 띄워주기 위해 사용하는 쓰레드
 	
 	////////////////////////////
 	int sel_cam; // 몇번째 카메라로 녹화할것인지 선택한다.
-	int sel_cap; // 이미지를 몇개나 Compare 할것인지 선택한다.
+	
 	////////////////////////////
 		
 	CStatic m_ctrCamView; // 캠영상이 출력될 Picture Control
@@ -95,4 +95,11 @@ public:
 	CButton m_btn_cap7;
 	CButton m_btn_cap8;
 	afx_msg void OnBnClickedComBtn1();
+	afx_msg void OnBnClickedComBtn2();
+	afx_msg void OnBnClickedComBtn3();
+	afx_msg void OnBnClickedComBtn4();
+	afx_msg void OnBnClickedComBtn5();
+	afx_msg void OnBnClickedComBtn6();
+	afx_msg void OnBnClickedComBtn7();
+	afx_msg void OnBnClickedComBtn8();
 };

@@ -30,7 +30,7 @@ CAPP_BSPDlg *Main = (CAPP_BSPDlg*)AfxGetApp()->GetMainWnd();
 
 int CAPP_BSPDlg::compare_order[8];
 IplImage* CAPP_BSPDlg::Compare_cam[8];
-IplImage* CAPP_BSPDlg::ResultImage[10];
+IplImage* CAPP_BSPDlg::ResultImage;
 IplImage* CAPP_BSPDlg::Result_cap[8];
 CvCapture *CAPP_BSPDlg::cam;
 
@@ -96,9 +96,16 @@ ON_BN_CLICKED(IDC_CAP_BTN6, &VIEW::OnBnClickedCapBtn6)
 ON_BN_CLICKED(IDC_CAP_BTN7, &VIEW::OnBnClickedCapBtn7)
 ON_BN_CLICKED(IDC_CAP_BTN8, &VIEW::OnBnClickedCapBtn8)
 
-ON_BN_CLICKED(IDC_SEL_CAP, &VIEW::OnBnClickedSelCap)
+ON_BN_CLICKED(IDC_sel_cap, &VIEW::OnBnClickedSelCap)
 ON_WM_INITMENU()
 ON_BN_CLICKED(IDC_COM_BTN1, &VIEW::OnBnClickedComBtn1)
+ON_BN_CLICKED(IDC_COM_BTN2, &VIEW::OnBnClickedComBtn2)
+ON_BN_CLICKED(IDC_COM_BTN3, &VIEW::OnBnClickedComBtn3)
+ON_BN_CLICKED(IDC_COM_BTN4, &VIEW::OnBnClickedComBtn4)
+ON_BN_CLICKED(IDC_COM_BTN5, &VIEW::OnBnClickedComBtn5)
+ON_BN_CLICKED(IDC_COM_BTN6, &VIEW::OnBnClickedComBtn6)
+ON_BN_CLICKED(IDC_COM_BTN7, &VIEW::OnBnClickedComBtn7)
+ON_BN_CLICKED(IDC_COM_BTN8, &VIEW::OnBnClickedComBtn8)
 END_MESSAGE_MAP()
 
 UINT VIEW::ThreadSecond(LPVOID _mothod) // picture Control에 영상 띄우는 코드, OnActvie 이벤트에 스레드 실행 지정하였다.
@@ -114,10 +121,11 @@ UINT VIEW::ThreadSecond(LPVOID _mothod) // picture Control에 영상 띄우는 코드, O
 	pMain->m_ctrCamView.GetClientRect(rect);
 	
 	
-	Main->Thread_second_running = true;
+	
 
 	cout << "Thread Second 실행" << endl;
-	cout << "Main->Image_order = " << Main->Image_order << endl;
+	//cout << "Main->Image_order = " << Main->Image_order << endl;
+	
 
 	/*
 	int x;
@@ -144,7 +152,10 @@ UINT VIEW::ThreadSecond(LPVOID _mothod) // picture Control에 영상 띄우는 코드, O
 			
 			
 			if (Main->Thread_second_running == false)
-					break;
+			{
+				//break;
+				//cs.Unlock;
+			}
 
 			if(Main->Image_order < 0)
 					Main->Image_order = 0;
@@ -172,9 +183,9 @@ UINT VIEW::ThreadSecond(LPVOID _mothod) // picture Control에 영상 띄우는 코드, O
 					//Main->Compare_cam = cvCreateImage(cvGetSize(Main->pthImage),Main->pthImage->depth,Main->pthImage->nChannels); // Main->Compare_cam 변수에 원본이미지를 넣는다
 					
 
-					if(Main->ResultImage[0] != NULL)
+					if(Main->ResultImage != NULL)
 					{
-						pMain->m_viewcopy[0].CopyOf(Main->ResultImage[0]);
+						pMain->m_viewcopy[0].CopyOf(Main->ResultImage);
 						pMain->m_viewcopy[0].DrawToHDC(pDC->m_hDC,&rect);// 좌우반전한 Main->ResultImage를 출력한다.
 						//Main->ResultImage[i].DrawToHDC(pDC->m_hDC,&rect);// DrawToHDC 왼쪽에는 클래스/구조체/공용구조체가 있어야 합니다. 에러가 나옴
 					}
@@ -189,7 +200,7 @@ UINT VIEW::ThreadSecond(LPVOID _mothod) // picture Control에 영상 띄우는 코드, O
 					{
 						//for (int j=0 ; j<=9 ; j++)
 						{
-							cvReleaseImage(&Main->ResultImage[0]);
+							cvReleaseImage(&Main->ResultImage);
 							//if (j == 9)
 							//	cout << "Clear" << endl;
 						}
@@ -220,9 +231,11 @@ void VIEW::OnClose()
 
 	Main->Thread_second_running = false;
 
-	sw_active = 0; // Thread second를 종료시키는 코드
+	//p1->SuspendThread();
 
-	if ( Thread_second_running == false )
+	//sw_active = 0; // Thread second를 종료시키는 코드
+
+	if ( Main->Thread_second_running == false )
 		cout << "VIEW 종료" << endl;
 	
 	//Main->ThreadFirst_pause = true;
@@ -266,7 +279,7 @@ void VIEW::OnBnClickedCamsel()
 
 	if(sel_cam==0)
 		cam = cvCaptureFromCAM(sel_cam); // cam에 웹캠의 정보를 저장
-	else if (sel_cam==1/* && cvCreateCameraCapture(sel_cam) != NULL*/)
+	else if (sel_cam==1 && cvCreateCameraCapture(sel_cam) != NULL)
 		if(cvCaptureFromCAM(1))
 			cam = cvCaptureFromCAM(1); // cam에 웹캠의 정보를 저장
 		else
@@ -283,14 +296,16 @@ void VIEW::OnActivate(UINT nState, CWnd* pWndOther, BOOL bMinimized)
 {
 	CDialog::OnActivate(nState, pWndOther, bMinimized);
 
-	if (sw_active == 0)
+	CAPP_BSPDlg *Main = (CAPP_BSPDlg*)AfxGetApp()->GetMainWnd();
+
+	if (Main->sw_active == 1) // 스레드가 한번만 실행되게 하는 코드
 		{
 			sel.SetCurSel(0); //  캠의 ComboBox에 기본값을 지정한다.
 			
 			CWinThread *p1;
 			p1 = AfxBeginThread(ThreadSecond, this); // 여기까지 스레드
 			p1->m_bAutoDelete = FALSE;
-			sw_active = 1;
+			Main->sw_active = 0;
 		}
 
 	Main->draw=true;
@@ -307,10 +322,13 @@ int VIEW::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	// TODO:  여기에 특수화된 작성 코드를 추가합니다.
 	
 	
+	CAPP_BSPDlg *Main = (CAPP_BSPDlg*)AfxGetApp()->GetMainWnd();
+
 	sel_cam = 0;
-	sw_active = 0;
+	//sw_active = 0;
+	Main->Thread_second_running_count += 1;
 	
-	//m_sel_cap.SetCurSel(0);
+	//m_Main->sel_cap.SetCurSel(0);
 	
 
 	return 0;
@@ -616,6 +634,8 @@ void VIEW::OnBnClickedSelCap()
 {
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
 
+	CAPP_BSPDlg *Main = (CAPP_BSPDlg*)AfxGetApp()->GetMainWnd();
+
 	CRect rect;
 	GetClientRect(&rect);
 	CBrush myBrush(GRAY); // dialog background color <- 요기 바꾸면 됨.
@@ -630,12 +650,21 @@ void VIEW::OnBnClickedSelCap()
 	GetDlgItem(IDC_CAP_BTN7)->EnableWindow(TRUE);
 	GetDlgItem(IDC_CAP_BTN8)->EnableWindow(TRUE);
 
-	cout << m_sel_cap.GetCurSel()+1 << "개의 이미지 비교" << endl;
-	sel_cap = m_sel_cap.GetCurSel() ;
+	GetDlgItem(IDC_COM_BTN1)->EnableWindow(FALSE);
+	GetDlgItem(IDC_COM_BTN2)->EnableWindow(FALSE);
+	GetDlgItem(IDC_COM_BTN3)->EnableWindow(FALSE);
+	GetDlgItem(IDC_COM_BTN4)->EnableWindow(FALSE);
+	GetDlgItem(IDC_COM_BTN5)->EnableWindow(FALSE);
+	GetDlgItem(IDC_COM_BTN6)->EnableWindow(FALSE);
+	GetDlgItem(IDC_COM_BTN7)->EnableWindow(FALSE);
+	GetDlgItem(IDC_COM_BTN8)->EnableWindow(FALSE);
 
-	// for(sel_cap = m_sel_cap.GetCurSel() ; 7 - sel_cap > 0 ;sel_cap++ )
+	cout << m_sel_cap.GetCurSel()+1 << "개의 이미지 비교" << endl;
+	Main->sel_cap = m_sel_cap.GetCurSel() ;
+
+	// for(Main->sel_cap = m_Main->sel_cap.GetCurSel() ; 7 - Main->sel_cap > 0 ;Main->sel_cap++ )
 	{
-		if(sel_cap+1 == 1)
+		if(Main->sel_cap+1 == 1)
 		{
 			CDC* pDC2 = m_cap2.GetWindowDC();
 			CBrush *pOld2 = pDC2->SelectObject(&myBrush);
@@ -680,7 +709,7 @@ void VIEW::OnBnClickedSelCap()
 			GetDlgItem(IDC_CAP_BTN7)->EnableWindow(FALSE);
 			GetDlgItem(IDC_CAP_BTN8)->EnableWindow(FALSE); // 버튼 비활성화
 		}
-		else if(sel_cap+1 == 2)
+		else if(Main->sel_cap+1 == 2)
 		{			
 			CDC* pDC3 = m_cap3.GetWindowDC();
 			CBrush *pOld3 = pDC3->SelectObject(&myBrush);
@@ -719,7 +748,7 @@ void VIEW::OnBnClickedSelCap()
 			GetDlgItem(IDC_CAP_BTN7)->EnableWindow(FALSE);
 			GetDlgItem(IDC_CAP_BTN8)->EnableWindow(FALSE); // 버튼 비활성화
 		}
-		else if(sel_cap+1 == 3)
+		else if(Main->sel_cap+1 == 3)
 		{
 			CDC* pDC4 = m_cap4.GetWindowDC();
 			CBrush *pOld4 = pDC4->SelectObject(&myBrush);
@@ -752,7 +781,7 @@ void VIEW::OnBnClickedSelCap()
 			GetDlgItem(IDC_CAP_BTN7)->EnableWindow(FALSE);
 			GetDlgItem(IDC_CAP_BTN8)->EnableWindow(FALSE); // 버튼 비활성화
 		}
-		else if(sel_cap+1 == 4)
+		else if(Main->sel_cap+1 == 4)
 		{
 			
 			CDC* pDC5 = m_cap5.GetWindowDC();
@@ -780,7 +809,7 @@ void VIEW::OnBnClickedSelCap()
 			GetDlgItem(IDC_CAP_BTN7)->EnableWindow(FALSE);
 			GetDlgItem(IDC_CAP_BTN8)->EnableWindow(FALSE); // 버튼 비활성화
 		}
-		else if(sel_cap+1 == 5)
+		else if(Main->sel_cap+1 == 5)
 		{
 			CDC* pDC6 = m_cap6.GetWindowDC();
 			CBrush *pOld6 = pDC6->SelectObject(&myBrush);
@@ -801,7 +830,7 @@ void VIEW::OnBnClickedSelCap()
 			GetDlgItem(IDC_CAP_BTN7)->EnableWindow(FALSE);
 			GetDlgItem(IDC_CAP_BTN8)->EnableWindow(FALSE); // 버튼 비활성화
 		}
-		else if(sel_cap+1 == 6)
+		else if(Main->sel_cap+1 == 6)
 		{
 			CDC* pDC7 = m_cap7.GetWindowDC();
 			CBrush *pOld7 = pDC7->SelectObject(&myBrush);
@@ -816,7 +845,7 @@ void VIEW::OnBnClickedSelCap()
 			GetDlgItem(IDC_CAP_BTN7)->EnableWindow(FALSE);
 			GetDlgItem(IDC_CAP_BTN8)->EnableWindow(FALSE); // 버튼 비활성화
 		}
-		else if(sel_cap+1 == 7)
+		else if(Main->sel_cap+1 == 7)
 		{
 			CDC* pDC8 = m_cap8.GetWindowDC();
 			CBrush *pOld8 = pDC8->SelectObject(&myBrush);
@@ -830,7 +859,7 @@ void VIEW::OnBnClickedSelCap()
 			cout << "이미지 8개 모두 비교" << endl;
 		} // if문의 끝
 		
-		//cout << "sel_cap의 값은 : "<< sel_cap << endl;
+		//cout << "Main->sel_cap의 값은 : "<< Main->sel_cap << endl;
 	}// for문의 끝
 	cout << "--------------------" << endl;
 }
@@ -841,14 +870,16 @@ void VIEW::OnInitMenu(CMenu* pMenu)
 
 	// TODO: 여기에 메시지 처리기 코드를 추가합니다.
 	
+	CAPP_BSPDlg *Main = (CAPP_BSPDlg*)AfxGetApp()->GetMainWnd();
+	
 	for(int i=0;i<8;i++)
 	{
 		Main->compare_order[i] = 0;
 	}
 
-	Main->Thread_second_running = true;
+	//Main->Thread_second_running = true;
 	
-	sel_cap = m_sel_cap.SetCurSel(0);
+	Main->sel_cap = m_sel_cap.SetCurSel(0);
 	
 }
 
@@ -856,7 +887,49 @@ void VIEW::OnBnClickedComBtn1()
 {
 	// cout << Main->Result_cap[0] << endl;
 
-	Main->compare_order[0] = 1;
+	Main->compare_order[CAP0] = 1;
 
+	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+}
+
+void VIEW::OnBnClickedComBtn2()
+{
+	Main->compare_order[CAP1] = 1;
+	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+}
+
+void VIEW::OnBnClickedComBtn3()
+{
+	Main->compare_order[CAP2] = 1;
+	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+}
+
+void VIEW::OnBnClickedComBtn4()
+{
+	Main->compare_order[CAP3] = 1;
+	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+}
+
+void VIEW::OnBnClickedComBtn5()
+{
+	Main->compare_order[CAP4] = 1;
+	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+}
+
+void VIEW::OnBnClickedComBtn6()
+{
+	Main->compare_order[CAP5] = 1;
+	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+}
+
+void VIEW::OnBnClickedComBtn7()
+{
+	Main->compare_order[CAP6] = 1;
+	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+}
+
+void VIEW::OnBnClickedComBtn8()
+{
+	Main->compare_order[CAP7] = 1;
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
 }

@@ -33,7 +33,6 @@ using namespace cv;
 // CAPP_BSPDlg dialog
 IplImage *imgNames[NUM] = {CAPP_BSPDlg::ResultImage,CAPP_BSPDlg::Result_cap[0]}; // 이미지가 저장된 배열
 int CAPP_BSPDlg::Image_order = 0;
-bool VIEW::draw;
 CvvImage VIEW::m_viewcopy[10];
 CCriticalSection CAPP_BSPDlg::cs; // 스레드 동기화를 위한 변수
 IplImage *pthImage = NULL;
@@ -100,7 +99,10 @@ END_MESSAGE_MAP()
 void CAPP_BSPDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialog::DoDataExchange(pDX);
-	DDX_Control(pDX, IDC_START_TIME2, Loop);
+	DDX_Control(pDX, IDC_LOOP, m_Loop);
+	DDX_Control(pDX, IDC_AFTER, m_after);
+	DDX_Control(pDX, IDC_GAP, m_gap);
+	DDX_Control(pDX, IDC_ACCURATE, m_Accurate);
 }
 
 BEGIN_MESSAGE_MAP(CAPP_BSPDlg, CDialog)
@@ -111,6 +113,7 @@ BEGIN_MESSAGE_MAP(CAPP_BSPDlg, CDialog)
 	ON_BN_CLICKED(IDC_VIEW, &CAPP_BSPDlg::OnBnClickedView)
 	ON_WM_ACTIVATE()
 	ON_WM_CREATE()
+	ON_BN_CLICKED(IDC_SETTING, &CAPP_BSPDlg::OnBnClickedSetting)
 END_MESSAGE_MAP()
 
 
@@ -143,15 +146,15 @@ BOOL CAPP_BSPDlg::OnInitDialog()
 	// 이 대화 상자의 아이콘을 설정합니다. 응용 프로그램의 주 창이 대화 상자가 아닐 경우에는
 	//  프레임워크가 이 작업을 자동으로 수행합니다.
 
-	CAPP_BSPDlg *Main = (CAPP_BSPDlg*)AfxGetApp()->GetMainWnd();
-
-	//Main->Thread_second_running = false;
-
-	
 	
 	SetIcon(m_hIcon, TRUE);			// 큰 아이콘을 설정합니다.
 	SetIcon(m_hIcon, FALSE);		// 작은 아이콘을 설정합니다.
 	m_pDlg = NULL;
+
+
+	CAPP_BSPDlg *Main = (CAPP_BSPDlg*)AfxGetApp()->GetMainWnd();
+
+	Main->m_Accurate.SetWindowTextW(TEXT("90000"));
 
 	// TODO: 여기에 추가 초기화 작업을 추가합니다.
 
@@ -279,11 +282,6 @@ UINT CAPP_BSPDlg::ThreadFirst(LPVOID _mothod) // Cam으로부터 이미지를 가져오는 �
 	{  
 				if (Main->ThreadFirst_running == false)
 					break;
-				/*
-				ResultImage가 10개의 배열인데 0번만 사용하는 이유는 처음 설계 한것이 배열 10개를 이용해서 출력, 비교 하는것이었는데 배열 10개를 사용하면 영상이 출력 되는것이 버벅거리며나와서
-				배열의 첫번째 칸만 사용하였다.
-				*/
-
 				//for(Main->Image_order = 0 ; Main->Image_order <= 9 ;Main->Image_order++)
 				{
 					cs.Lock();
@@ -379,61 +377,10 @@ UINT CAPP_BSPDlg::ThreadFirst(LPVOID _mothod) // Cam으로부터 이미지를 가져오는 �
 
 				////////////////////// 이상 Compare 코드 /////////////////////////////
 
-				///////////////////////////이하 VIEW Dialog에 Cam화면을 그려주는 코드 //////////////////////////////
-				/*
-				if(draw == true)
-				{
-					cout << "그리는중" << endl;
-					//CWnd* cam_dialog = GetDlgItem(pView->m_ctrCamView); // pic1_cap의 포인터를 GetDlgItem 함수를 이용해 pWnd에 저장한다.
-					//CClientDC dc(pView->m_ctrCamView);// CClientDC는 Window영역의 캡션바, 메뉴바, 상태바 등을 제외한 클라이언트 영역만을 관리하는 DC를 뜻한다.
-					
-					//VIEW* pFrame = (VIEW*)GetParentFrame();
-					VIEW *pView_rect = (VIEW*)_mothod;
-					pView_rect->m_ctrCamView.GetClientRect(rect);
-
-					//pView_rect->m_ctrCamView.GetClientRect(rect);
-					
-
-
-					// 이쪽에 있던 while문을 삭제했다.
-					if (View.Thread_second_running== false)
-								break;
-
-					//cout << "Main->Image_order = " << Main->Image_order << endl;
-
-					for(int i=0 ; i < Image_order ; i++ )
-					{
-						//cout << "Image_order = " << Image_order << endl;
-							pDC = pView->m_ctrCamView.GetDC();
-						
-						if(Main->ResultImage)
-						{
-							m_viewcopy[i].CopyOf(ResultImage[i]);
-							m_viewcopy[i].DrawToHDC(pDC->m_hDC,&rect); // pDC에 그려준다
-						}
-						pView->m_ctrCamView.ReleaseDC(pDC); // DC를 Release 해준다
-					} // for 문의 끝
-				}
-				*/
-
-				///////////////////////////이상 VIEW Dialog에 Cam화면을 그려주는 코드 //////////////////////////////
-
-
-					
-					
-					
-					
-					//if (Main->Image_order == 9)
-					//cout << "-----------------------------------------------------------------------" << endl;
-					
-
+				
 					if (Main->Thread_second_running == false)
 					{
-						//for (int j=0 ; j<9 ; j++)
-						{
 							cvReleaseImage(&Main->ResultImage);
-							
-						}
 					}
 
 
@@ -471,11 +418,36 @@ int CAPP_BSPDlg::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	CWinThread static *p1 = NULL;
 	p1 = AfxBeginThread(ThreadFirst, this); // 여기까지 스레드
 	p1->m_bAutoDelete = FALSE;
-	draw = false;
 	Main->Thread_second_running_count = 0;
 
 	ThreadFirst_running = true;
-	Image_order = 0;
+
+	//Image_order = 0;
 
 	return 0;
+}
+void CAPP_BSPDlg::OnBnClickedSetting()
+{
+	CAPP_BSPDlg *Main = (CAPP_BSPDlg*)AfxGetApp()->GetMainWnd();
+	
+	GetDlgItemTextW(IDC_LOOP,Main->Loop_tmp);
+	Main->Loop = _ttoi(Main->Loop_tmp);
+
+	GetDlgItemTextW(IDC_GAP,Main->Gap_tmp);
+	Main->Gap = _ttoi(Main->Gap_tmp);
+
+	GetDlgItemTextW(IDC_ACCURATE,Main->Accurate_tmp);
+	Main->Accurate = _ttoi(Main->Accurate_tmp);
+
+	GetDlgItemTextW(IDC_AFTER,Main->After_tmp);
+	Main->After = _ttoi(Main->After_tmp);
+
+	/*
+		cout << "Main->Loop : " << Main->Loop << endl;
+		cout << "Main->After : " << Main->After << endl;
+		cout << "Main->Accurate : " << Main->Accurate << endl;
+		cout << "Main->Gap : " << Main->Gap << endl;
+	*/
+
+	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
 }

@@ -57,7 +57,6 @@ public:
 	static IplImage *ResultImage; // 캠으로 캡쳐중인 이미지들이 저장된 배열
 	static IplImage *Result_cap[8]; // cap1 ~ cap 8까지 캡쳐된 이미지가 저장될 배열
 	static CvCapture *cam; // 현재 입력받고 있는 cam
-	static bool draw;
 	bool ThreadFirst_running;
 	bool Threadfirst_sw;// sw == switch
 	bool ThreadFirst_pause;
@@ -68,13 +67,23 @@ public:
 	static CvvImage m_viewcopy[10];
 	CModalDialog *m_pDlg; // 모달리스로 VIEW를 열기 위한 변수
 	static IplImage *pthImage; // 원본 이미지
+	int Loop;
+	CString Loop_tmp;
+	int After;
+	CString After_tmp;
+	int Gap;
+	CString Gap_tmp;
+	int Accurate;
+	CString Accurate_tmp;
 	
-	
-	afx_msg void OnBnClickedSetting();
 	static CCriticalSection cs; // 스레드 동기화를 위한 변수
 	int sel_cap; // 이미지를 몇개나 Compare 할것인지 선택한다.
 
 	static UINT ThreadFirst(LPVOID _mothod); // Main Dialog에서 돌아갈 스레드를 만든다.
 	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
-	CEdit Loop;
+	afx_msg void OnBnClickedSetting();
+	CEdit m_Loop;
+	CEdit m_after;
+	CEdit m_gap;
+	CEdit m_Accurate;
 };

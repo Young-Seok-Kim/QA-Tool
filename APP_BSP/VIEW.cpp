@@ -308,7 +308,6 @@ void VIEW::OnActivate(UINT nState, CWnd* pWndOther, BOOL bMinimized)
 			Main->sw_active = 0;
 		}
 
-	Main->draw=true;
 	
 }
 

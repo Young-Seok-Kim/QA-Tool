@@ -128,7 +128,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
-				AdditionalIncludeDirectories="D:\opencv\build\install\include"
+				AdditionalIncludeDirectories="D:\opencv\build\install\include;D:\opencv\build\install\x86\vc9\staticlib"
 				PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG"
 				MinimalRebuild="false"
 				RuntimeLibrary="2"

@@ -103,6 +103,7 @@ void CAPP_BSPDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_AFTER, m_after);
 	DDX_Control(pDX, IDC_GAP, m_gap);
 	DDX_Control(pDX, IDC_ACCURATE, m_Accurate);
+	DDX_Control(pDX, IDC_TEST_SCREEN, m_test_screen);
 }
 
 BEGIN_MESSAGE_MAP(CAPP_BSPDlg, CDialog)
@@ -436,18 +437,21 @@ void CAPP_BSPDlg::OnBnClickedSetting()
 	GetDlgItemTextW(IDC_GAP,Main->Gap_tmp);
 	Main->Gap = _ttoi(Main->Gap_tmp);
 
+	GetDlgItemTextW(IDC_GAP,Main->Test_screen_tmp);
+	Main->sel_cap = _ttoi(Main->Test_screen_tmp);
+
 	GetDlgItemTextW(IDC_ACCURATE,Main->Accurate_tmp);
 	Main->Accurate = _ttoi(Main->Accurate_tmp);
 
 	GetDlgItemTextW(IDC_AFTER,Main->After_tmp);
 	Main->After = _ttoi(Main->After_tmp);
 
-	/*
 		cout << "Main->Loop : " << Main->Loop << endl;
-		cout << "Main->After : " << Main->After << endl;
-		cout << "Main->Accurate : " << Main->Accurate << endl;
 		cout << "Main->Gap : " << Main->Gap << endl;
-	*/
+		cout << "Main->sel_cap : " << Main->sel_cap << endl;
+		cout << "Main->Accurate : " << Main->Accurate << endl;
+		cout << "Main->After : " << Main->After << endl;
+
 
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
 }

@@ -75,6 +75,7 @@ public:
 	CString Gap_tmp;
 	int Accurate;
 	CString Accurate_tmp;
+	CString Test_screen_tmp;
 	
 	static CCriticalSection cs; // 스레드 동기화를 위한 변수
 	int sel_cap; // 이미지를 몇개나 Compare 할것인지 선택한다.
@@ -86,4 +87,5 @@ public:
 	CEdit m_after;
 	CEdit m_gap;
 	CEdit m_Accurate;
+	CComboBox m_test_screen;
 };

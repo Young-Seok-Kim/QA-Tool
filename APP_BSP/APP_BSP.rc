@@ -104,7 +104,7 @@ BEGIN
     PUSHBUTTON      "STOP",IDC_STOP,281,262,91,18
     LTEXT           "화면사이의 n초 간격",IDC_STATIC,10,70,56,13
     LTEXT           "정확도",IDC_STATIC,10,89,56,13
-    LTEXT           "n초후부터 검사 - 숫자 1개\n\nn개의 화면 검사 - 1~8\n\n화면 사이의 n초 간격 - 숫자 1개~8개(','로 구분)\nex)2개의 화면을 2초,3초 간격으로 검사한다면'2,3'만 입력\n\n정확도 - 1~10000 까지 입력 가능 (100.00%)\n\nSetting 완료후 하단 Setting 버튼 클릭!!",IDC_HELP,7,106,183,86
+    LTEXT           "n초후부터 검사 - 숫자 1개\n\nn개의 화면 검사 - 1~8\n\n화면 사이의 n초 간격 - 숫자 1개~8개(','로 구분)\nex)2개의 화면을 2초,3초 간격으로 검사한다면'2,3'만 입력\n\n정확도 - 1~10000 까지 입력 가능 (100.00%)\n\nSetting 완료후 하단 Setting 버튼 클릭!!",IDC_INFO,7,106,183,86
     GROUPBOX        "Setting",IDC_STATIC,7,7,185,97
     COMBOBOX        IDC_TEST_SCREEN,76,51,65,13,CBS_DROPDOWN | CBS_SORT | WS_VSCROLL | WS_TABSTOP
     LTEXT           "n번 검사",IDC_TEST_COUNT,11,14,56,13

@@ -34,7 +34,7 @@
 #define IDC_COM_BTN6                    1022
 #define IDC_COM_BTN7                    1023
 #define IDC_COM_BTN8                    1024
-#define IDC_HELP                        1024
+#define IDC_INFO                        1024
 #define IDC_COM_BTN5                    1025
 #define IDC_COMBO2                      1026
 #define IDC_TEST_SCREEN                 1026

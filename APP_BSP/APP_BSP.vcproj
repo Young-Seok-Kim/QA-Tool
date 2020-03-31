@@ -202,7 +202,7 @@
 				>
 			</File>
 			<File
-				RelativePath="D:\opencv\CvvImage\CvvImage.cpp"
+				RelativePath="..\..\..\Git\QA-Tool\APP_BSP\CvvImage.cpp"
 				>
 			</File>
 			<File
@@ -244,7 +244,11 @@
 				>
 			</File>
 			<File
-				RelativePath="D:\opencv\CvvImage\CvvImage.h"
+				RelativePath="..\..\..\Git\QA-Tool\APP_BSP\CvvImage.h"
+				>
+			</File>
+			<File
+				RelativePath=".\highgui.h"
 				>
 			</File>
 			<File

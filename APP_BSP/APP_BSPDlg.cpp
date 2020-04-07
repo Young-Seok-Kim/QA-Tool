@@ -8,6 +8,7 @@
 #include "APP_BSPDlg.h"
 #include "VIEW.h"
 #include "stdio.h"
+#include "use_opencv.h"
 
 
 #define SCALE 02

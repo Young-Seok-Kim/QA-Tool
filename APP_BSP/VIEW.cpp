@@ -327,9 +327,6 @@ int VIEW::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	//sw_active = 0;
 	Main->Thread_second_running_count += 1;
 	
-	//m_Main->sel_cap.SetCurSel(0);
-	
-
 	return 0;
 }
 
@@ -366,7 +363,8 @@ void VIEW::OnBnClickedCapBtn1()
 		Main->Compare_cam[CAP0] = Main->Result_cap[CAP0];
 		//cvShowImage("Main->Compare_cam",&Main->Compare_cam);
 	}
-	
+
+	Thread_compare[0] = 1;
 	GetDlgItem(IDC_COM_BTN1)->EnableWindow(TRUE);
 
 	//((CButton*)GetDlgItem(IDC_BUTTON2))->EnableWindow(TRUE);
@@ -405,6 +403,8 @@ void VIEW::OnBnClickedCapBtn2()
 		//cvShowImage("Main->Compare_cam",&Main->Compare_cam);
 	}
 
+	Thread_compare[1] = 1;
+
 	GetDlgItem(IDC_COM_BTN2)->EnableWindow(TRUE);
 }
 void VIEW::OnBnClickedCapBtn3()
@@ -440,6 +440,9 @@ void VIEW::OnBnClickedCapBtn3()
 		Main->Compare_cam[CAP2] = Main->Result_cap[CAP2];
 		//cvShowImage("Main->Compare_cam",&Main->Compare_cam);
 	}
+	
+	Thread_compare[2] = 1;
+
 	GetDlgItem(IDC_COM_BTN3)->EnableWindow(TRUE);
 }
 
@@ -478,6 +481,8 @@ void VIEW::OnBnClickedCapBtn4()
 		//cvShowImage("Main->Compare_cam",&Main->Compare_cam);
 	}
 
+	Thread_compare[3] = 1;
+
 	GetDlgItem(IDC_COM_BTN4)->EnableWindow(TRUE);
 }
 
@@ -514,6 +519,8 @@ void VIEW::OnBnClickedCapBtn5()
 		Main->Compare_cam[CAP4] = Main->Result_cap[CAP4];
 		//cvShowImage("Main->Compare_cam",&Main->Compare_cam);
 	}
+
+	Thread_compare[4] = 1;
 
 	GetDlgItem(IDC_COM_BTN5)->EnableWindow(TRUE);
 }
@@ -552,6 +559,8 @@ void VIEW::OnBnClickedCapBtn6()
 		//cvShowImage("Main->Compare_cam",&Main->Compare_cam);
 	}
 
+	Thread_compare[5] = 1;
+
 	GetDlgItem(IDC_COM_BTN6)->EnableWindow(TRUE);
 }
 
@@ -587,6 +596,8 @@ void VIEW::OnBnClickedCapBtn7()
 		Main->Compare_cam[CAP6] = Main->Result_cap[CAP6];
 		//cvShowImage("Main->Compare_cam",&Main->Compare_cam);
 	}
+
+	Thread_compare[6] = 1;
 
 	GetDlgItem(IDC_COM_BTN7)->EnableWindow(TRUE);
 }
@@ -624,6 +635,9 @@ void VIEW::OnBnClickedCapBtn8()
 		Main->Compare_cam[CAP7] = Main->Result_cap[CAP7];
 		//cvShowImage("Main->Compare_cam",&Main->Compare_cam);
 	}
+
+	Thread_compare[7] = 1;
+
 	GetDlgItem(IDC_COM_BTN8)->EnableWindow(TRUE);
 }
 

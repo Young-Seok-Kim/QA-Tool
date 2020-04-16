@@ -91,7 +91,6 @@
       #pragma comment(lib,"libtiffd.lib")
 */
 
-
       #pragma comment(lib,"vfw32.lib")
 
       #pragma comment(lib,"comctl32.lib")
@@ -129,6 +128,7 @@
       #pragma comment(lib,"opencv_stitching249.lib")
 
       #pragma comment(lib,"opencv_legacy249.lib")
+
 /*
       #pragma comment(lib,"IlmImf.lib")
 
@@ -143,8 +143,7 @@
       #pragma comment(lib,"uafxcw.lib")	
 
       #pragma comment(lib,"LIBCMT.lib")	
-
-*/
+*/	  
 
       #pragma comment(lib,"vfw32.lib")
 

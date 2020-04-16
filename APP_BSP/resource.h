@@ -37,7 +37,6 @@
 #define IDC_INFO                        1024
 #define IDC_COM_BTN5                    1025
 #define IDC_COMBO2                      1026
-#define IDC_TEST_SCREEN                 1026
 #define IDC_TEST_COUNT                  1027
 #define IDC_EDIT1                       1028
 #define IDC_LOOP                        1028

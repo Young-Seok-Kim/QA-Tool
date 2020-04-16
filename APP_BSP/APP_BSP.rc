@@ -97,21 +97,17 @@ BEGIN
     LTEXT           "결과창",IDC_STATIC,195,6,178,188,WS_BORDER
     LTEXT           "Debug Console창",IDC_STATIC,6,203,367,53,WS_BORDER
     PUSHBUTTON      "VIEW",IDC_VIEW,6,262,70,19
-    PUSHBUTTON      "Setting",IDC_SETTING,85,262,70,19
-    LTEXT           "n초후부터 검사",IDC_STATIC,10,31,56,13
-    LTEXT           "n개의 화면 검사",IDC_STATIC,10,51,56,13
+    PUSHBUTTON      "Setting",IDC_SETTING,89,262,70,19
     PUSHBUTTON      "START",IDC_START,174,262,91,18
     PUSHBUTTON      "STOP",IDC_STOP,281,262,91,18
-    LTEXT           "화면사이의 n초 간격",IDC_STATIC,10,70,56,13
-    LTEXT           "정확도",IDC_STATIC,10,89,56,13
-    LTEXT           "n초후부터 검사 - 숫자 1개\n\nn개의 화면 검사 - 1~8\n\n화면 사이의 n초 간격 - 숫자 1개~8개(','로 구분)\nex)2개의 화면을 2초,3초 간격으로 검사한다면'2,3'만 입력\n\n정확도 - 1~10000 까지 입력 가능 (100.00%)\n\nSetting 완료후 하단 Setting 버튼 클릭!!",IDC_INFO,7,106,183,86
+    LTEXT           "화면사이의 n초 간격",IDC_STATIC,10,31,56,13
+    LTEXT           "정확도",IDC_STATIC,10,50,56,13
+    LTEXT           "n초후부터 검사 - 숫자 1개\n\nn개의 화면 검사 - 1~8\n\n화면 사이의 n초 간격\nex)2 입력시 2초마다 Compare\n\n정확도 - 1~10000 까지 입력 가능 (100.00%)\n\nSetting 완료후 하단 Setting 버튼 클릭!!",IDC_INFO,7,106,183,86
     GROUPBOX        "Setting",IDC_STATIC,7,7,185,97
-    COMBOBOX        IDC_TEST_SCREEN,76,51,65,13,CBS_DROPDOWN | CBS_SORT | WS_VSCROLL | WS_TABSTOP
     LTEXT           "n번 검사",IDC_TEST_COUNT,11,14,56,13
     EDITTEXT        IDC_LOOP,76,11,65,15,ES_AUTOHSCROLL | ES_NUMBER
-    EDITTEXT        IDC_AFTER,76,30,65,14,ES_AUTOHSCROLL | ES_NUMBER
-    EDITTEXT        IDC_GAP,76,72,65,14,ES_AUTOHSCROLL | ES_NUMBER
-    EDITTEXT        IDC_ACCURATE,76,89,65,14,ES_AUTOHSCROLL | ES_NUMBER
+    EDITTEXT        IDC_GAP,76,33,65,14,ES_AUTOHSCROLL | ES_NUMBER
+    EDITTEXT        IDC_ACCURATE,76,50,65,14,ES_AUTOHSCROLL | ES_NUMBER
 END
 
 IDD_VIEW DIALOGEX 0, 0, 655, 339
@@ -280,27 +276,6 @@ BEGIN
     IDC_CAP_SEL, 0x403, 2, 0
 0x0037, 
     IDC_CAP_SEL, 0x403, 2, 0
-0x0038, 
-    0
-END
-
-IDD_APP_BSP_DIALOG DLGINIT
-BEGIN
-    IDC_TEST_SCREEN, 0x403, 2, 0
-0x0031, 
-    IDC_TEST_SCREEN, 0x403, 2, 0
-0x0032, 
-    IDC_TEST_SCREEN, 0x403, 2, 0
-0x0033, 
-    IDC_TEST_SCREEN, 0x403, 2, 0
-0x0034, 
-    IDC_TEST_SCREEN, 0x403, 2, 0
-0x0035, 
-    IDC_TEST_SCREEN, 0x403, 2, 0
-0x0036, 
-    IDC_TEST_SCREEN, 0x403, 2, 0
-0x0037, 
-    IDC_TEST_SCREEN, 0x403, 2, 0
 0x0038, 
     0
 END

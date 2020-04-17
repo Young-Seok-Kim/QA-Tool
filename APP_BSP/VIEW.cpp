@@ -46,7 +46,7 @@ VIEW::~VIEW()
 {
 }
 
-CString SelectCam=_T(""); // 문자형 -> 정수형으로 변경해야 하므로 선언하였다.
+CString View_SelectCam=_T(""); // 문자형 -> 정수형으로 변경해야 하므로 선언하였다.
 
 
 // VIEW 대화 상자입니다.
@@ -122,6 +122,7 @@ UINT VIEW::ThreadSecond(LPVOID _mothod) // picture Control에 영상 띄우는 코드, O
 	
 	
 	
+	
 
 	cout << "Thread Second 실행" << endl;
 	//cout << "Main->Image_order = " << Main->Image_order << endl;
@@ -148,8 +149,6 @@ UINT VIEW::ThreadSecond(LPVOID _mothod) // picture Control에 영상 띄우는 코드, O
 			Main->Image_order가 배열인 이유는 처음 설계 한것이 배열 10개를 이용해서 출력, 비교 하는것이었는데 배열 10개를 사용하면 영상이 출력 되는것이 버벅거리며나와서
 			배열의 첫번째 칸만 사용하였다.
 			*/
-
-			
 			
 			if (Main->Thread_second_running == false)
 			{
@@ -274,14 +273,16 @@ void VIEW::OnBnClickedCamsel()
 	
 	// MessageBox(_T("test"),_T("title"),MB_ICONERROR);
 
-	sel_cam = sel.GetCurSel();
-	sel.GetLBText(sel_cam,SelectCam);
+	CAPP_BSPDlg *Main = (CAPP_BSPDlg*)AfxGetApp()->GetMainWnd();
 
-	if(sel_cam==0)
-		cam = cvCaptureFromCAM(sel_cam); // cam에 웹캠의 정보를 저장
-	else if (sel_cam==1 && cvCreateCameraCapture(sel_cam) != NULL)
+	Main->sel_cam = sel.GetCurSel();
+	sel.GetLBText(Main->sel_cam,View_SelectCam);
+
+	if(Main->sel_cam==0)
+		Main->cam = cvCaptureFromCAM(Main->sel_cam); // cam에 웹캠의 정보를 저장
+	else if (Main->sel_cam==1 && cvCreateCameraCapture(Main->sel_cam) != NULL)
 		if(cvCaptureFromCAM(1))
-			cam = cvCaptureFromCAM(1); // cam에 웹캠의 정보를 저장
+			Main->cam = cvCaptureFromCAM(1); // cam에 웹캠의 정보를 저장
 		else
 			MessageBox(L"캠이 연결되어있지 않습니다.");
 	else
@@ -299,16 +300,16 @@ void VIEW::OnActivate(UINT nState, CWnd* pWndOther, BOOL bMinimized)
 	CAPP_BSPDlg *Main = (CAPP_BSPDlg*)AfxGetApp()->GetMainWnd();
 
 	if (Main->sw_active == 1) // 스레드가 한번만 실행되게 하는 코드
-		{
-			sel.SetCurSel(0); //  캠의 ComboBox에 기본값을 지정한다.
-			
-			CWinThread *p1;
-			p1 = AfxBeginThread(ThreadSecond, this); // 여기까지 스레드
-			p1->m_bAutoDelete = FALSE;
-			Main->sw_active = 0;
-		}
-
+	{
+		sel.SetCurSel(0); //  캠의 ComboBox에 기본값을 지정한다.
+		
+		CWinThread *p1;
+		p1 = AfxBeginThread(ThreadSecond, this); // 여기까지 스레드
+		p1->m_bAutoDelete = FALSE;
+		Main->sw_active = 0;
+	}
 	
+	sel.SetCurSel(Main->sel_cam);
 }
 
 
@@ -323,9 +324,9 @@ int VIEW::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	
 	CAPP_BSPDlg *Main = (CAPP_BSPDlg*)AfxGetApp()->GetMainWnd();
 
-	sel_cam = 0;
-	//sw_active = 0;
 	Main->Thread_second_running_count += 1;
+	
+	sel.SetCurSel(Main->sel_cam);
 	
 	return 0;
 }

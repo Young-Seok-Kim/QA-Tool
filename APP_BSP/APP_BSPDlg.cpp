@@ -35,9 +35,10 @@ using namespace cv;
 IplImage *imgNames[NUM] = {CAPP_BSPDlg::ResultImage,CAPP_BSPDlg::Result_cap[0]}; // ÀÌ¹ÌÁö°¡ ÀúÀåµÈ ¹è¿­
 int CAPP_BSPDlg::Image_order = 0;
 int CAPP_BSPDlg::Thread_compare[8];
-CvvImage VIEW::m_viewcopy[10];
+//CvvImage VIEW::m_viewcopy[10];
 CCriticalSection CAPP_BSPDlg::cs; // ½º·¹µå µ¿±âÈ­¸¦ À§ÇÑ º¯¼ö
 IplImage *pthImage = NULL;
+CString Main_SelectCam=_T(""); // ¹®ÀÚÇü -> Á¤¼öÇüÀ¸·Î º¯°æÇØ¾ß ÇÏ¹Ç·Î ¼±¾ðÇÏ¿´´Ù.
 
 
 
@@ -104,6 +105,9 @@ void CAPP_BSPDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_LOOP, m_Loop);
 	DDX_Control(pDX, IDC_GAP, m_gap);
 	DDX_Control(pDX, IDC_ACCURATE, m_Accurate);
+	DDX_Control(pDX, IDC_MAIN_CAM_SEL, m_Main_sel_cam);
+	DDX_Control(pDX, IDC_AFTER, m_after);
+	DDX_Control(pDX, IDC_LIST1, m_Result_table);
 }
 
 BEGIN_MESSAGE_MAP(CAPP_BSPDlg, CDialog)
@@ -119,6 +123,7 @@ BEGIN_MESSAGE_MAP(CAPP_BSPDlg, CDialog)
 //	ON_BN_CLICKED(IDC_STOP, &CAPP_BSPDlg::OnBnClickedStop)
 	ON_BN_CLICKED(IDC_START, &CAPP_BSPDlg::OnBnClickedStart)
 	ON_BN_CLICKED(IDC_STOP, &CAPP_BSPDlg::OnBnClickedStop)
+	ON_BN_CLICKED(IDC_CAM_SEL, &CAPP_BSPDlg::OnBnClickedCamSel)
 END_MESSAGE_MAP()
 
 
@@ -157,12 +162,23 @@ BOOL CAPP_BSPDlg::OnInitDialog()
 	m_pDlg = NULL;
 	
 
-
 	CAPP_BSPDlg *Main = (CAPP_BSPDlg*)AfxGetApp()->GetMainWnd();
 
-	Main->m_Loop.SetWindowTextW(TEXT("1"));
+
+	str_Loop.Format(_T("%d"),Main->Loop);
+
+	Main->m_Loop.SetWindowTextW(Main->str_Loop);
+	Main->m_after.SetWindowTextW(TEXT("1"));
 	Main->m_gap.SetWindowTextW(TEXT("1"));
 	Main->m_Accurate.SetWindowTextW(TEXT("90000"));
+
+	Main->m_Result_table.GetWindowRect(&Main->rt);
+	Main->m_Result_table.SetExtendedStyle(LVS_EX_GRIDLINES | LVS_EX_FULLROWSELECT);
+
+	Main->m_Result_table.InsertColumn(0,_T("¹Ýº¹"),LVCFMT_CENTER,rt.Width()*0.1);
+	Main->m_Result_table.InsertColumn(1,_T("Ç×¸ñ"),LVCFMT_CENTER,rt.Width()*0.2);
+	Main->m_Result_table.InsertColumn(2,_T("°á°ú"),LVCFMT_CENTER,rt.Width()*0.2);
+	Main->m_Result_table.InsertColumn(3,_T("Á¤È®µµ"),LVCFMT_CENTER,rt.Width()*0.2);
 
 	// TODO: ¿©±â¿¡ Ãß°¡ ÃÊ±âÈ­ ÀÛ¾÷À» Ãß°¡ÇÕ´Ï´Ù.
 
@@ -282,7 +298,26 @@ UINT CAPP_BSPDlg::ThreadFirst(LPVOID _mothod) // CamÀ¸·ÎºÎÅÍ ÀÌ¹ÌÁö¸¦ °¡Á®¿À´Â ½
 
 	Main->Thread_second_running = false;
 	Main->Start = false;
+
+	Main->Loop = 1;
+
+	Main->After = 1;
+
+	Main->Gap = 1;
+
+	Main->sel_cap = 1;
+
+	Main->Accurate = 90000;
+
 	
+	cout << "Main->Loop : " << Main->Loop << endl;
+	cout << "Main->After : " << Main->After << endl;
+	cout << "Main->Gap : " << Main->Gap << endl;
+	cout << "Main->Accurate : " << Main->Accurate << endl;
+	cout << "Main->Start : " << Main->Start << endl;
+	cout << "¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ" << endl;
+
+	Main->Match_result = new bool[Main->Loop];
 	
 	 cout << "Thread First ½ÇÇà" << endl;
 
@@ -318,11 +353,17 @@ UINT CAPP_BSPDlg::ThreadFirst(LPVOID _mothod) // CamÀ¸·ÎºÎÅÍ ÀÌ¹ÌÁö¸¦ °¡Á®¿À´Â ½
 
 					if(Main->Start == true) //START ¹öÆ°À» ´©¸£¸é
 					{
+						for (int sleep_cnt = 0 ; sleep_cnt < Main->After ; sleep_cnt++ )
+						{
+								cout << "Å×½ºÆ®¸¦ À§ÇØ" << sleep_cnt + 1 << "ÃÊ ´ë±â" << endl;
+								Sleep(1000);
+						}
+
 						for(int Loop_cnt = 0 ; Loop_cnt < Main->Loop ; Loop_cnt++) // Å×½ºÆ®¸¦ Loop_cnt¹ø ¹Ýº¹
 						{
 							cout << endl << Loop_cnt + 1 << "È¸ ¹Ýº¹Áß" << endl;
 
-							int temp = 0;
+							int cnt = 0;
 
 							for(int CAP = 0 ; CAP < 8 ; CAP++) // [CAP]¹øÂ°ÀÇ È­¸éÀ» Compare ÇÑ´Ù
 							{	
@@ -364,7 +405,7 @@ UINT CAPP_BSPDlg::ThreadFirst(LPVOID _mothod) // CamÀ¸·ÎºÎÅÍ ÀÌ¹ÌÁö¸¦ °¡Á®¿À´Â ½
 													cvtColor(imgs[i],imgsHLS[i], COLOR_BGR2HLS);
 												}
 
-												cout << "succeeded to read all image" << endl;
+												cout << endl << "succeeded to read all image" << endl;
 
 												Mat histogram[NUM];
 
@@ -394,23 +435,39 @@ UINT CAPP_BSPDlg::ThreadFirst(LPVOID _mothod) // CamÀ¸·ÎºÎÅÍ ÀÌ¹ÌÁö¸¦ °¡Á®¿À´Â ½
 														double matching_score = compareHist(histogram[i], histogram[j],CV_COMP_CORREL);
 														cout << "Ä¸ÃÄµÈ È­¸é CAP[" << CAP << "] Ä· È­¸é " << &Compare_cam << "ÀÇ À¯»çµµ´Â " << matching_score * 100 << "%" << endl << endl;
 
-														//if(matching_score < matching_result) // °á°ú¿¡ µû¶ó True False °á°ú ÀúÀå
+														Main->m_Result_table.InsertItem(0,TEXT("test")); // ½º·¹µå ¾È¿¡¼­ ¸®½ºÆ® ÄÁÆ®·Ñ¿¡ µ¥ÀÌÅÍ¸¦ Ãß°¡ÇÏ·Á°í ÇÏ¸é ¾ÈµÇ´Âµí.. PostMessage »ç¿ë °Ë»öÇØº¸ÀÚ
+														Main->m_Result_table.SetItemText(0,1,TEXT("test1"));
+														Main->m_Result_table.SetItemText(0,2,TEXT("test2"));
+														
+
+														if(matching_score > Main->Accurate/100000) // °á°ú¿¡ µû¶ó True False °á°ú ÀúÀå
+															Main->Match_result[Main->Loop] = true;
+														else
+															Main->Match_result[Main->Loop] = false;
+
+														if(Main->Match_result[Main->Loop] == true)
+															cout << cnt + 1 << "¹øÂ° °á°ú´Â " << "PASS" << endl << endl;
+														else
+															cout << cnt + 1 << "¹øÂ° °á°ú´Â " << "FAIL" << endl << endl;
+
+														
+													
 													}
 												}
 
 												//*Main->Test_result = new bool[Main->m_Loop] // µ¿ÀûÇÒ´ç , °á°ú°ª ÀúÀå ¹è¿­¿¡ TRUE, FALSE ÀúÀåÇÒ º¯¼ö
 												// https://m.blog.naver.com/PostView.nhn?blogId=hgt2768&logNo=220686069251&proxyReferer=https:%2F%2Fwww.google.com%2F µ¿ÀûÇÒ´ç ÄÚµå Âü°í
 												
-												for (int sleep_cnt = 0 ; sleep_cnt < Main->Gap ; sleep_cnt++ )
+												for (int sleep_cnt = 0 ; (sleep_cnt < Main->Gap) && ( cnt < Main->Loop - 1 ) ; sleep_cnt++ )
 												{
-														cout << temp  << "¹øÂ° Ç×¸ñÀ» " << sleep_cnt + 1 << "ÃÊ ´ë±â" << endl;
+														cout << cnt + 2  << "¹øÂ° Ç×¸ñÀ» Å×½ºÆ®ÇÏ±â À§ÇØ" << sleep_cnt + 1 << "ÃÊ ´ë±â" << endl;
 														Sleep(1000);
 												}
 
-												temp += 1;
+												//if(cnt < Main->Loop - 1)
+													cnt += 1;
 
-												cout << endl;
-												cout << "¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ" << endl;
+												
 
 										} // (Thread_compare[CAP] == 1) ¹®
 
@@ -420,6 +477,9 @@ UINT CAPP_BSPDlg::ThreadFirst(LPVOID _mothod) // CamÀ¸·ÎºÎÅÍ ÀÌ¹ÌÁö¸¦ °¡Á®¿À´Â ½
 
 
 							} // ¸î¹øÂ° È­¸éÀ» Compare ÁßÀÎÁö »ç¿ëÀÚ¿¡°Ô ¾Ë·ÁÁÖ±â À§ÇÔ
+							
+							cout << endl;
+							cout << "¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ" << endl;
 
 							if(Main->Start == false)
 							{
@@ -436,12 +496,14 @@ UINT CAPP_BSPDlg::ThreadFirst(LPVOID _mothod) // CamÀ¸·ÎºÎÅÍ ÀÌ¹ÌÁö¸¦ °¡Á®¿À´Â ½
 								
 						} // Loop for¹®ÀÇ ³¡
 
+						cout << "Compare Á¾·á" << endl;
+
 						for(int i=0 ; i < 8 ; i++)
 						{
 							Thread_compare[i] = 0;
 
 							if ( Compare_cam[i])
-								cvReleaseImage(&Compare_cam[i]); // ÀÌ ÄÚµå´Â ÃßÈÄ¿¡ Compare Image ±â´ÉÀ» ±¸Çö ÇÑ ÈÄ¿¡ ±×°÷À¸·Î ¿Å°Ü¾ßÇÒ°Í°°´Ù.
+								cvReleaseImage(&Compare_cam[i]); // Compare_cam ¸±¸®Áî
 						}
 
 
@@ -517,8 +579,6 @@ UINT CAPP_BSPDlg::ThreadFirst(LPVOID _mothod) // CamÀ¸·ÎºÎÅÍ ÀÌ¹ÌÁö¸¦ °¡Á®¿À´Â ½
 													cout << "Ä¸ÃÄµÈ È­¸é CAP[" << CAP << "] Ä· È­¸é " << &Compare_cam << "ÀÇ À¯»çµµ´Â " << matching_score * 100 << "%" << endl << endl;
 												}
 											}
-
-											//*Main->Test_result = new bool[Main->m_Loop] // µ¿ÀûÇÒ´ç , °á°ú°ª ÀúÀå ¹è¿­¿¡ TRUE, FALSE ÀúÀåÇÒ º¯¼ö
 											// https://m.blog.naver.com/PostView.nhn?blogId=hgt2768&logNo=220686069251&proxyReferer=https:%2F%2Fwww.google.com%2F µ¿ÀûÇÒ´ç ÄÚµå Âü°í
 
 											compare_order[CAP] = 0;
@@ -578,20 +638,6 @@ int CAPP_BSPDlg::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	ThreadFirst_running = true;
 
 
-	Main->Loop = 1;
-
-	Main->Gap = 1;
-
-	Main->sel_cap = 1;
-
-	Main->Accurate = 90000;
-
-	
-	cout << "Main->Loop : " << Main->Loop << endl;
-	cout << "Main->Gap : " << Main->Gap << endl;
-	cout << "Main->Accurate : " << Main->Accurate << endl;
-	cout << "Main->Start : " << Main->Start << endl;
-	cout << "¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ" << endl;
 
 	//Image_order = 0;
 
@@ -601,8 +647,15 @@ void CAPP_BSPDlg::OnBnClickedSetting()
 {
 	CAPP_BSPDlg *Main = (CAPP_BSPDlg*)AfxGetApp()->GetMainWnd();
 	
+
+	if(Main->Match_result) // µ¿ÀûÇÒ´ç ¹Þ¾ÒÀ¸¸é ÇØÁ¦
+		delete [] Main->Match_result;
+
 	GetDlgItemTextW(IDC_LOOP,Main->Loop_tmp);
 	Main->Loop = _ttoi(Main->Loop_tmp);
+
+	GetDlgItemTextW(IDC_AFTER,Main->After_tmp);
+	Main->After = _ttoi(Main->After_tmp);
 
 	GetDlgItemTextW(IDC_GAP,Main->Gap_tmp);
 	Main->Gap = _ttoi(Main->Gap_tmp);
@@ -611,11 +664,13 @@ void CAPP_BSPDlg::OnBnClickedSetting()
 	Main->Accurate = _ttoi(Main->Accurate_tmp);
 
 		cout << "Main->Loop : " << Main->Loop << endl;
+		cout << "Main->After : " << Main->After << endl;
 		cout << "Main->Gap : " << Main->Gap << endl;
 		cout << "Main->sel_cap : " << Main->sel_cap << endl;
 		cout << "Main->Accurate : " << Main->Accurate << endl << endl;
-		
 
+	Main->Match_result = new bool[Main->Loop];
+	
 	// TODO: ¿©±â¿¡ ÄÁÆ®·Ñ ¾Ë¸² Ã³¸®±â ÄÚµå¸¦ Ãß°¡ÇÕ´Ï´Ù.
 }
 void CAPP_BSPDlg::OnBnClickedStart()
@@ -639,5 +694,26 @@ void CAPP_BSPDlg::OnBnClickedStop()
 }
 void CAPP_BSPDlg::OnCbnSelchangeTestScreen()
 {
+	// TODO: ¿©±â¿¡ ÄÁÆ®·Ñ ¾Ë¸² Ã³¸®±â ÄÚµå¸¦ Ãß°¡ÇÕ´Ï´Ù.
+}
+
+void CAPP_BSPDlg::OnBnClickedCamSel()
+{
+	CAPP_BSPDlg *Main = (CAPP_BSPDlg*)AfxGetApp()->GetMainWnd();
+
+
+	Main->sel_cam = m_Main_sel_cam.GetCurSel();
+	m_Main_sel_cam.GetLBText(Main->sel_cam,Main_SelectCam);
+
+	if(Main->sel_cam==0)
+		Main->cam = cvCaptureFromCAM(Main->sel_cam); // cam¿¡ À¥Ä·ÀÇ Á¤º¸¸¦ ÀúÀå
+	else if (Main->sel_cam==1 && cvCreateCameraCapture(Main->sel_cam) != NULL)
+		if(cvCaptureFromCAM(1))
+			Main->cam = cvCaptureFromCAM(1); // cam¿¡ À¥Ä·ÀÇ Á¤º¸¸¦ ÀúÀå
+		else
+			MessageBox(L"Ä·ÀÌ ¿¬°áµÇ¾îÀÖÁö ¾Ê½À´Ï´Ù.");
+	else
+		MessageBox(L"Ä·ÀÌ ¿¬°áµÇ¾îÀÖÁö ¾Ê½À´Ï´Ù.");
+
 	// TODO: ¿©±â¿¡ ÄÁÆ®·Ñ ¾Ë¸² Ã³¸®±â ÄÚµå¸¦ Ãß°¡ÇÕ´Ï´Ù.
 }

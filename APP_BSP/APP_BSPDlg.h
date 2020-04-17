@@ -14,6 +14,7 @@
 #include "APP_BSP.h"
 #include "afxmt.h"
 #include "afxwin.h"
+#include "afxcmn.h"
 //#include "modellessdlg.h"
 
 
@@ -51,6 +52,7 @@ public:
 	afx_msg void OnActivate(UINT nState, CWnd* pWndOther, BOOL bMinimized);
 	afx_msg void OnInitMenu(CMenu* pMenu);
 
+	int sel_cam; // 몇번째 카메라로 녹화할것인지 선택한다.
 	int sw_active; // 스레드가 한번만 실행되게 하는 스위치 변수
 	static int compare_order[8]; // 몇번째의 이미지를 Compare 할 것인지 Compare 할것이면 1, 안할것이면 0으로 표시한다.
 	static int Thread_compare[8];
@@ -65,17 +67,22 @@ public:
 	int Thread_second_running_count;
 	CWinThread *p1;
 	static int Image_order;
-	static CvvImage m_viewcopy[10];
+	CvvImage m_viewcopy[10];
 	CModalDialog *m_pDlg; // 모달리스로 VIEW를 열기 위한 변수
 	static IplImage *pthImage; // 원본 이미지
 	int Loop;
 	CString Loop_tmp;
 	int Gap;
+	CString After_tmp;
+	int After;
 	CString Gap_tmp;
-	int Accurate;
+	double Accurate;
 	CString Accurate_tmp;
 	bool Start;
-	
+	bool *Match_result;
+	CString str_Loop;
+	CRect rt;
+	CString Add_result;
 
 //	bool Test_result[];
 //	int Test_sleep[];
@@ -93,4 +100,8 @@ public:
 	afx_msg void OnBnClickedStart();
 	afx_msg void OnBnClickedStop();
 	afx_msg void OnCbnSelchangeTestScreen();
+	CComboBox m_Main_sel_cam;
+	afx_msg void OnBnClickedCamSel();
+	CEdit m_after;
+	CListCtrl m_Result_table;
 };

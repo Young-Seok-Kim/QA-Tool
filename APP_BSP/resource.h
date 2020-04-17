@@ -37,19 +37,24 @@
 #define IDC_INFO                        1024
 #define IDC_COM_BTN5                    1025
 #define IDC_COMBO2                      1026
+#define IDC_MAIN_CAM_SEL                1026
 #define IDC_TEST_COUNT                  1027
 #define IDC_EDIT1                       1028
 #define IDC_LOOP                        1028
-#define IDC_AFTER                       1029
-#define IDC_AFTER2                      1030
+#define IDC_MAIN_CAM                    1029
 #define IDC_GAP                         1030
 #define IDC_CAP_PIC5                    1031
 #define IDC_GAP2                        1031
 #define IDC_ACCURATE                    1031
 #define IDC_CAP_BTN5                    1032
+#define IDC_CAM_NUM                     1032
 #define IDC_CAP_PIC6                    1033
+#define IDC_CAM_SEL                     1033
 #define IDC_CAP_BTN6                    1034
+#define IDC_AFTER                       1034
 #define IDC_CAP_PIC7                    1035
+#define IDC_LOOP2                       1035
+#define IDC_LIST1                       1035
 #define IDC_CAP_BTN7                    1036
 #define IDC_CAP_PIC8                    1037
 #define IDC_CAP_BTN8                    1038
@@ -58,9 +63,9 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        132
+#define _APS_NEXT_RESOURCE_VALUE        133
 #define _APS_NEXT_COMMAND_VALUE         32771
-#define _APS_NEXT_CONTROL_VALUE         1029
+#define _APS_NEXT_CONTROL_VALUE         1036
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

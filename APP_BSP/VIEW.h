@@ -54,7 +54,7 @@ public:
 	static UINT ThreadSecond(LPVOID _mothod); // 캠 영상을 Picture Control에 계속 띄워주기 위해 사용하는 쓰레드
 	
 	////////////////////////////
-	int sel_cam; // 몇번째 카메라로 녹화할것인지 선택한다.
+	
 	
 	////////////////////////////
 		

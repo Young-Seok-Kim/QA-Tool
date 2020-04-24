@@ -7,6 +7,7 @@
 #include "stdafx.h"
 #include "VIEW.h"
 #include "APP_BSP.h"
+#include "APP_BSPDlg.h"
 
 
 using namespace std;
@@ -126,20 +127,6 @@ UINT VIEW::ThreadSecond(LPVOID _mothod) // picture Control에 영상 띄우는 코드, O
 
 	cout << "Thread Second 실행" << endl;
 	//cout << "Main->Image_order = " << Main->Image_order << endl;
-	
-
-	/*
-	int x;
-	
-	for (x=0 ; x<10 ; x++) // 간혹 Rlease 되지않은 이미지가 있어서 추가함
-		{
-			if(Main->ResultImage[x] != NULL)
-			{
-				cvReleaseImage(&Main->ResultImage[x]);
-				cout << x << "번째 이미지가 Release 되지않아 Release를 진행합니다." << endl;
-			}
-		}
-	*/
 	
 	while(1)
 		{
@@ -310,6 +297,7 @@ void VIEW::OnActivate(UINT nState, CWnd* pWndOther, BOOL bMinimized)
 	}
 	
 	sel.SetCurSel(Main->sel_cam);
+
 }
 
 

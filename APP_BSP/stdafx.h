@@ -25,7 +25,7 @@
 
 
 #include <afxdisp.h>        // MFC 자동화 클래스입니다.
-
+//#include "Def.h"
 
 
 #ifndef _AFX_NO_OLE_SUPPORT
@@ -38,12 +38,7 @@
 #include <afxcontrolbars.h>     // MFC의 리본 및 컨트롤 막대 지원
 
 
-
-
-
-
-
-
+#define WM_USER_MESSAGE1 (WM_USER + 10)
 
 #ifdef _UNICODE
 #if defined _M_IX86

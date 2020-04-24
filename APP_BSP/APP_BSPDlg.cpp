@@ -12,7 +12,7 @@
 
 
 #define SCALE 02
-#define NUM 2 // ºñ±³ÇÒ ÀÌ¹ÌÁöÀÇ °¹¼ö ÀÌ ÄÚµå¿¡¼­´Â Ä¸Ã³µÈ (·±Ã³,ºÎÆ®·Î´õ)È­¸é°ú ºñ±³ÇÒ È­¸é ÃÑ 2°³°¡ ÀÖÀ¸¹Ç·Î 2·Î ÁöÁ¤
+#define NUM 2 // ºñ±³ÇÒ ÀÌ¹ÌÁöÀÇ °¹¼ö ÀÌ ÄÚµå¿¡¼­´Â Ä¸Ã³µÈ È­¸é°ú ºñ±³ÇÒ È­¸é ÃÑ 2°³°¡ ÀÖÀ¸¹Ç·Î 2·Î ÁöÁ¤
 #define BINS 8
 
 #define CAP0 0
@@ -65,6 +65,7 @@ CAPP_BSPDlg::~CAPP_BSPDlg()
 
 }
 
+
 // ÀÀ¿ë ÇÁ·Î±×·¥ Á¤º¸¿¡ »ç¿ëµÇ´Â CAboutDlg ´ëÈ­ »óÀÚÀÔ´Ï´Ù.
 
 class CAboutDlg : public CDialog
@@ -92,9 +93,8 @@ void CAboutDlg::DoDataExchange(CDataExchange* pDX)
 	CDialog::DoDataExchange(pDX);
 }
 
-BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
+BEGIN_MESSAGE_MAP(CAboutDlg, CDialog) // ÀÌ°Ç AboutDlg´Ù!!!! Çò°¥¸®°Ô À§¿¡ ÀÖ¾î¼­ ÇãÅÁÃÆ´Ù..
 END_MESSAGE_MAP()
-
 
 // CAPP_BSPDlg ´ëÈ­ »óÀÚ
 
@@ -119,11 +119,10 @@ BEGIN_MESSAGE_MAP(CAPP_BSPDlg, CDialog)
 	ON_WM_ACTIVATE()
 	ON_WM_CREATE()
 	ON_BN_CLICKED(IDC_SETTING, &CAPP_BSPDlg::OnBnClickedSetting)
-//	ON_BN_CLICKED(IDC_START, &CAPP_BSPDlg::OnBnClickedStart)
-//	ON_BN_CLICKED(IDC_STOP, &CAPP_BSPDlg::OnBnClickedStop)
 	ON_BN_CLICKED(IDC_START, &CAPP_BSPDlg::OnBnClickedStart)
 	ON_BN_CLICKED(IDC_STOP, &CAPP_BSPDlg::OnBnClickedStop)
 	ON_BN_CLICKED(IDC_CAM_SEL, &CAPP_BSPDlg::OnBnClickedCamSel)
+	ON_MESSAGE(WM_USER_MESSAGE1 , CAPP_BSPDlg::OnUserFunc)
 END_MESSAGE_MAP()
 
 
@@ -285,13 +284,13 @@ void CAPP_BSPDlg::OnActivate(UINT nState, CWnd* pWndOther, BOOL bMinimized)
 
 
 
-UINT CAPP_BSPDlg::ThreadFirst(LPVOID _mothod) // CamÀ¸·ÎºÎÅÍ ÀÌ¹ÌÁö¸¦ °¡Á®¿À´Â ½º·¹µå
+UINT CAPP_BSPDlg::ThreadFirst(LPVOID _mothod) // CamÀ¸·ÎºÎÅÍ ÀÌ¹ÌÁö¸¦ °¡Á®¿À°í, ÀÌ¹ÌÁö¸¦ ºñ±³ÇØÁÖ¸ç °á°ú¸¦ ÀúÀåÇØÁÖ´Â ¸ÞÀÎ ½º·¹µå
 {
-	CAPP_BSPDlg *pMain = (CAPP_BSPDlg*)_mothod;
+	//CAPP_BSPDlg *pMain = (CAPP_BSPDlg*)_mothod;
 	
-	IplImage *pthImage=NULL; // ¿øº» ÀÌ¹ÌÁö
 	CAPP_BSPDlg *Main = (CAPP_BSPDlg*)AfxGetApp()->GetMainWnd();
-	
+
+	IplImage *pthImage=NULL; // ¿øº» ÀÌ¹ÌÁö	
 	CRect rect;
 	VIEW View;
 	VIEW *pView = (VIEW*)AfxGetApp()->GetMainWnd();//(VIEW*)_mothod;
@@ -309,7 +308,8 @@ UINT CAPP_BSPDlg::ThreadFirst(LPVOID _mothod) // CamÀ¸·ÎºÎÅÍ ÀÌ¹ÌÁö¸¦ °¡Á®¿À´Â ½
 
 	Main->Accurate = 90000;
 
-	
+	Main->test = 0; // ÃßÈÄ »èÁ¦ ¿¹Á¤ ¶óÀÎ
+
 	cout << "Main->Loop : " << Main->Loop << endl;
 	cout << "Main->After : " << Main->After << endl;
 	cout << "Main->Gap : " << Main->Gap << endl;
@@ -317,7 +317,7 @@ UINT CAPP_BSPDlg::ThreadFirst(LPVOID _mothod) // CamÀ¸·ÎºÎÅÍ ÀÌ¹ÌÁö¸¦ °¡Á®¿À´Â ½
 	cout << "Main->Start : " << Main->Start << endl;
 	cout << "¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ" << endl;
 
-	Main->Match_result = new bool[Main->Loop];
+	Main->Match_result = new bool[Main->Loop]; // °á°ú ÀúÀå ¹è¿­ µ¿ÀûÇÒ´ç
 	
 	 cout << "Thread First ½ÇÇà" << endl;
 
@@ -363,7 +363,7 @@ UINT CAPP_BSPDlg::ThreadFirst(LPVOID _mothod) // CamÀ¸·ÎºÎÅÍ ÀÌ¹ÌÁö¸¦ °¡Á®¿À´Â ½
 						{
 							cout << endl << Loop_cnt + 1 << "È¸ ¹Ýº¹Áß" << endl;
 
-							int cnt = 0;
+							Main->cnt = 0;
 
 							for(int CAP = 0 ; CAP < 8 ; CAP++) // [CAP]¹øÂ°ÀÇ È­¸éÀ» Compare ÇÑ´Ù
 							{	
@@ -435,9 +435,7 @@ UINT CAPP_BSPDlg::ThreadFirst(LPVOID _mothod) // CamÀ¸·ÎºÎÅÍ ÀÌ¹ÌÁö¸¦ °¡Á®¿À´Â ½
 														double matching_score = compareHist(histogram[i], histogram[j],CV_COMP_CORREL);
 														cout << "Ä¸ÃÄµÈ È­¸é CAP[" << CAP << "] Ä· È­¸é " << &Compare_cam << "ÀÇ À¯»çµµ´Â " << matching_score * 100 << "%" << endl << endl;
 
-														Main->m_Result_table.InsertItem(0,TEXT("test")); // ½º·¹µå ¾È¿¡¼­ ¸®½ºÆ® ÄÁÆ®·Ñ¿¡ µ¥ÀÌÅÍ¸¦ Ãß°¡ÇÏ·Á°í ÇÏ¸é ¾ÈµÇ´Âµí.. PostMessage »ç¿ë °Ë»öÇØº¸ÀÚ
-														Main->m_Result_table.SetItemText(0,1,TEXT("test1"));
-														Main->m_Result_table.SetItemText(0,2,TEXT("test2"));
+														
 														
 
 														if(matching_score > Main->Accurate/100000) // °á°ú¿¡ µû¶ó True False °á°ú ÀúÀå
@@ -446,34 +444,35 @@ UINT CAPP_BSPDlg::ThreadFirst(LPVOID _mothod) // CamÀ¸·ÎºÎÅÍ ÀÌ¹ÌÁö¸¦ °¡Á®¿À´Â ½
 															Main->Match_result[Main->Loop] = false;
 
 														if(Main->Match_result[Main->Loop] == true)
-															cout << cnt + 1 << "¹øÂ° °á°ú´Â " << "PASS" << endl << endl;
+															cout << Main->cnt + 1 << "¹øÂ° °á°ú´Â " << "PASS" << endl << endl;
 														else
-															cout << cnt + 1 << "¹øÂ° °á°ú´Â " << "FAIL" << endl << endl;
+															cout << Main->cnt + 1 << "¹øÂ° °á°ú´Â " << "FAIL" << endl << endl;
+
+														Main->SendMessageW(WM_USER_MESSAGE1,100,200);
 
 														
-													
 													}
 												}
 
 												//*Main->Test_result = new bool[Main->m_Loop] // µ¿ÀûÇÒ´ç , °á°ú°ª ÀúÀå ¹è¿­¿¡ TRUE, FALSE ÀúÀåÇÒ º¯¼ö
 												// https://m.blog.naver.com/PostView.nhn?blogId=hgt2768&logNo=220686069251&proxyReferer=https:%2F%2Fwww.google.com%2F µ¿ÀûÇÒ´ç ÄÚµå Âü°í
 												
-												for (int sleep_cnt = 0 ; (sleep_cnt < Main->Gap) && ( cnt < Main->Loop - 1 ) ; sleep_cnt++ )
+												for (int sleep_cnt = 0 ; (sleep_cnt < Main->Gap) && ( Main->cnt < Main->Loop - 1 ) ; sleep_cnt++ )
 												{
-														cout << cnt + 2  << "¹øÂ° Ç×¸ñÀ» Å×½ºÆ®ÇÏ±â À§ÇØ" << sleep_cnt + 1 << "ÃÊ ´ë±â" << endl;
+														cout << Main->cnt + 2  << "¹øÂ° Ç×¸ñÀ» Å×½ºÆ®ÇÏ±â À§ÇØ" << sleep_cnt + 1 << "ÃÊ ´ë±â" << endl;
 														Sleep(1000);
 												}
 
 												//if(cnt < Main->Loop - 1)
-													cnt += 1;
+													Main->cnt += 1; // ÀüÃ¼ ¸î¹øµµ´ÂÁö ´©Àû
 
 												
 
-										} // (Thread_compare[CAP] == 1) ¹®
-
 										} // if (Main->Thread_compare[CAP]) ¹®
 
-								}	
+										} //ÁÖ¼®Ã³¸®ÇÑ for¹®
+
+								} // (Thread_compare[CAP] == 1) ¹®
 
 
 							} // ¸î¹øÂ° È­¸éÀ» Compare ÁßÀÎÁö »ç¿ëÀÚ¿¡°Ô ¾Ë·ÁÁÖ±â À§ÇÔ
@@ -496,6 +495,10 @@ UINT CAPP_BSPDlg::ThreadFirst(LPVOID _mothod) // CamÀ¸·ÎºÎÅÍ ÀÌ¹ÌÁö¸¦ °¡Á®¿À´Â ½
 								
 						} // Loop for¹®ÀÇ ³¡
 
+						//for(int i=0 ; i < Main->Loop ; i++)
+							//delete [] Main->Match_result;
+
+
 						cout << "Compare Á¾·á" << endl;
 
 						for(int i=0 ; i < 8 ; i++)
@@ -510,6 +513,8 @@ UINT CAPP_BSPDlg::ThreadFirst(LPVOID _mothod) // CamÀ¸·ÎºÎÅÍ ÀÌ¹ÌÁö¸¦ °¡Á®¿À´Â ½
 						Main->Start = false;
 
 					} // Start ¹öÆ°À» ´­·¶À»½ÃÀÇ if¹®ÀÇ ³¡
+
+					
 					
 					if ( Main->Start == false ) // VIEW DlgÀÇ Com ¹öÆ°À» ´­·¶À»¶§ÀÇ ÀÌº¥Æ®
 					{
@@ -682,16 +687,6 @@ void CAPP_BSPDlg::OnBnClickedStart()
 	// TODO: ¿©±â¿¡ ÄÁÆ®·Ñ ¾Ë¸² Ã³¸®±â ÄÚµå¸¦ Ãß°¡ÇÕ´Ï´Ù.
 }
 
-void CAPP_BSPDlg::OnBnClickedStop()
-{
-	CAPP_BSPDlg *Main = (CAPP_BSPDlg*)AfxGetApp()->GetMainWnd();
-
-	cout << "Compare Á¾·á" << endl;
-
-	Main->Start = false;
-
-	// TODO: ¿©±â¿¡ ÄÁÆ®·Ñ ¾Ë¸² Ã³¸®±â ÄÚµå¸¦ Ãß°¡ÇÕ´Ï´Ù.
-}
 void CAPP_BSPDlg::OnCbnSelchangeTestScreen()
 {
 	// TODO: ¿©±â¿¡ ÄÁÆ®·Ñ ¾Ë¸² Ã³¸®±â ÄÚµå¸¦ Ãß°¡ÇÕ´Ï´Ù.
@@ -716,4 +711,58 @@ void CAPP_BSPDlg::OnBnClickedCamSel()
 		MessageBox(L"Ä·ÀÌ ¿¬°áµÇ¾îÀÖÁö ¾Ê½À´Ï´Ù.");
 
 	// TODO: ¿©±â¿¡ ÄÁÆ®·Ñ ¾Ë¸² Ã³¸®±â ÄÚµå¸¦ Ãß°¡ÇÕ´Ï´Ù.
+}
+
+void CAPP_BSPDlg::OnBnClickedStop()
+{
+	CAPP_BSPDlg *Main = (CAPP_BSPDlg*)AfxGetApp()->GetMainWnd();
+
+	cout << "Compare Á¾·á" << endl;
+
+	Main->Start = false;
+
+	//Main->m_Result_table.DeleteAllItems(); // ¸®½ºÆ®¹Ú½º ÃÊ±âÈ­ ÄÚµå
+
+	/*
+		if(IsWindow(Main->m_Result_table.m_hWnd))
+			MessageBox(TEXT("Focus On"));
+		else
+			MessageBox(TEXT("Focus Off"));
+	*/
+
+	
+
+	//for( ; i < 2 ; i++)
+	{
+		Main->m_Result_table.InsertItem(Main->test ,_T("test"));
+		Main->m_Result_table.SetItemText(Main->test ,1,TEXT("test1"));
+		Main->m_Result_table.SetItemText(Main->test ,2,TEXT("test2"));
+		cout << "Main->test : " << Main->test << endl;
+		Main->test += 1;
+	}
+
+
+	// TODO: ¿©±â¿¡ ÄÁÆ®·Ñ ¾Ë¸² Ã³¸®±â ÄÚµå¸¦ Ãß°¡ÇÕ´Ï´Ù.
+}
+
+LRESULT CAPP_BSPDlg::OnUserFunc(WPARAM wParam, LPARAM lParam)
+{
+	// ¼öÇàÇÒ ÀÛ¾÷ ( lParam : ³Ñ°ÜÁØ °ª)
+	//http://blog.naver.com/PostView.nhn?blogId=ikari13&logNo=70087210165 ¸®½ºÆ®¹Ú½º txt·Î ÀúÀå ÇÏ´Â ¹æ¹ý! ³ªÁß¿¡ ±¸ÇöÇÏ¸é ÁÁÀ»µí?
+	//http://www.tipssoft.com/bulletin/board.php?bo_table=update&wr_id=923 À§¿Í µ¿ÀÏ
+
+	CAPP_BSPDlg *Main = (CAPP_BSPDlg*)AfxGetApp()->GetMainWnd();
+	
+	//Main->m_Result_table.DeleteAllItems(); // ¸®½ºÆ®¹Ú½º ÃÊ±âÈ­ ÄÚµå
+
+	Main->m_Result_table.InsertItem(Main->cnt , _T("test"));
+	Main->m_Result_table.SetItemText(Main->cnt , 1,TEXT("test1"));
+	Main->m_Result_table.SetItemText(Main->cnt , 2,TEXT("test2"));
+	//Main->m_Result_table.SetItemText(Main->cnt,1,TEXT("test1"));
+	//Main->m_Result_table.SetItemText(Main->cnt,2,TEXT("test2"));
+
+	//MessageBox(L"test!!");
+	
+
+	return 0;
 }

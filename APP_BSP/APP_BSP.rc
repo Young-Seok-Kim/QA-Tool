@@ -178,11 +178,12 @@ BEGIN
     BEGIN
         BLOCK "041203b5"
         BEGIN
-            VALUE "CompanyName", "TODO: <회사 이름>"
-            VALUE "FileDescription", "TODO: <파일 설명>"
+            VALUE "Comments", "Made By. Young seok"
+            VALUE "CompanyName", "Telechips"
+            VALUE "FileDescription", "Application BSP Team QA Tool"
             VALUE "FileVersion", "1.0.0.1"
             VALUE "InternalName", "APP_BSP.exe"
-            VALUE "LegalCopyright", "TODO: (c) <회사 이름>.  All rights reserved."
+            VALUE "LegalCopyright", "QA Tool"
             VALUE "OriginalFilename", "APP_BSP.exe"
             VALUE "ProductName", "TODO: <제품 이름>"
             VALUE "ProductVersion", "1.0.0.1"

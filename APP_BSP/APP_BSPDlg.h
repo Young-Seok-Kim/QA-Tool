@@ -83,6 +83,10 @@ public:
 	CString str_Loop;
 	CRect rt;
 	CString Add_result;
+	afx_msg LRESULT OnUserFunc(WPARAM wParam, LPARAM lParam);
+	int cnt;
+	int test; // 결과 표 만들때 테스트 하기 위한 변수
+
 
 //	bool Test_result[];
 //	int Test_sleep[];

@@ -132,10 +132,6 @@ UINT VIEW::ThreadSecond(LPVOID _mothod) // picture Control에 영상 띄우는 코드, O
 		{
 			cs.Lock();
 			//cout << "Thread Second Lock 시작" << endl;
-			/*
-			Main->Image_order가 배열인 이유는 처음 설계 한것이 배열 10개를 이용해서 출력, 비교 하는것이었는데 배열 10개를 사용하면 영상이 출력 되는것이 버벅거리며나와서
-			배열의 첫번째 칸만 사용하였다.
-			*/
 			
 			if (Main->Thread_second_running == false)
 			{
@@ -312,7 +308,7 @@ int VIEW::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	
 	CAPP_BSPDlg *Main = (CAPP_BSPDlg*)AfxGetApp()->GetMainWnd();
 
-	Main->Thread_second_running_count += 1;
+	//Main->Thread_second_running_count += 1;
 	
 	sel.SetCurSel(Main->sel_cam);
 	
@@ -322,6 +318,8 @@ int VIEW::OnCreate(LPCREATESTRUCT lpCreateStruct)
 void VIEW::OnBnClickedCapBtn1()
 {
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+
+	Sleep(5000); // 임시용, 테스트 끝난후 삭제 할것
 
 	CWnd* pic1 = GetDlgItem(IDC_CAP_PIC1); // pic1_cap의 포인터를 GetDlgItem 함수를 이용해 pWnd에 저장한다.
 	// pic1는 캡처된 런처 화면의 포인터, 화면이 어디에 출력될지를 위한 변수

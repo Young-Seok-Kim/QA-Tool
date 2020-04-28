@@ -126,6 +126,7 @@ BEGIN_MESSAGE_MAP(CAPP_BSPDlg, CDialog)
 END_MESSAGE_MAP()
 
 
+
 // CAPP_BSPDlg 메시지 처리기
 
 BOOL CAPP_BSPDlg::OnInitDialog()
@@ -174,10 +175,12 @@ BOOL CAPP_BSPDlg::OnInitDialog()
 	Main->m_Result_table.GetWindowRect(&Main->rt);
 	Main->m_Result_table.SetExtendedStyle(LVS_EX_GRIDLINES | LVS_EX_FULLROWSELECT);
 
-	Main->m_Result_table.InsertColumn(0,_T("반복"),LVCFMT_CENTER,rt.Width()*0.1);
-	Main->m_Result_table.InsertColumn(1,_T("항목"),LVCFMT_CENTER,rt.Width()*0.2);
-	Main->m_Result_table.InsertColumn(2,_T("결과"),LVCFMT_CENTER,rt.Width()*0.2);
-	Main->m_Result_table.InsertColumn(3,_T("정확도"),LVCFMT_CENTER,rt.Width()*0.2);
+	Main->m_Result_table.InsertColumn(1,_T("반복"),LVCFMT_CENTER,rt.Width()*0.1); // 0부터 시작하면 VIEW Dlg를 열때 column이 하나씩 좌측으로 밀린다; 왜지?;;
+	Main->m_Result_table.InsertColumn(2,_T("항목"),LVCFMT_CENTER,rt.Width()*0.2);
+	Main->m_Result_table.InsertColumn(3,_T("결과"),LVCFMT_CENTER,rt.Width()*0.2);
+	Main->m_Result_table.InsertColumn(4,_T("정확도"),LVCFMT_CENTER,rt.Width()*0.2);
+
+	UpdateData(FALSE);
 
 	// TODO: 여기에 추가 초기화 작업을 추가합니다.
 
@@ -253,6 +256,11 @@ void CAPP_BSPDlg::OnBnClickedView()
 	Main->Thread_second_running = true;
 	Main->sw_active = 1;
 
+	UpdateData(FALSE);
+
+	Main->m_Result_table.InsertItem(Main->test ,TEXT("Create"));
+	Main->m_Result_table.SetItemText(Main->test , 1,TEXT("Before"));
+
 	//if (Thread_second_running_count >0)
 		//p1->ResumeThread();
 
@@ -267,8 +275,9 @@ void CAPP_BSPDlg::OnBnClickedView()
 		m_pDlg->Create(IDD_VIEW,this);
 		m_pDlg->ShowWindow(SW_SHOW);
 	}
-	
-	
+
+	Main->m_Result_table.InsertItem(Main->test ,TEXT("Create"));
+	Main->m_Result_table.SetItemText(Main->test , 1,TEXT("After"));
 	
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
 }
@@ -278,8 +287,13 @@ void CAPP_BSPDlg::OnActivate(UINT nState, CWnd* pWndOther, BOOL bMinimized)
 	CDialog::OnActivate(nState, pWndOther, bMinimized);
 
 	// TODO: 여기에 메시지 처리기 코드를 추가합니다.
-		
-	
+
+	CAPP_BSPDlg *Main = (CAPP_BSPDlg*)AfxGetApp()->GetMainWnd();
+
+	//Main->m_Result_table.m_hWnd = m_hWnd;
+	//Main->m_Result_table.m_pfnSuper = m_pfnSuper;
+	//Main->m_Result_table.PreSubclassWindow();
+
 }
 
 
@@ -309,6 +323,11 @@ UINT CAPP_BSPDlg::ThreadFirst(LPVOID _mothod) // Cam으로부터 이미지를 가져오고, 
 	Main->Accurate = 90000;
 
 	Main->test = 0; // 추후 삭제 예정 라인
+
+
+	CTime cTime;
+	CString strDate, strTime; // 반환되는 날짜와 시간을 저장할 CString 변수 선언
+
 
 	cout << "Main->Loop : " << Main->Loop << endl;
 	cout << "Main->After : " << Main->After << endl;
@@ -457,7 +476,7 @@ UINT CAPP_BSPDlg::ThreadFirst(LPVOID _mothod) // Cam으로부터 이미지를 가져오고, 
 												//*Main->Test_result = new bool[Main->m_Loop] // 동적할당 , 결과값 저장 배열에 TRUE, FALSE 저장할 변수
 												// https://m.blog.naver.com/PostView.nhn?blogId=hgt2768&logNo=220686069251&proxyReferer=https:%2F%2Fwww.google.com%2F 동적할당 코드 참고
 												
-												for (int sleep_cnt = 0 ; (sleep_cnt < Main->Gap) && ( Main->cnt < Main->Loop - 1 ) ; sleep_cnt++ )
+												for (int sleep_cnt = 0 ; (sleep_cnt < Main->Gap) && ( Main->cnt < Main->Loop ) ; sleep_cnt++ )
 												{
 														cout << Main->cnt + 2  << "번째 항목을 테스트하기 위해" << sleep_cnt + 1 << "초 대기" << endl;
 														Sleep(1000);
@@ -501,18 +520,115 @@ UINT CAPP_BSPDlg::ThreadFirst(LPVOID _mothod) // Cam으로부터 이미지를 가져오고, 
 
 						cout << "Compare 종료" << endl;
 
-						for(int i=0 ; i < 8 ; i++)
-						{
-							Thread_compare[i] = 0;
-
-							if ( Compare_cam[i])
-								cvReleaseImage(&Compare_cam[i]); // Compare_cam 릴리즈
-						}
-
+						
+						
 
 						Main->Start = false;
 
 					} // Start 버튼을 눌렀을시의 if문의 끝
+
+					//이하 https://tcs.telechips.com:8443/browse/SQ8995A-78 를 테스트 하기 위한 코드
+
+						for(int CAP = 0 ; CAP < 8 ; CAP++) // [CAP]번째의 화면을 Compare 한다
+						{
+						
+							if (Main->Thread_compare[CAP])
+							{
+									IplImage *imgNames[NUM] = {ResultImage,Result_cap[CAP]}; // 이미지가 저장된 배열
+
+									if (Main->ResultImage == NULL)
+									{
+										Main->ResultImage = cvCreateImage(cvGetSize(pthImage),pthImage->depth,pthImage->nChannels); // Main.ResultImage 변수에 원본이미지를 넣는다
+									}
+																
+									Mat imgs[NUM];
+									Mat imgsHLS[NUM];
+
+									for(int i=0;i<NUM;i++)
+									{
+										imgs[i] = cvarrToMat(imgNames[i]); // IplImage를 Mat형태로 변환
+										
+										//imgs[i] = imread(imgNames[i], IMREAD_COLOR);
+
+										if(imgs[i].data==0)
+										{
+											cout << "Unable to read" << imgNames[i] <<endl;
+										}
+										
+										cvtColor(imgs[i],imgsHLS[i], COLOR_BGR2HLS);
+									}
+
+									//cout << endl << "succeeded to read all image" << endl;
+
+									Mat histogram[NUM];
+
+									int channel_numbers[] = {0,1,2};
+									for (int i=0;i<NUM;i++)
+									{
+										int* number_bins=new int[imgsHLS[i].channels()];
+
+										for (int ch=0;ch<imgsHLS[i].channels();ch++)
+										{
+											number_bins[ch]=BINS;
+										}
+
+										float ch_range[] = {0.0,255.0};
+										const float *channel_ranges[] = {ch_range,ch_range,ch_range};
+										calcHist(&imgsHLS[i],1,channel_numbers,Mat(),histogram[i],imgsHLS[i].channels(),number_bins,channel_ranges);
+										normalize(histogram[i],histogram[i],1.0);
+										delete[] number_bins;
+									}
+
+									//cout << "Image Comparison by HISTCMP_CORREL " << endl;
+
+									for(int i=0; i < NUM; i++)
+									{
+										for (int j = i+1 ; j<NUM ; j++)
+										{
+											double matching_score = compareHist(histogram[i], histogram[j],CV_COMP_CORREL);
+											//cout << "캡쳐된 화면 CAP[" << CAP << "] 캠 화면 " << &Compare_cam << "의 유사도는 " << matching_score * 100 << "%" << endl << endl;
+
+											
+											
+
+											if(matching_score > Main->Accurate/100000) // 결과에 따라 True False 결과 저장
+												Main->Match_result[Main->Loop] = true;
+											else
+												Main->Match_result[Main->Loop] = false;
+
+											if(Main->Match_result[Main->Loop] == true)
+											{
+												//cout << "캡쳐된 화면 CAP[" << CAP << "] 캠 화면 " << &Compare_cam << "의 유사도는 " << matching_score * 100 << "%" << endl << endl;
+												cout << Main->cnt + 1 << "번째 " << "화면 깜빡임" << endl << endl;
+												cTime = CTime::GetCurrentTime();
+												strDate.Format(TEXT("%04d년 %02d월 %02d일"), cTime.GetYear(), cTime.GetMonth(),cTime.GetDay());
+												strTime.Format(TEXT("%02d시 %02d분 %02d초"), cTime.GetHour(), cTime.GetMinute(), cTime.GetSecond()); 
+												cout << cTime.GetYear() << "년 " << cTime.GetMonth() << "월 " << cTime.GetDay() << "일" << endl;
+												cout << cTime.GetHour() << "시 " << cTime.GetMinute() << "분 " << cTime.GetSecond() << "초 " << endl;
+											}
+											
+											//Main->SendMessageW(WM_USER_MESSAGE1,100,200);
+
+											
+										}
+									}
+
+									//*Main->Test_result = new bool[Main->m_Loop] // 동적할당 , 결과값 저장 배열에 TRUE, FALSE 저장할 변수
+									// https://m.blog.naver.com/PostView.nhn?blogId=hgt2768&logNo=220686069251&proxyReferer=https:%2F%2Fwww.google.com%2F 동적할당 코드 참고
+									
+									for (int sleep_cnt = 0 ; (sleep_cnt < Main->Gap) && ( Main->cnt < Main->Loop ) ; sleep_cnt++ )
+									{
+											cout << Main->cnt + 2  << "번째 항목을 테스트하기 위해" << sleep_cnt + 1 << "초 대기" << endl;
+											Sleep(1000);
+									}
+
+									//if(cnt < Main->Loop - 1)
+										Main->cnt += 1; // 전체 몇번도는지 누적
+							}
+						}
+					
+					// 이상 https://tcs.telechips.com:8443/browse/SQ8995A-78 를 테스트하기 위한 코드
+
 
 					
 					
@@ -602,6 +718,16 @@ UINT CAPP_BSPDlg::ThreadFirst(LPVOID _mothod) // Cam으로부터 이미지를 가져오고, 
 					{
 							cvReleaseImage(&Main->ResultImage);
 					}
+
+					/*
+						for(int i=0 ; i < 8 ; i++)
+						{
+							Thread_compare[i] = 0;
+
+							if ( Compare_cam[i])
+								cvReleaseImage(&Compare_cam[i]); // Compare_cam 릴리즈
+						}
+						*/
 
 
 					//cout << "Thread First Unlock" << endl;
@@ -730,17 +856,21 @@ void CAPP_BSPDlg::OnBnClickedStop()
 			MessageBox(TEXT("Focus Off"));
 	*/
 
-	
+	//UpdateData(FALSE);
 
-	//for( ; i < 2 ; i++)
+	//for(int i=0 ; i < 2 ; i++)
 	{
-		Main->m_Result_table.InsertItem(Main->test ,_T("test"));
-		Main->m_Result_table.SetItemText(Main->test ,1,TEXT("test1"));
-		Main->m_Result_table.SetItemText(Main->test ,2,TEXT("test2"));
+		int inserted_index = m_Result_table.InsertItem(LVIF_TEXT|LVIF_STATE, test,TEXT("Test"), 0, LVIS_SELECTED, 0, 0);
+		//m_Result_table.InsertItem(Main->test , _T("test"));
+		m_Result_table.SetItemText(Main->test  ,1,TEXT("Test1"));
+		m_Result_table.SetItemText(inserted_index ,2,TEXT("Test2"));
 		cout << "Main->test : " << Main->test << endl;
-		Main->test += 1;
+		Main->test++;
 	}
 
+
+
+	
 
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
 }
@@ -755,11 +885,15 @@ LRESULT CAPP_BSPDlg::OnUserFunc(WPARAM wParam, LPARAM lParam)
 	
 	//Main->m_Result_table.DeleteAllItems(); // 리스트박스 초기화 코드
 
-	Main->m_Result_table.InsertItem(Main->cnt , _T("test"));
-	Main->m_Result_table.SetItemText(Main->cnt , 1,TEXT("test1"));
-	Main->m_Result_table.SetItemText(Main->cnt , 2,TEXT("test2"));
+	//UpdateData(FALSE);
+
+	Main->m_Result_table.InsertItem(Main->test , TEXT("test"));
+	Main->m_Result_table.SetItemText(Main->test , 1,TEXT("test1"));
+	Main->m_Result_table.SetItemText(Main->test , 2,TEXT("test2"));
 	//Main->m_Result_table.SetItemText(Main->cnt,1,TEXT("test1"));
 	//Main->m_Result_table.SetItemText(Main->cnt,2,TEXT("test2"));
+
+	//UpdateData(FALSE);
 
 	//MessageBox(L"test!!");
 	

@@ -55,6 +55,7 @@
 #define IDC_CAP_PIC7                    1035
 #define IDC_LOOP2                       1035
 #define IDC_LIST1                       1035
+#define IDC_LIST                        1035
 #define IDC_CAP_BTN7                    1036
 #define IDC_CAP_PIC8                    1037
 #define IDC_CAP_BTN8                    1038

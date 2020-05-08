@@ -19,6 +19,7 @@
 
 
 class VIEW;
+
 // CAPP_BSPDlg 대화 상자
 class CAPP_BSPDlg : public CDialog
 {
@@ -85,7 +86,7 @@ public:
 	CString Add_result;
 	afx_msg LRESULT OnUserFunc(WPARAM wParam, LPARAM lParam);
 	int cnt;
-	int test; // 결과 표 만들때 테스트 하기 위한 변수
+	int row_cnt; // 결과 표 만들때 테스트 하기 위한 변수
 
 
 //	bool Test_result[];
@@ -108,4 +109,6 @@ public:
 	afx_msg void OnBnClickedCamSel();
 	CEdit m_after;
 	CListCtrl m_Result_table;
+	afx_msg void OnLvnItemchangedList(NMHDR *pNMHDR, LRESULT *pResult);
+	int sw_listcontrol;
 };

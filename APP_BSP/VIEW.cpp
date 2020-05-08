@@ -293,7 +293,6 @@ void VIEW::OnActivate(UINT nState, CWnd* pWndOther, BOOL bMinimized)
 	}
 	
 	sel.SetCurSel(Main->sel_cam);
-
 }
 
 
@@ -312,6 +311,9 @@ int VIEW::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	
 	sel.SetCurSel(Main->sel_cam);
 	
+	//for(int i=0;i<2;i++)
+
+	
 	return 0;
 }
 
@@ -319,7 +321,7 @@ void VIEW::OnBnClickedCapBtn1()
 {
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
 
-	Sleep(5000); // 임시용, 테스트 끝난후 삭제 할것
+	//Sleep(5000); // 임시용, 테스트 끝난후 삭제 할것
 
 	CWnd* pic1 = GetDlgItem(IDC_CAP_PIC1); // pic1_cap의 포인터를 GetDlgItem 함수를 이용해 pWnd에 저장한다.
 	// pic1는 캡처된 런처 화면의 포인터, 화면이 어디에 출력될지를 위한 변수

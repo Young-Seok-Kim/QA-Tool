@@ -133,11 +133,11 @@ UINT VIEW::ThreadSecond(LPVOID _mothod) // picture Control에 영상 띄우는 코드, O
 			cs.Lock();
 			//cout << "Thread Second Lock 시작" << endl;
 			
-			if (Main->Thread_second_running == false)
+			if (Main->Thread_second_running == true)
 			{
 				//break;
 				//cs.Unlock;
-			}
+			//}
 
 			if(Main->Image_order < 0)
 					Main->Image_order = 0;
@@ -178,21 +178,15 @@ UINT VIEW::ThreadSecond(LPVOID _mothod) // picture Control에 영상 띄우는 코드, O
 					pMain->m_ctrCamView.ReleaseDC(pDC); // DC를 Release 해준다
 
 					
-					//if (Main->Image_order == 9 && i == Main->Image_order)
-					{
-						//for (int j=0 ; j<=9 ; j++)
-						{
-							cvReleaseImage(&Main->ResultImage);
-							//if (j == 9)
-							//	cout << "Clear" << endl;
-						}
-					}
-					
+					if(Main->Thread_second_running == true)
+						cvReleaseImage(&Main->ResultImage);
+
 			} // for 문의 끝
 			
 			//Sleep(3); // CPU의 과도한 점유를 막기위한 코드
 		
 			//cout << "Thread Second Unlock" << endl;
+			}
 			cs.Unlock();
 			
 
@@ -322,6 +316,10 @@ void VIEW::OnBnClickedCapBtn1()
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
 
 	//Sleep(5000); // 임시용, 테스트 끝난후 삭제 할것
+
+	CAPP_BSPDlg *Main = (CAPP_BSPDlg*)AfxGetApp()->GetMainWnd();
+
+	//Main->Test_screen_cnt++;
 
 	CWnd* pic1 = GetDlgItem(IDC_CAP_PIC1); // pic1_cap의 포인터를 GetDlgItem 함수를 이용해 pWnd에 저장한다.
 	// pic1는 캡처된 런처 화면의 포인터, 화면이 어디에 출력될지를 위한 변수

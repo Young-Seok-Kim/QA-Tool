@@ -108,6 +108,7 @@ void CAPP_BSPDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_MAIN_CAM_SEL, m_Main_sel_cam);
 	DDX_Control(pDX, IDC_AFTER, m_after);
 	DDX_Control(pDX, IDC_LIST1, m_Result_table);
+	DDX_Control(pDX, IDC_MAIN_CAM_DRAW, m_main_cam_draw);
 }
 
 BEGIN_MESSAGE_MAP(CAPP_BSPDlg, CDialog)
@@ -165,27 +166,36 @@ BOOL CAPP_BSPDlg::OnInitDialog()
 
 	CAPP_BSPDlg *Main = (CAPP_BSPDlg*)AfxGetApp()->GetMainWnd();
 
-	Main->str_Loop.Format(_T("%d"),Main->Loop);
-	Main->m_Loop.SetWindowTextW(Main->str_Loop);
-	Main->m_after.SetWindowTextW(TEXT("1"));
-	Main->m_gap.SetWindowTextW(TEXT("1"));
-	Main->m_Accurate.SetWindowTextW(TEXT("90000"));
-
-
 	if(sw_listcontrol == 0)
 	{
+
+		//Main->Test_screen_cnt = 0;
+		Main->Test_result = "PASS";
+
+		Main->str_Loop.Format(_T("%d"),Main->Loop);
+		Main->m_Loop.SetWindowTextW(Main->str_Loop);
+		Main->m_after.SetWindowTextW(TEXT("1"));
+		Main->m_gap.SetWindowTextW(TEXT("1"));
+		Main->m_Accurate.SetWindowTextW(TEXT("90000"));
+
+		Main->cnt = 0;
+
+		///////////// 이상 초기값 설정 코드
+
+		///////////// 이하 리스트 컨트롤 컬럼 추가 코드
+
 		Main->m_Result_table.GetWindowRect(&Main->rt);
 		Main->m_Result_table.SetExtendedStyle(LVS_EX_GRIDLINES | LVS_EX_FULLROWSELECT);
 
 		Main->m_Result_table.InsertColumn(1,_T("반복"),LVCFMT_CENTER,Main->rt.Width()*0.1); // 0부터 시작하면 VIEW Dlg를 열때 column이 하나씩 좌측으로 밀린다; 왜지?;;
-		Main->m_Result_table.InsertColumn(2,_T("항목"),LVCFMT_CENTER,Main->rt.Width()*0.2);
-		Main->m_Result_table.InsertColumn(3,_T("결과"),LVCFMT_CENTER,Main->rt.Width()*0.2);
-		Main->m_Result_table.InsertColumn(4,_T("정확도"),LVCFMT_CENTER,Main->rt.Width()*0.2);
+		Main->m_Result_table.InsertColumn(2,_T("n번째 항목"),LVCFMT_CENTER,Main->rt.Width()*0.2);
+		Main->m_Result_table.InsertColumn(2,_T("결과"),LVCFMT_CENTER,Main->rt.Width()*0.2);
+		Main->m_Result_table.InsertColumn(3,_T("정확도"),LVCFMT_CENTER,Main->rt.Width()*0.2);
 
 		sw_listcontrol =1;
 	}
 
-	Main->Match_result = new bool[Main->Loop]; // 결과 저장 배열 동적할당
+	//Main->Match_result = new bool[Main->Loop]; // 결과 저장 배열 동적할당
 
 	
 	UpdateData(FALSE);
@@ -328,7 +338,9 @@ UINT CAPP_BSPDlg::ThreadFirst(LPVOID _mothod) // Cam으로부터 이미지를 가져오고, 
 
 	Main->Accurate = 90000;
 
-	Main->row_cnt = 0; // 추후 삭제 예정 라인
+	Main->row_cnt = 0;
+
+	CDC *pDC;
 
 
 	cout << "Main->Loop : " << Main->Loop << endl;
@@ -384,8 +396,6 @@ UINT CAPP_BSPDlg::ThreadFirst(LPVOID _mothod) // Cam으로부터 이미지를 가져오고, 
 						{
 							cout << endl << Loop_cnt + 1 << "회 반복중" << endl;
 
-							Main->cnt = 0;
-
 							for(int CAP = 0 ; CAP < 8 ; CAP++) // [CAP]번째의 화면을 Compare 한다
 							{	
 								
@@ -396,6 +406,7 @@ UINT CAPP_BSPDlg::ThreadFirst(LPVOID _mothod) // Cam으로부터 이미지를 가져오고, 
 
 										if (Thread_compare[CAP] == 1) // VIEW Dlg의 Com버튼을 누르면 이미지 비교를 하는 if문
 										{
+											Main->Test_screen = CAP;
 
 											//for( int temp = 0 ; temp < 8 ; temp++) // 몇번째 화면을 검사하는지 사용자에게 알려주기 위함
 											{
@@ -454,23 +465,24 @@ UINT CAPP_BSPDlg::ThreadFirst(LPVOID _mothod) // Cam으로부터 이미지를 가져오고, 
 													for (int j = i+1 ; j<NUM ; j++)
 													{
 														double matching_score = compareHist(histogram[i], histogram[j],CV_COMP_CORREL);
+														Main->Match_Accurate = matching_score;
 														cout << "캡쳐된 화면 CAP[" << CAP << "] 캠 화면 " << &Compare_cam << "의 유사도는 " << matching_score * 100 << "%" << endl << endl;
 
 														
 														
 
 														if(matching_score > Main->Accurate/100000) // 결과에 따라 True False 결과 저장
-															Main->Match_result[Main->Loop] = true;
+															Main->Test_result = "PASS";
 														else
-															Main->Match_result[Main->Loop] = false;
+															Main->Test_result = "FAIL";
 
-														if(Main->Match_result[Main->Loop] == true)
+														if(Main->Test_result == "PASS")
 														{
 															cTime = CTime::GetCurrentTime();
 															cout << cTime.GetYear() << "년 " << cTime.GetMonth() << "월 " << cTime.GetDay() << "일" << endl;
 															cout << cTime.GetHour() << "시 " << cTime.GetMinute() << "분 " << cTime.GetSecond() << "초 " << endl;
 
-															cout << Main->cnt + 1 << "번째 결과는 " << "PASS" << endl << endl;
+															cout << Main->cnt + 1 << "번째 결과는 " << Main->Test_result << endl << endl;
 														}
 														else
 														{
@@ -478,7 +490,7 @@ UINT CAPP_BSPDlg::ThreadFirst(LPVOID _mothod) // Cam으로부터 이미지를 가져오고, 
 															cout << cTime.GetYear() << "년 " << cTime.GetMonth() << "월 " << cTime.GetDay() << "일" << endl;
 															cout << cTime.GetHour() << "시 " << cTime.GetMinute() << "분 " << cTime.GetSecond() << "초 " << endl;
 
-															cout << Main->cnt + 1 << "번째 결과는 " << "FAIL" << endl << endl;
+															cout << Main->cnt + 1 << "번째 결과는 " << Main->Test_result << endl << endl;
 														}
 
 														Main->SendMessageW(WM_USER_MESSAGE1,100,200);
@@ -608,6 +620,7 @@ UINT CAPP_BSPDlg::ThreadFirst(LPVOID _mothod) // Cam으로부터 이미지를 가져오고, 
 												for (int j = i+1 ; j<NUM ; j++)
 												{
 													double matching_score = compareHist(histogram[i], histogram[j],CV_COMP_CORREL);
+													Main->Match_Accurate = matching_score;
 													cout << "캡쳐된 화면 CAP[" << CAP << "] 캠 화면 " << &Compare_cam << "의 유사도는 " << matching_score * 100 << "%" << endl << endl;
 												}
 											}
@@ -625,11 +638,7 @@ UINT CAPP_BSPDlg::ThreadFirst(LPVOID _mothod) // Cam으로부터 이미지를 가져오고, 
 				////////////////////// 이상 Compare 코드 /////////////////////////////
 
 				
-					if (Main->Thread_second_running == false)
-					{
-							cvReleaseImage(&Main->ResultImage);
-					}
-
+					
 					/*
 						for(int i=0 ; i < 8 ; i++)
 						{
@@ -649,7 +658,30 @@ UINT CAPP_BSPDlg::ThreadFirst(LPVOID _mothod) // Cam으로부터 이미지를 가져오고, 
 
 				
 			} // 1번째 for문의 끝
-		
+
+			
+
+			if (Main->Thread_second_running == false)
+			{
+				//그리기 시작
+				Main->m_main_cam_draw.GetClientRect(rect);
+
+				pDC = Main->m_main_cam_draw.GetDC();
+
+					if(Main->ResultImage != NULL)
+					{
+						Main->Main_draw.CopyOf(Main->ResultImage);
+						Main->Main_draw.DrawToHDC(pDC->m_hDC,&rect);// 좌우반전한 Main->ResultImage를 출력한다.
+					}
+
+					Main->m_main_cam_draw.ReleaseDC(pDC); // DC를 Release 해준다
+					
+			 // 캠 그리기 끝
+
+					cvReleaseImage(&Main->ResultImage);
+			}
+
+
 	}// while문의 끝
 
 	cout << "Thread First 종료" << endl;
@@ -690,8 +722,8 @@ void CAPP_BSPDlg::OnBnClickedSetting()
 	CAPP_BSPDlg *Main = (CAPP_BSPDlg*)AfxGetApp()->GetMainWnd();
 	
 
-	if(Main->Match_result) // 동적할당 받았으면 해제
-		delete [] Main->Match_result;
+	//if(Main->Match_result) // 동적할당 받았으면 해제
+		//delete [] Main->Match_result;
 
 	GetDlgItemTextW(IDC_LOOP,Main->Loop_tmp);
 	Main->Loop = _ttoi(Main->Loop_tmp);
@@ -702,8 +734,8 @@ void CAPP_BSPDlg::OnBnClickedSetting()
 	GetDlgItemTextW(IDC_GAP,Main->Gap_tmp);
 	Main->Gap = _ttoi(Main->Gap_tmp);
 	
-	GetDlgItemTextW(IDC_ACCURATE,Main->Accurate_tmp);
-	Main->Accurate = _ttoi(Main->Accurate_tmp);
+	GetDlgItemTextW(IDC_ACCURATE,Main->str_Accurate);
+	Main->str_Accurate.Format(_T("%1.2f"),Main->Accurate); // Accurate를 string으로 변환
 
 		cout << "Main->Loop : " << Main->Loop << endl;
 		cout << "Main->After : " << Main->After << endl;
@@ -711,13 +743,16 @@ void CAPP_BSPDlg::OnBnClickedSetting()
 		cout << "Main->sel_cap : " << Main->sel_cap << endl;
 		cout << "Main->Accurate : " << Main->Accurate << endl << endl;
 
-	Main->Match_result = new bool[Main->Loop];
+	//Main->Match_result = new bool[Main->Loop];
 	
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
 }
 void CAPP_BSPDlg::OnBnClickedStart()
 {
 	CAPP_BSPDlg *Main = (CAPP_BSPDlg*)AfxGetApp()->GetMainWnd();
+
+	Main->m_Result_table.DeleteAllItems(); // 리스트박스 초기화 코드
+	Main->cnt = 0;
 
 	Main->Start = true;
 	
@@ -775,13 +810,14 @@ void CAPP_BSPDlg::OnBnClickedStop()
 		//Main->str_Loop.Format(_T("%d"),Main->Loop); // int를 string으로 변환
 		//Main->m_Loop.SetWindowTextW(Main->str_Loop);
 
-		Main->str_Loop.Format(_T("%d"),Main->Loop); // int를 string으로 변환
+		Main->str_Loop.Format(_T("%d"),Main->Loop); // Loop를 string으로 변환
+		Main->str_Test_screen.Format(_T("%d"),Main->Test_screen); // 캡쳐한 n개의 화면 int형을 string으로 변환
+		Main->str_Accurate.Format(_T("%.2f"),Main->Accurate); // Accurate를 string으로 변환
 
-		int inserted_index = m_Result_table.InsertItem(LVIF_TEXT|LVIF_STATE, row_cnt,TEXT("Test"), 0, LVIS_SELECTED, 0, 0);
-		//m_Result_table.InsertItem(Main->test , Main->Loop);
-
-		m_Result_table.SetItemText(inserted_index ,1,TEXT("Test1"));
-		m_Result_table.SetItemText(inserted_index ,2,TEXT("Test2"));
+		int inserted_index = m_Result_table.InsertItem(LVIF_TEXT|LVIF_STATE, row_cnt,Main->str_Loop, 0, LVIS_SELECTED, 0, 0); // Loop추가
+		m_Result_table.SetItemText(inserted_index ,1,Main->str_Test_screen); // n번째 항목 추가
+		m_Result_table.SetItemText(inserted_index ,2,Main->Test_result); // 결과 추가
+		m_Result_table.SetItemText(inserted_index ,3,Main->str_Accurate); // 정확도 추가
 		cout << "Main->row_cnt : " << Main->row_cnt << endl;
 		Main->row_cnt++;
 	}
@@ -799,13 +835,22 @@ LRESULT CAPP_BSPDlg::OnUserFunc(WPARAM wParam, LPARAM lParam)
 	
 	//Main->m_Result_table.DeleteAllItems(); // 리스트박스 초기화 코드
 
-	//UpdateData(FALSE);
+	{
 
-	//Main->m_Result_table.InsertItem(Main->test , TEXT("test"));
-	//Main->m_Result_table.SetItemText(Main->test , 1,TEXT("test1"));
-	//Main->m_Result_table.SetItemText(Main->test , 2,TEXT("test2"));
-	//Main->m_Result_table.SetItemText(Main->cnt,1,TEXT("test1"));
-	//Main->m_Result_table.SetItemText(Main->cnt,2,TEXT("test2"));
+		//Main->str_Loop.Format(_T("%d"),Main->Loop); // int를 string으로 변환
+		//Main->m_Loop.SetWindowTextW(Main->str_Loop);
+
+		Main->str_Loop.Format(_T("%d"),Main->cnt); // Loop를 string으로 변환
+		Main->str_Test_screen.Format(_T("%d"),Main->Test_screen); // 캡쳐한 n개의 화면 int형을 string으로 변환
+		Main->str_Accurate.Format(_T("%.2f%%"),Main->Match_Accurate * 100); // Accurate를 string으로 변환
+
+		int inserted_index = m_Result_table.InsertItem(LVIF_TEXT|LVIF_STATE, row_cnt,Main->str_Loop, 0, LVIS_SELECTED, 0, 0); // Loop추가
+		m_Result_table.SetItemText(inserted_index ,1,Main->str_Test_screen); // n번째 항목 추가
+		m_Result_table.SetItemText(inserted_index ,2,Main->Test_result); // 결과 추가
+		m_Result_table.SetItemText(inserted_index ,3,Main->str_Accurate); // 정확도 추가
+		cout << "Main->row_cnt : " << Main->row_cnt << endl;
+		Main->row_cnt++;
+	}
 
 	//UpdateData(FALSE);
 

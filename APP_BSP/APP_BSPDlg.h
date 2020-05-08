@@ -77,8 +77,6 @@ public:
 	CString After_tmp;
 	int After;
 	CString Gap_tmp;
-	double Accurate;
-	CString Accurate_tmp;
 	bool Start;
 	bool *Match_result;
 	CString str_Loop;
@@ -87,6 +85,14 @@ public:
 	afx_msg LRESULT OnUserFunc(WPARAM wParam, LPARAM lParam);
 	int cnt;
 	int row_cnt; // 결과 표 만들때 테스트 하기 위한 변수
+	int Test_screen; // 몇개의 화면을 테스트 할것인지
+	CString str_Test_screen;
+	double Accurate;
+	double Match_Accurate;
+	CString str_Accurate;
+	CString Test_result;
+	int loop_cnt;
+	CvvImage Main_draw;
 
 
 //	bool Test_result[];
@@ -111,4 +117,5 @@ public:
 	CListCtrl m_Result_table;
 	afx_msg void OnLvnItemchangedList(NMHDR *pNMHDR, LRESULT *pResult);
 	int sw_listcontrol;
+	CStatic m_main_cam_draw;
 };

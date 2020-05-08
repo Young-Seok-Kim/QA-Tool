@@ -57,6 +57,8 @@
 #define IDC_LIST1                       1035
 #define IDC_LIST                        1035
 #define IDC_CAP_BTN7                    1036
+#define IDC_MAIN_CAM_SCREEN             1036
+#define IDC_MAIN_CAM_DRAW               1036
 #define IDC_CAP_PIC8                    1037
 #define IDC_CAP_BTN8                    1038
 
@@ -66,7 +68,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        133
 #define _APS_NEXT_COMMAND_VALUE         32771
-#define _APS_NEXT_CONTROL_VALUE         1036
+#define _APS_NEXT_CONTROL_VALUE         1037
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

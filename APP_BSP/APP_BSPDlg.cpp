@@ -482,7 +482,7 @@ UINT CAPP_BSPDlg::ThreadFirst(LPVOID _mothod) // Cam으로부터 이미지를 가져오고, 
 															cout << cTime.GetYear() << "년 " << cTime.GetMonth() << "월 " << cTime.GetDay() << "일" << endl;
 															cout << cTime.GetHour() << "시 " << cTime.GetMinute() << "분 " << cTime.GetSecond() << "초 " << endl;
 
-															cout << Main->cnt + 1 << "번째 결과는 " << Main->Test_result << endl << endl;
+															cout << Main->cnt + 1 << "번째 결과는 " << "PASS" << endl << endl;
 														}
 														else
 														{
@@ -490,7 +490,7 @@ UINT CAPP_BSPDlg::ThreadFirst(LPVOID _mothod) // Cam으로부터 이미지를 가져오고, 
 															cout << cTime.GetYear() << "년 " << cTime.GetMonth() << "월 " << cTime.GetDay() << "일" << endl;
 															cout << cTime.GetHour() << "시 " << cTime.GetMinute() << "분 " << cTime.GetSecond() << "초 " << endl;
 
-															cout << Main->cnt + 1 << "번째 결과는 " << Main->Test_result << endl << endl;
+															cout << Main->cnt + 1 << "번째 결과는 " << "FAIL" << endl << endl;
 														}
 
 														Main->SendMessageW(WM_USER_MESSAGE1,100,200);

@@ -305,8 +305,7 @@ int VIEW::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	
 	sel.SetCurSel(Main->sel_cam);
 	
-	//for(int i=0;i<2;i++)
-
+	
 	
 	return 0;
 }

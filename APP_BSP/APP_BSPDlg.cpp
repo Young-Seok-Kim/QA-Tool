@@ -525,7 +525,7 @@ UINT CAPP_BSPDlg::ThreadFirst(LPVOID _mothod) // Cam으로부터 이미지를 가져오고, 
 							cout << endl;
 							cout << "ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ" << endl;
 
-							if(Main->Start == false)
+							//if(Main->Start == false)
 							{
 								for(int i=0 ; i < 8 ; i++)
 								{

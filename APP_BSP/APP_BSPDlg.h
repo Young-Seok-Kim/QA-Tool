@@ -58,7 +58,7 @@ public:
 	static int compare_order[8]; // 몇번째의 이미지를 Compare 할 것인지 Compare 할것이면 1, 안할것이면 0으로 표시한다.
 	static int Thread_compare[8];
 	static IplImage *Compare_cam[8]; // Capture 1 ~ 8 에저장된 이미지와 캠을 비교한다.
-	static IplImage *ResultImage; // 캠으로 캡쳐중인 이미지들이 저장된 배열
+	static IplImage *ResultImage; // 캠으로 캡쳐중인 이미지가 저장된 배열
 	static IplImage *Result_cap[8]; // cap1 ~ cap 8까지 캡쳐된 이미지가 저장될 배열
 	static CvCapture *cam; // 현재 입력받고 있는 cam
 	bool ThreadFirst_running;
@@ -104,7 +104,7 @@ public:
 	CString str_Compare_creen_cnt;
 	int Fail_cnt; // FAIL 갯수 변수
 	CString str_Fail_cnt;
-	int match_score_min;  // 이 변수는 사용 할지 안할지 모르겠는데 일단 만듬..
+	int match_score_min;
 	CTimeSpan Time_gap;
 	int Start_time_sw;
 

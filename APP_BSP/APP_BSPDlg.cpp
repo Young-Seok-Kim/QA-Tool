@@ -343,7 +343,7 @@ UINT CAPP_BSPDlg::ThreadFirst(LPVOID _mothod) // Cam으로부터 이미지를 가져오고, 
 
 	Main->row_cnt = 0;
 	
-	Main->Compare_screen_cnt = 100; // 차후에 0으로 수정할것
+	Main->Compare_screen_cnt = 0;
 
 	Main->Fail_cnt = 0;
 
@@ -371,16 +371,10 @@ UINT CAPP_BSPDlg::ThreadFirst(LPVOID _mothod) // Cam으로부터 이미지를 가져오고, 
 	{  
 				if (Main->ThreadFirst_running == false)
 					break;
-				//for(Main->Image_order = 0 ; Main->Image_order <= 9 ;Main->Image_order++)
-
-				{
+				
 					cs.Lock();
-					//cout << "Thread First Lock 시작" << endl;
 					
-					//cout << "Thread First의 Main->Image_order = " << Main->Image_order << endl;
-
 					pthImage = cvQueryFrame(Main->cam); // 원본이미지 변수에 캠의 화면을 저장
-					//m_MainDlg->GetQueryFrame(&pthImage);// 원본이미지 변수에 캠의 화면을 저장
 					ResultImage = cvCreateImage(cvGetSize(pthImage),pthImage->depth,pthImage->nChannels); // ResultImage 변수에 원본이미지를 넣는다
 					//cout << x << "번째 이미지 Load" << endl;
 
@@ -389,8 +383,9 @@ UINT CAPP_BSPDlg::ThreadFirst(LPVOID _mothod) // Cam으로부터 이미지를 가져오고, 
 
 					if(Main->Start == true) //START 버튼을 누르면
 					{
-						//cout << "테스트 시작 시간은 " << Main->Start_time.GetYear() << "년 " << Main->Start_time.GetMonth() << "월 " << Main->Start_time.GetDay() << "일" << endl;
-						//cout << Main->Start_time.GetHour() << "시 " << Main->Start_time.GetMinute() << "분 " << Main->Start_time.GetSecond() << "초 " << endl << endl;
+						Main->Start_time = CTime::GetCurrentTime();
+						cout << "테스트 시작 시간은 " << Main->Start_time.GetYear() << "년 " << Main->Start_time.GetMonth() << "월 " << Main->Start_time.GetDay() << "일" << endl;
+						cout << Main->Start_time.GetHour() << "시 " << Main->Start_time.GetMinute() << "분 " << Main->Start_time.GetSecond() << "초 " << endl << endl;
 
 						for (int sleep_cnt = 0 ; sleep_cnt < Main->After ; sleep_cnt++ )
 						{
@@ -406,9 +401,10 @@ UINT CAPP_BSPDlg::ThreadFirst(LPVOID _mothod) // Cam으로부터 이미지를 가져오고, 
 							{
 									while(1)
 									{	
+
 										if(Main->Start_time_sw == 0)
 										{
-											Main->Start_time = CTime::GetCurrentTime(); // 
+											Main->Start_time = CTime::GetCurrentTime();
 											Main->cTime = CTime::GetCurrentTime(); // cTime의 초기값을 지정해주기 위한 코드
 
 											Main->Start_time_sw = 1;
@@ -418,31 +414,22 @@ UINT CAPP_BSPDlg::ThreadFirst(LPVOID _mothod) // Cam으로부터 이미지를 가져오고, 
 	
 										Main->Time_gap = Main->cTime - Main->Start_time;
 
-										pthImage = cvQueryFrame(Main->cam); // 원본이미지 변수에 캠의 화면을 저장
-
-										if(ResultImage == NULL)
-										ResultImage = cvCreateImage(cvGetSize(pthImage),pthImage->depth,pthImage->nChannels); // ResultImage 변수에 원본이미지를 넣는다
-										//cout << x << "번째 이미지 Load" << endl;
-
-
-										//cout << "Main->Time_gap.GetTotalSeconds() : " << Main->Time_gap.GetTotalSeconds() << endl;
-
-										
-
-											// https://sosobaba.tistory.com/8?category=766417 특수문자를 기준으로 추출하는 법 링크
-											// https://m.blog.naver.com/PostView.nhn?blogId=hgt2768&logNo=220686069251&proxyReferer=https:%2F%2Fwww.google.com%2F 동적할당 코드 참고
-
 											Compare_cam[CAP] = cvCreateImage(cvGetSize(pthImage),pthImage->depth,pthImage->nChannels); // Compare_cam 변수에 원본이미지를 넣는다
 
 											if (Thread_compare[CAP] == 1)
 											{
-												Main->Test_screen = CAP;
+												if (Main->ResultImage != NULL)
+												cvReleaseImage(&Main->ResultImage);
+
+												Main->Test_screen = CAP; // List Control에 몇번째 이미지를 검색하는지 출력하기 위해 Test Screen 변수에 저장
 
 												if (Main->Thread_compare[CAP])
 												{
-													if (Main->ResultImage == NULL)
+													//if (Main->ResultImage == NULL)
 													{
+														pthImage = cvQueryFrame(Main->cam); // 원본이미지 변수에 캠의 화면을 저장
 														Main->ResultImage = cvCreateImage(cvGetSize(pthImage),pthImage->depth,pthImage->nChannels); // Main.ResultImage 변수에 원본이미지를 넣는다
+														cvFlip(pthImage,ResultImage,1); // Main.ResultImage 변수에 넣은 원본 이미지를 좌우반전한다.
 													}
 
 													IplImage *imgNames[NUM] = {ResultImage,Result_cap[CAP]}; // 이미지가 저장된 배열
@@ -450,12 +437,10 @@ UINT CAPP_BSPDlg::ThreadFirst(LPVOID _mothod) // Cam으로부터 이미지를 가져오고, 
 													Mat imgs[NUM];
 													Mat imgsHLS[NUM];
 
-													for(int i=0;i<NUM;i++)
+													for(int i = 0 ; i < NUM ;i++)
 													{
 														imgs[i] = cvarrToMat(imgNames[i]); // IplImage를 Mat형태로 변환
-														
-														//imgs[i] = imread(imgNames[i], IMREAD_COLOR);
-
+													
 														if(imgs[i].data==0)
 														{
 															cout << "Unable to read" << imgNames[i] <<endl;
@@ -508,7 +493,6 @@ UINT CAPP_BSPDlg::ThreadFirst(LPVOID _mothod) // Cam으로부터 이미지를 가져오고, 
 																Main->Test_result = "FAIL";
 																Main->Fail_cnt++;
 															}
-
 																Main->SendMessageW(WM_USER_MESSAGE1,100,200); // List Control에 결과를 추가하기 위한 코드
 
 															
@@ -519,9 +503,8 @@ UINT CAPP_BSPDlg::ThreadFirst(LPVOID _mothod) // Cam으로부터 이미지를 가져오고, 
 
 												} // if (Main->Thread_compare[CAP]) 문
 
-												if (Main->Thread_second_running == false)
-												{
-													//그리기 시작
+												// 캠 그리기 시작
+
 													Main->m_main_cam_draw.GetClientRect(rect);
 
 													pDC = Main->m_main_cam_draw.GetDC();
@@ -537,7 +520,8 @@ UINT CAPP_BSPDlg::ThreadFirst(LPVOID _mothod) // Cam으로부터 이미지를 가져오고, 
 												 // 캠 그리기 끝
 
 														cvReleaseImage(&Main->ResultImage);
-												}
+														cvReleaseImage(&Compare_cam[CAP]);
+												
 											} // (Thread_compare[CAP] == 1) 문
 
 									Main->cTime = CTime::GetCurrentTime(); // cTime 변수에 현재시간 저장
@@ -661,6 +645,8 @@ UINT CAPP_BSPDlg::ThreadFirst(LPVOID _mothod) // Cam으로부터 이미지를 가져오고, 
 									cvReleaseImage(&Compare_cam[CAP]); // 이 코드는 추후에 Compare Image 기능을 구현 한 후에 그곳으로 옮겨야할것같다.
 									
 									} // CAP[n] for문의 끝
+
+						Main->sw_Compare = 0;
 					}
 
 				////////////////////// 이상 Compare 코드 /////////////////////////////
@@ -679,43 +665,34 @@ UINT CAPP_BSPDlg::ThreadFirst(LPVOID _mothod) // Cam으로부터 이미지를 가져오고, 
 
 
 					//cout << "Thread First Unlock" << endl;
+
+					if (Main->Thread_second_running == false && Main->Start == false)
+					{
+						//그리기 시작
+						Main->m_main_cam_draw.GetClientRect(rect);
+
+						pDC = Main->m_main_cam_draw.GetDC();
+
+							if(Main->ResultImage != NULL)
+							{
+								Main->Main_draw.CopyOf(Main->ResultImage);
+								Main->Main_draw.DrawToHDC(pDC->m_hDC,&rect);// 좌우반전한 Main->ResultImage를 출력한다.
+								cvReleaseImage(&Main->ResultImage);
+							}
+
+							Main->m_main_cam_draw.ReleaseDC(pDC); // DC를 Release 해준다
+							
+					 // 캠 그리기 끝
+					}
 					
 					cs.Unlock();
 
 					Sleep(3);
 
-				
-			} // 1번째 for문의 끝
 
-			
-
-			if (Main->Thread_second_running == false && Main->Start == false)
-			{
-				//그리기 시작
-				Main->m_main_cam_draw.GetClientRect(rect);
-
-				pDC = Main->m_main_cam_draw.GetDC();
-
-					if(Main->ResultImage != NULL)
-					{
-						Main->Main_draw.CopyOf(Main->ResultImage);
-						Main->Main_draw.DrawToHDC(pDC->m_hDC,&rect);// 좌우반전한 Main->ResultImage를 출력한다.
-					}
-
-					Main->m_main_cam_draw.ReleaseDC(pDC); // DC를 Release 해준다
-					
-			 // 캠 그리기 끝
-
-					cvReleaseImage(&Main->ResultImage);
-			}
-
-
-	}// while문의 끝
+	} // while문의 끝
 
 	cout << "Thread First 종료" << endl;
-
-	//g_pThread=NULL;
-	
 
 	return 0;
 }

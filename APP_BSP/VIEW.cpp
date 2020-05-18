@@ -135,11 +135,7 @@ UINT VIEW::ThreadSecond(LPVOID _mothod) // picture Control에 영상 띄우는 코드, O
 			
 			if (Main->Thread_second_running == true)
 			{
-				//break;
-				//cs.Unlock;
-			//}
-
-			if(Main->Image_order < 0)
+				if(Main->Image_order < 0)
 					Main->Image_order = 0;
 
 			//cout << "Main->Image_order = " << Main->Image_order << endl;
@@ -188,10 +184,6 @@ UINT VIEW::ThreadSecond(LPVOID _mothod) // picture Control에 영상 띄우는 코드, O
 			//cout << "Thread Second Unlock" << endl;
 			}
 			cs.Unlock();
-			
-
-			
-
 
 		} // while문의 끝
 	
@@ -887,6 +879,7 @@ void VIEW::OnBnClickedComBtn1()
 	// cout << Main->Result_cap[0] << endl;
 
 	Main->compare_order[CAP0] = 1;
+	Main->sw_Compare = 1;
 
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
 }
@@ -894,41 +887,48 @@ void VIEW::OnBnClickedComBtn1()
 void VIEW::OnBnClickedComBtn2()
 {
 	Main->compare_order[CAP1] = 1;
+	Main->sw_Compare = 1;
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
 }
 
 void VIEW::OnBnClickedComBtn3()
 {
 	Main->compare_order[CAP2] = 1;
+	Main->sw_Compare = 1;
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
 }
 
 void VIEW::OnBnClickedComBtn4()
 {
 	Main->compare_order[CAP3] = 1;
+	Main->sw_Compare = 1;
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
 }
 
 void VIEW::OnBnClickedComBtn5()
 {
 	Main->compare_order[CAP4] = 1;
+	Main->sw_Compare = 1;
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
 }
 
 void VIEW::OnBnClickedComBtn6()
 {
 	Main->compare_order[CAP5] = 1;
+	Main->sw_Compare = 1;
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
 }
 
 void VIEW::OnBnClickedComBtn7()
 {
 	Main->compare_order[CAP6] = 1;
+	Main->sw_Compare = 1;
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
 }
 
 void VIEW::OnBnClickedComBtn8()
 {
 	Main->compare_order[CAP7] = 1;
+	Main->sw_Compare = 1;
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
 }

@@ -166,7 +166,7 @@ BOOL CAPP_BSPDlg::OnInitDialog()
 
 	CAPP_BSPDlg *Main = (CAPP_BSPDlg*)AfxGetApp()->GetMainWnd();
 
-	if(sw_listcontrol == 0)
+	if(sw_listcontrol == 0) // 초기화가 한번만 되게 해주는 코드
 	{
 
 		//Main->Test_screen_cnt = 0;
@@ -187,12 +187,14 @@ BOOL CAPP_BSPDlg::OnInitDialog()
 		Main->m_Result_table.GetWindowRect(&Main->rt);
 		Main->m_Result_table.SetExtendedStyle(LVS_EX_GRIDLINES | LVS_EX_FULLROWSELECT);
 
-		Main->m_Result_table.InsertColumn(1,_T("반복"),LVCFMT_CENTER,Main->rt.Width()*0.1); // 0부터 시작하면 VIEW Dlg를 열때 column이 하나씩 좌측으로 밀린다; 왜지?;;
-		Main->m_Result_table.InsertColumn(2,_T("n번째 항목"),LVCFMT_CENTER,Main->rt.Width()*0.2);
-		Main->m_Result_table.InsertColumn(2,_T("결과"),LVCFMT_CENTER,Main->rt.Width()*0.2);
-		Main->m_Result_table.InsertColumn(3,_T("정확도"),LVCFMT_CENTER,Main->rt.Width()*0.2);
+		Main->m_Result_table.InsertColumn(0,_T("반복"),LVCFMT_CENTER,Main->rt.Width()*0.1);
+		Main->m_Result_table.InsertColumn(1,_T("n번째 항목"),LVCFMT_CENTER,Main->rt.Width()*0.1);
+		Main->m_Result_table.InsertColumn(2,_T("결과"),LVCFMT_CENTER,Main->rt.Width()*0.1);
+		Main->m_Result_table.InsertColumn(3,_T("총 비교한 이미지"),LVCFMT_CENTER,Main->rt.Width()*0.2);
+		Main->m_Result_table.InsertColumn(4,_T("FAIL 이미지"),LVCFMT_CENTER,Main->rt.Width()*0.2);
+		Main->m_Result_table.InsertColumn(5,_T("최저 정확도"),LVCFMT_CENTER,Main->rt.Width()*0.2);
 
-		sw_listcontrol =1;
+		sw_listcontrol = 1;
 	}
 
 	//Main->Match_result = new bool[Main->Loop]; // 결과 저장 배열 동적할당
@@ -321,7 +323,6 @@ UINT CAPP_BSPDlg::ThreadFirst(LPVOID _mothod) // Cam으로부터 이미지를 가져오고, 
 	VIEW View;
 	VIEW *pView = (VIEW*)AfxGetApp()->GetMainWnd();//(VIEW*)_mothod;
 
-	CTime cTime;
 	CString strDate, strTime; // 반환되는 날짜와 시간을 저장할 CString 변수 선언
 
 
@@ -338,7 +339,17 @@ UINT CAPP_BSPDlg::ThreadFirst(LPVOID _mothod) // Cam으로부터 이미지를 가져오고, 
 
 	Main->Accurate = 90000;
 
+	Main->Test_screen = 0;
+
 	Main->row_cnt = 0;
+	
+	Main->Compare_screen_cnt = 100; // 차후에 0으로 수정할것
+
+	Main->Fail_cnt = 0;
+
+	Main->match_score_min = 0;
+
+	Main->Start_time_sw = 0; // Start time이 한번만 초기화 되게 만들어주는 변수
 
 	CDC *pDC;
 
@@ -375,17 +386,12 @@ UINT CAPP_BSPDlg::ThreadFirst(LPVOID _mothod) // Cam으로부터 이미지를 가져오고, 
 
 					cvFlip(pthImage,ResultImage,1); // Main.ResultImage 변수에 넣은 원본 이미지를 좌우반전한다.
 					
-					//if(Compare_cam == NULL)
-					
-					
-					//if (ResultImage[x] != NULL)
-					//cvCopy(ResultImage[x], Compare_cam);
-
-					////////////////////// 이하 Compare 코드 /////////////////////////////
-					// Compare_cam을 Release 시켜야 해서 Button click event에 코드를 적지않고 이곳에 적어놓았다.
 
 					if(Main->Start == true) //START 버튼을 누르면
 					{
+						//cout << "테스트 시작 시간은 " << Main->Start_time.GetYear() << "년 " << Main->Start_time.GetMonth() << "월 " << Main->Start_time.GetDay() << "일" << endl;
+						//cout << Main->Start_time.GetHour() << "시 " << Main->Start_time.GetMinute() << "분 " << Main->Start_time.GetSecond() << "초 " << endl << endl;
+
 						for (int sleep_cnt = 0 ; sleep_cnt < Main->After ; sleep_cnt++ )
 						{
 								cout << "테스트를 위해" << sleep_cnt + 1 << "초 대기" << endl;
@@ -397,130 +403,157 @@ UINT CAPP_BSPDlg::ThreadFirst(LPVOID _mothod) // Cam으로부터 이미지를 가져오고, 
 							cout << endl << Loop_cnt + 1 << "회 반복중" << endl;
 
 							for(int CAP = 0 ; CAP < 8 ; CAP++) // [CAP]번째의 화면을 Compare 한다
-							{	
-								
-										// https://sosobaba.tistory.com/8?category=766417 특수문자를 기준으로 추출하는 법 링크
-										// https://m.blog.naver.com/PostView.nhn?blogId=hgt2768&logNo=220686069251&proxyReferer=https:%2F%2Fwww.google.com%2F 동적할당 코드 참고
-
-										Compare_cam[CAP] = cvCreateImage(cvGetSize(pthImage),pthImage->depth,pthImage->nChannels); // Compare_cam 변수에 원본이미지를 넣는다
-
-										if (Thread_compare[CAP] == 1) // VIEW Dlg의 Com버튼을 누르면 이미지 비교를 하는 if문
+							{
+									while(1)
+									{	
+										if(Main->Start_time_sw == 0)
 										{
-											Main->Test_screen = CAP;
+											Main->Start_time = CTime::GetCurrentTime(); // 
+											Main->cTime = CTime::GetCurrentTime(); // cTime의 초기값을 지정해주기 위한 코드
 
-											//for( int temp = 0 ; temp < 8 ; temp++) // 몇번째 화면을 검사하는지 사용자에게 알려주기 위함
+											Main->Start_time_sw = 1;
+										}
+
+										//cout << CAP << "번째 화면 " << Main->Gap << "초간 Compare 시작 " << endl;
+	
+										Main->Time_gap = Main->cTime - Main->Start_time;
+
+										pthImage = cvQueryFrame(Main->cam); // 원본이미지 변수에 캠의 화면을 저장
+
+										if(ResultImage == NULL)
+										ResultImage = cvCreateImage(cvGetSize(pthImage),pthImage->depth,pthImage->nChannels); // ResultImage 변수에 원본이미지를 넣는다
+										//cout << x << "번째 이미지 Load" << endl;
+
+
+										//cout << "Main->Time_gap.GetTotalSeconds() : " << Main->Time_gap.GetTotalSeconds() << endl;
+
+										
+
+											// https://sosobaba.tistory.com/8?category=766417 특수문자를 기준으로 추출하는 법 링크
+											// https://m.blog.naver.com/PostView.nhn?blogId=hgt2768&logNo=220686069251&proxyReferer=https:%2F%2Fwww.google.com%2F 동적할당 코드 참고
+
+											Compare_cam[CAP] = cvCreateImage(cvGetSize(pthImage),pthImage->depth,pthImage->nChannels); // Compare_cam 변수에 원본이미지를 넣는다
+
+											if (Thread_compare[CAP] == 1)
 											{
+												Main->Test_screen = CAP;
 
-											if (Main->Thread_compare[CAP])
-											{
-												IplImage *imgNames[NUM] = {ResultImage,Result_cap[CAP]}; // 이미지가 저장된 배열
-
-												if (Main->ResultImage == NULL)
+												if (Main->Thread_compare[CAP])
 												{
-													Main->ResultImage = cvCreateImage(cvGetSize(pthImage),pthImage->depth,pthImage->nChannels); // Main.ResultImage 변수에 원본이미지를 넣는다
-												}
-																			
-												Mat imgs[NUM];
-												Mat imgsHLS[NUM];
-
-												for(int i=0;i<NUM;i++)
-												{
-													imgs[i] = cvarrToMat(imgNames[i]); // IplImage를 Mat형태로 변환
-													
-													//imgs[i] = imread(imgNames[i], IMREAD_COLOR);
-
-													if(imgs[i].data==0)
+													if (Main->ResultImage == NULL)
 													{
-														cout << "Unable to read" << imgNames[i] <<endl;
-													}
-													
-													cvtColor(imgs[i],imgsHLS[i], COLOR_BGR2HLS);
-												}
-
-												cout << endl << "succeeded to read all image" << endl;
-
-												Mat histogram[NUM];
-
-												int channel_numbers[] = {0,1,2};
-												for (int i=0;i<NUM;i++)
-												{
-													int* number_bins=new int[imgsHLS[i].channels()];
-
-													for (int ch=0;ch<imgsHLS[i].channels();ch++)
-													{
-														number_bins[ch]=BINS;
+														Main->ResultImage = cvCreateImage(cvGetSize(pthImage),pthImage->depth,pthImage->nChannels); // Main.ResultImage 변수에 원본이미지를 넣는다
 													}
 
-													float ch_range[] = {0.0,255.0};
-													const float *channel_ranges[] = {ch_range,ch_range,ch_range};
-													calcHist(&imgsHLS[i],1,channel_numbers,Mat(),histogram[i],imgsHLS[i].channels(),number_bins,channel_ranges);
-													normalize(histogram[i],histogram[i],1.0);
-													delete[] number_bins;
-												}
+													IplImage *imgNames[NUM] = {ResultImage,Result_cap[CAP]}; // 이미지가 저장된 배열
+																				
+													Mat imgs[NUM];
+													Mat imgsHLS[NUM];
 
-												cout << "Image Comparison by HISTCMP_CORREL " << endl;
-
-												for(int i=0; i < NUM; i++)
-												{
-													for (int j = i+1 ; j<NUM ; j++)
+													for(int i=0;i<NUM;i++)
 													{
-														double matching_score = compareHist(histogram[i], histogram[j],CV_COMP_CORREL);
-														Main->Match_Accurate = matching_score;
-														cout << "캡쳐된 화면 CAP[" << CAP << "] 캠 화면 " << &Compare_cam << "의 유사도는 " << matching_score * 100 << "%" << endl << endl;
-
+														imgs[i] = cvarrToMat(imgNames[i]); // IplImage를 Mat형태로 변환
 														
-														
+														//imgs[i] = imread(imgNames[i], IMREAD_COLOR);
 
-														if(matching_score > Main->Accurate/100000) // 결과에 따라 True False 결과 저장
-															Main->Test_result = "PASS";
-														else
-															Main->Test_result = "FAIL";
-
-														if(Main->Test_result == "PASS")
+														if(imgs[i].data==0)
 														{
-															cTime = CTime::GetCurrentTime();
-															cout << cTime.GetYear() << "년 " << cTime.GetMonth() << "월 " << cTime.GetDay() << "일" << endl;
-															cout << cTime.GetHour() << "시 " << cTime.GetMinute() << "분 " << cTime.GetSecond() << "초 " << endl;
-
-															cout << Main->cnt + 1 << "번째 결과는 " << "PASS" << endl << endl;
+															cout << "Unable to read" << imgNames[i] <<endl;
 														}
-														else
-														{
-															cTime = CTime::GetCurrentTime();
-															cout << cTime.GetYear() << "년 " << cTime.GetMonth() << "월 " << cTime.GetDay() << "일" << endl;
-															cout << cTime.GetHour() << "시 " << cTime.GetMinute() << "분 " << cTime.GetSecond() << "초 " << endl;
+														
+														cvtColor(imgs[i],imgsHLS[i], COLOR_BGR2HLS);
+													}
 
-															cout << Main->cnt + 1 << "번째 결과는 " << "FAIL" << endl << endl;
+													cout << endl << "succeeded to read all image" << endl;
+
+													Mat histogram[NUM];
+
+													int channel_numbers[] = {0,1,2};
+													for (int i=0;i<NUM;i++)
+													{
+														int* number_bins=new int[imgsHLS[i].channels()];
+
+														for (int ch=0;ch<imgsHLS[i].channels();ch++)
+														{
+															number_bins[ch]=BINS;
 														}
 
-														Main->SendMessageW(WM_USER_MESSAGE1,100,200);
-
-														
+														float ch_range[] = {0.0,255.0};
+														const float *channel_ranges[] = {ch_range,ch_range,ch_range};
+														calcHist(&imgsHLS[i],1,channel_numbers,Mat(),histogram[i],imgsHLS[i].channels(),number_bins,channel_ranges);
+														normalize(histogram[i],histogram[i],1.0);
+														delete[] number_bins;
 													}
-												}
 
-												//*Main->Test_result = new bool[Main->m_Loop] // 동적할당 , 결과값 저장 배열에 TRUE, FALSE 저장할 변수
-												// https://m.blog.naver.com/PostView.nhn?blogId=hgt2768&logNo=220686069251&proxyReferer=https:%2F%2Fwww.google.com%2F 동적할당 코드 참고
-												
-												for (int sleep_cnt = 0 ; (sleep_cnt < Main->Gap) && ( Main->cnt < Main->Loop ) ; sleep_cnt++ )
-												{
-														cout << Main->cnt + 2  << "번째 항목을 테스트하기 위해" << sleep_cnt + 1 << "초 대기" << endl;
-														Sleep(1000);
-												}
+													cout << "Image Comparison by HISTCMP_CORREL " << endl;
 
-												//if(cnt < Main->Loop - 1)
+													for(int i=0; i < NUM; i++)
+													{
+														for (int j = i+1 ; j<NUM ; j++)
+														{
+															double matching_score = compareHist(histogram[i], histogram[j],CV_COMP_CORREL);
+															Main->Match_Accurate = matching_score;
+															cout << "캡쳐된 화면 CAP[" << CAP << "] 캠 화면 " << &Compare_cam << "의 유사도는 " << matching_score * 100 << "%" << endl << endl;
+
+															Main->Compare_screen_cnt++;
+
+															if(matching_score < Main->match_score_min)
+																Main->match_score_min = matching_score;
+															
+
+															if(matching_score > Main->Accurate/100000) // 결과에 따라 True False 결과 저장
+																Main->Test_result = "PASS";
+															else
+															{
+																Main->Test_result = "FAIL";
+																Main->Fail_cnt++;
+															}
+
+																Main->SendMessageW(WM_USER_MESSAGE1,100,200); // List Control에 결과를 추가하기 위한 코드
+
+															
+														}
+													}
+
 													Main->cnt += 1; // 전체 몇번도는지 누적
 
-												
+												} // if (Main->Thread_compare[CAP]) 문
 
-										} // if (Main->Thread_compare[CAP]) 문
+												if (Main->Thread_second_running == false)
+												{
+													//그리기 시작
+													Main->m_main_cam_draw.GetClientRect(rect);
 
-										} //주석처리한 for문
+													pDC = Main->m_main_cam_draw.GetDC();
 
-								} // (Thread_compare[CAP] == 1) 문
+														if(Main->ResultImage != NULL)
+														{
+															Main->Main_draw.CopyOf(Main->ResultImage);
+															Main->Main_draw.DrawToHDC(pDC->m_hDC,&rect);// 좌우반전한 Main->ResultImage를 출력한다.
+														}
 
+														Main->m_main_cam_draw.ReleaseDC(pDC); // DC를 Release 해준다
+														
+												 // 캠 그리기 끝
 
-							} // 몇번째 화면을 Compare 중인지 사용자에게 알려주기 위함
+														cvReleaseImage(&Main->ResultImage);
+												}
+											} // (Thread_compare[CAP] == 1) 문
+
+									Main->cTime = CTime::GetCurrentTime(); // cTime 변수에 현재시간 저장
+									
+									if( Main->Time_gap.GetTotalSeconds() > Main->Gap || Thread_compare[CAP] == 0)
+										break;
+									
+									} // while문의 끝
+
+									Main->cTime = CTime::GetCurrentTime();		
+
+									Main->Compare_screen_cnt = 0;
+									Main->Fail_cnt = 0;
+									Main->Start_time_sw = 0;
+									
+								} //CAP for문의 끝
 							
 							cout << endl;
 							cout << "ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ" << endl;
@@ -540,14 +573,9 @@ UINT CAPP_BSPDlg::ThreadFirst(LPVOID _mothod) // Cam으로부터 이미지를 가져오고, 
 								
 						} // Loop for문의 끝
 
-						//for(int i=0 ; i < Main->Loop ; i++)
-							//delete [] Main->Match_result;
-
-
 						cout << "Compare 종료" << endl;
 
-						
-						
+						Main->Start_time_sw = 0;
 
 						Main->Start = false;
 
@@ -555,7 +583,7 @@ UINT CAPP_BSPDlg::ThreadFirst(LPVOID _mothod) // Cam으로부터 이미지를 가져오고, 
 
 					
 					
-					if ( Main->Start == false ) // VIEW Dlg의 Com 버튼을 눌렀을때의 이벤트
+					if ( Main->Start == false && Main->sw_Compare == 1 ) // VIEW Dlg의 Com 버튼을 눌렀을때의 이벤트
 					{
 						for(int CAP = 0 ; CAP < 8 ; CAP++) // [CAP]번째의 화면을 Compare 한다, START 버튼 기능을 다 구현하면 해당 라인 주석처리 할것
 						{
@@ -661,7 +689,7 @@ UINT CAPP_BSPDlg::ThreadFirst(LPVOID _mothod) // Cam으로부터 이미지를 가져오고, 
 
 			
 
-			if (Main->Thread_second_running == false)
+			if (Main->Thread_second_running == false && Main->Start == false)
 			{
 				//그리기 시작
 				Main->m_main_cam_draw.GetClientRect(rect);
@@ -812,12 +840,16 @@ void CAPP_BSPDlg::OnBnClickedStop()
 
 		Main->str_Loop.Format(_T("%d"),Main->Loop); // Loop를 string으로 변환
 		Main->str_Test_screen.Format(_T("%d"),Main->Test_screen); // 캡쳐한 n개의 화면 int형을 string으로 변환
+		Main->str_Compare_creen_cnt.Format(_T("%d"),Main->Compare_screen_cnt); // 누적 비교 이미지 갯수를 int형에서 string으로 변환
+		Main->str_Fail_cnt.Format(_T("%d"),Main->Fail_cnt); // 캡쳐한 n개의 화면 int형을 string으로 변환
 		Main->str_Accurate.Format(_T("%.2f"),Main->Accurate); // Accurate를 string으로 변환
 
 		int inserted_index = m_Result_table.InsertItem(LVIF_TEXT|LVIF_STATE, row_cnt,Main->str_Loop, 0, LVIS_SELECTED, 0, 0); // Loop추가
 		m_Result_table.SetItemText(inserted_index ,1,Main->str_Test_screen); // n번째 항목 추가
 		m_Result_table.SetItemText(inserted_index ,2,Main->Test_result); // 결과 추가
-		m_Result_table.SetItemText(inserted_index ,3,Main->str_Accurate); // 정확도 추가
+		m_Result_table.SetItemText(inserted_index ,3,Main->str_Compare_creen_cnt); // 총 비교한 이미지 추가
+		m_Result_table.SetItemText(inserted_index ,4,Main->str_Fail_cnt); // FAIL 이미지 추가
+		m_Result_table.SetItemText(inserted_index ,5,Main->str_Accurate); // 정확도 추가 -> 최저 정확도로 변경할것
 		cout << "Main->row_cnt : " << Main->row_cnt << endl;
 		Main->row_cnt++;
 	}

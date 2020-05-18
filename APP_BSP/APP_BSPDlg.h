@@ -94,6 +94,21 @@ public:
 	int loop_cnt;
 	CvvImage Main_draw;
 
+	int sw_Compare;
+
+	CTime Start_time; // 테스트 시작 시간 저장 변수
+	CTime cTime; // 테스트 진행중 시간 저장 변수
+
+	// 이하 n초동안 Comapre를 하는 동작을 구현하기 위해 선언해야 하는변수
+	int Compare_screen_cnt; // 총 n개의 스크린을 compare한 누적 갯수 변수
+	CString str_Compare_creen_cnt;
+	int Fail_cnt; // FAIL 갯수 변수
+	CString str_Fail_cnt;
+	int match_score_min;  // 이 변수는 사용 할지 안할지 모르겠는데 일단 만듬..
+	CTimeSpan Time_gap;
+	int Start_time_sw;
+
+
 
 //	bool Test_result[];
 //	int Test_sleep[];

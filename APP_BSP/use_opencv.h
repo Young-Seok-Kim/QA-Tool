@@ -1,4 +1,3 @@
-
 #ifndef __USE_OPENCV_H__
 
 #define __USE_OPENCV_H__
@@ -89,7 +88,7 @@
       #pragma comment(lib,"libpngd.lib")
 
       #pragma comment(lib,"libtiffd.lib")
-*/
+//*/
 
       #pragma comment(lib,"vfw32.lib")
 
@@ -128,8 +127,7 @@
       #pragma comment(lib,"opencv_stitching249.lib")
 
       #pragma comment(lib,"opencv_legacy249.lib")
-
-/*
+/* // statick library link 할때 사용
       #pragma comment(lib,"IlmImf.lib")
 
       #pragma comment(lib,"libjasper.lib")
@@ -140,16 +138,15 @@
 
       #pragma comment(lib,"libtiff.lib")
 
-      #pragma comment(lib,"uafxcw.lib")	
+      #pragma comment(lib,"uafxcw.lib")	// 폴더에없다.
 
-      #pragma comment(lib,"LIBCMT.lib")	
-*/	  
+      #pragma comment(lib,"LIBCMT.lib")	// 폴더에없다.
 
+	  #pragma comment(lib,"zlib.lib")
+//*/
       #pragma comment(lib,"vfw32.lib")
 
-      #pragma comment(lib,"comctl32.lib")	
-
-
+      #pragma comment(lib,"comctl32.lib")
 
 #endif  // _DEBUG
 

@@ -8,3 +8,5 @@ Main Dialog가 열림
 설정값을 지정하는 Dialog도 하나 만들어야될듯? -> 'VIEW Dialog에서 캡쳐한 n번째 이미지를 n초후에 비교한다.'와 같은 기능을 구현하기 위함
 Thread First의 역할 : Cam에서 이미지를 읽어온다.
 Thread Second의 역할 : Thread First에서 읽어온 이미지를 VIEW Dialog에 그려준다.
+
+* 이미지 하나만을 이용해서 Compare하는데.. 특정 시간동안 Compare 한 후에 PASS FAIL을 줘야 실제로 사용할수 있을듯

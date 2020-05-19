@@ -398,8 +398,6 @@ UINT CAPP_BSPDlg::ThreadFirst(LPVOID _mothod) // Cam으로부터 이미지를 가져오고, 
 							
 							Main->cnt += 1; // 전체 몇번도는지 누적
 
-							Main->match_score_min = 100000;
-
 							for(int CAP = 0 ; CAP < 8 ; CAP++) // [CAP]번째의 화면을 Compare 한다
 							{
 									while(1)
@@ -531,6 +529,7 @@ UINT CAPP_BSPDlg::ThreadFirst(LPVOID _mothod) // Cam으로부터 이미지를 가져오고, 
 									Main->Compare_screen_cnt = 0;
 									Main->Fail_cnt = 0;
 									Main->Start_time_sw = 0;
+									Main->match_score_min = 100000;
 									
 								} //CAP for문의 끝
 							

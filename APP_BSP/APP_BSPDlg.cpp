@@ -168,6 +168,37 @@ BOOL CAPP_BSPDlg::OnInitDialog()
 
 	if(sw_listcontrol == 0) // 초기화가 한번만 되게 해주는 코드
 	{
+		CWinThread static *p1 = NULL;
+		p1 = AfxBeginThread(ThreadFirst, this); // 여기까지 스레드
+		p1->m_bAutoDelete = FALSE;
+
+		ThreadFirst_running = true;
+
+		Main->Thread_second_running = false;
+
+		Main->Start = false;
+
+		Main->Loop = 1;
+
+		Main->After = 1;
+
+		Main->Gap = 1;
+
+		Main->sel_cap = 1;
+
+		Main->Accurate = 90000;
+
+		Main->Test_screen = 0;
+
+		Main->row_cnt = 0;
+		
+		Main->Compare_screen_cnt = 0;
+
+		Main->Fail_cnt = 0;
+
+		Main->match_score_min = 100000;
+
+		Main->Start_time_sw = 0; // Start time이 한번만 초기화 되게 만들어주는 변수
 
 		//Main->Test_screen_cnt = 0;
 		Main->Test_result = "PASS";
@@ -325,32 +356,6 @@ UINT CAPP_BSPDlg::ThreadFirst(LPVOID _mothod) // Cam으로부터 이미지를 가져오고, 
 
 	CString strDate, strTime; // 반환되는 날짜와 시간을 저장할 CString 변수 선언
 
-
-	Main->Thread_second_running = false;
-	Main->Start = false;
-
-	Main->Loop = 1;
-
-	Main->After = 1;
-
-	Main->Gap = 1;
-
-	Main->sel_cap = 1;
-
-	Main->Accurate = 90000;
-
-	Main->Test_screen = 0;
-
-	Main->row_cnt = 0;
-	
-	Main->Compare_screen_cnt = 0;
-
-	Main->Fail_cnt = 0;
-
-	Main->match_score_min = 0;
-
-	Main->Start_time_sw = 0; // Start time이 한번만 초기화 되게 만들어주는 변수
-
 	CDC *pDC;
 
 
@@ -361,14 +366,10 @@ UINT CAPP_BSPDlg::ThreadFirst(LPVOID _mothod) // Cam으로부터 이미지를 가져오고, 
 	cout << "Main->Start : " << Main->Start << endl;
 	cout << "ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ" << endl;
 
-
-
 	cout << "Thread First 실행" << endl;
-
-	 
 	
 	while(1)
-	{  
+	{
 				if (Main->ThreadFirst_running == false)
 					break;
 				
@@ -376,8 +377,6 @@ UINT CAPP_BSPDlg::ThreadFirst(LPVOID _mothod) // Cam으로부터 이미지를 가져오고, 
 					
 					pthImage = cvQueryFrame(Main->cam); // 원본이미지 변수에 캠의 화면을 저장
 					ResultImage = cvCreateImage(cvGetSize(pthImage),pthImage->depth,pthImage->nChannels); // ResultImage 변수에 원본이미지를 넣는다
-					//cout << x << "번째 이미지 Load" << endl;
-
 					cvFlip(pthImage,ResultImage,1); // Main.ResultImage 변수에 넣은 원본 이미지를 좌우반전한다.
 					
 
@@ -396,6 +395,10 @@ UINT CAPP_BSPDlg::ThreadFirst(LPVOID _mothod) // Cam으로부터 이미지를 가져오고, 
 						for(int Loop_cnt = 0 ; Loop_cnt < Main->Loop ; Loop_cnt++) // 테스트를 Loop_cnt번 반복
 						{
 							cout << endl << Loop_cnt + 1 << "회 반복중" << endl;
+							
+							Main->cnt += 1; // 전체 몇번도는지 누적
+
+							Main->match_score_min = 100000;
 
 							for(int CAP = 0 ; CAP < 8 ; CAP++) // [CAP]번째의 화면을 Compare 한다
 							{
@@ -486,20 +489,10 @@ UINT CAPP_BSPDlg::ThreadFirst(LPVOID _mothod) // Cam으로부터 이미지를 가져오고, 
 																Main->match_score_min = matching_score;
 															
 
-															if(matching_score > Main->Accurate/100000) // 결과에 따라 True False 결과 저장
-																Main->Test_result = "PASS";
-															else
-															{
-																Main->Test_result = "FAIL";
+															if(matching_score < Main->Accurate/100000) // 결과에 따라 True False 결과 저장
 																Main->Fail_cnt++;
-															}
-																Main->SendMessageW(WM_USER_MESSAGE1,100,200); // List Control에 결과를 추가하기 위한 코드
-
-															
 														}
 													}
-
-													Main->cnt += 1; // 전체 몇번도는지 누적
 
 												} // if (Main->Thread_compare[CAP]) 문
 
@@ -525,14 +518,16 @@ UINT CAPP_BSPDlg::ThreadFirst(LPVOID _mothod) // Cam으로부터 이미지를 가져오고, 
 											} // (Thread_compare[CAP] == 1) 문
 
 									Main->cTime = CTime::GetCurrentTime(); // cTime 변수에 현재시간 저장
-									
+
 									if( Main->Time_gap.GetTotalSeconds() > Main->Gap || Thread_compare[CAP] == 0)
 										break;
-									
 									} // while문의 끝
 
-									Main->cTime = CTime::GetCurrentTime();		
+									Main->cTime = CTime::GetCurrentTime();
 
+									if (Thread_compare[CAP] == 1)
+										Main->SendMessageW(WM_USER_MESSAGE1,100,200); // List Control에 결과를 추가하기 위한 코드
+									
 									Main->Compare_screen_cnt = 0;
 									Main->Fail_cnt = 0;
 									Main->Start_time_sw = 0;
@@ -542,20 +537,20 @@ UINT CAPP_BSPDlg::ThreadFirst(LPVOID _mothod) // Cam으로부터 이미지를 가져오고, 
 							cout << endl;
 							cout << "ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ" << endl;
 
-							//if(Main->Start == false)
-							{
 								for(int i=0 ; i < 8 ; i++)
 								{
-									Thread_compare[i] = 0;
-
 									if ( Compare_cam[i])
 										cvReleaseImage(&Compare_cam[i]); // 이 코드는 추후에 Compare Image 기능을 구현 한 후에 그곳으로 옮겨야할것같다.
 								}
-
-									break;
-							}
+						
+								cout << endl;
+								cout << "ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ" << endl;
 								
 						} // Loop for문의 끝
+						for(int i=0 ; i < 8 ; i++)
+						{
+							Thread_compare[i] = 0;
+						}
 
 						cout << "Compare 종료" << endl;
 
@@ -641,8 +636,8 @@ UINT CAPP_BSPDlg::ThreadFirst(LPVOID _mothod) // Cam으로부터 이미지를 가져오고, 
 											compare_order[CAP] = 0;
 
 										} // compare cap[n] == 1 if문의 끝
-
-									cvReleaseImage(&Compare_cam[CAP]); // 이 코드는 추후에 Compare Image 기능을 구현 한 후에 그곳으로 옮겨야할것같다.
+										
+										cvReleaseImage(&Compare_cam[CAP]);
 									
 									} // CAP[n] for문의 끝
 
@@ -665,6 +660,8 @@ UINT CAPP_BSPDlg::ThreadFirst(LPVOID _mothod) // Cam으로부터 이미지를 가져오고, 
 
 
 					//cout << "Thread First Unlock" << endl;
+
+
 
 					if (Main->Thread_second_running == false && Main->Start == false)
 					{
@@ -708,15 +705,11 @@ int CAPP_BSPDlg::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	//Main->Thread_second_running = false;
 
 	cam = cvCaptureFromCAM(0);
-	CWinThread static *p1 = NULL;
-	p1 = AfxBeginThread(ThreadFirst, this); // 여기까지 스레드
-	p1->m_bAutoDelete = FALSE;
+	
 	Main->Thread_second_running_count = 0;
 
 	sw_listcontrol = 0;
 	
-
-	ThreadFirst_running = true;
 
 	//Image_order = 0;
 
@@ -818,15 +811,15 @@ void CAPP_BSPDlg::OnBnClickedStop()
 		Main->str_Loop.Format(_T("%d"),Main->Loop); // Loop를 string으로 변환
 		Main->str_Test_screen.Format(_T("%d"),Main->Test_screen); // 캡쳐한 n개의 화면 int형을 string으로 변환
 		Main->str_Compare_creen_cnt.Format(_T("%d"),Main->Compare_screen_cnt); // 누적 비교 이미지 갯수를 int형에서 string으로 변환
-		Main->str_Fail_cnt.Format(_T("%d"),Main->Fail_cnt); // 캡쳐한 n개의 화면 int형을 string으로 변환
-		Main->str_Accurate.Format(_T("%.2f"),Main->Accurate); // Accurate를 string으로 변환
+		Main->str_Fail_cnt.Format(_T("%d"),Main->Fail_cnt); // Fail 갯수를 string으로 변환
+		Main->str_match_score_min.Format(_T("%.2f"),Main->match_score_min); // Accurate를 string으로 변환
 
 		int inserted_index = m_Result_table.InsertItem(LVIF_TEXT|LVIF_STATE, row_cnt,Main->str_Loop, 0, LVIS_SELECTED, 0, 0); // Loop추가
 		m_Result_table.SetItemText(inserted_index ,1,Main->str_Test_screen); // n번째 항목 추가
 		m_Result_table.SetItemText(inserted_index ,2,Main->Test_result); // 결과 추가
 		m_Result_table.SetItemText(inserted_index ,3,Main->str_Compare_creen_cnt); // 총 비교한 이미지 추가
 		m_Result_table.SetItemText(inserted_index ,4,Main->str_Fail_cnt); // FAIL 이미지 추가
-		m_Result_table.SetItemText(inserted_index ,5,Main->str_Accurate); // 정확도 추가 -> 최저 정확도로 변경할것
+		m_Result_table.SetItemText(inserted_index ,5,Main->str_match_score_min); // 정확도 추가 -> 최저 정확도로 변경할것
 		cout << "Main->row_cnt : " << Main->row_cnt << endl;
 		Main->row_cnt++;
 	}
@@ -849,15 +842,25 @@ LRESULT CAPP_BSPDlg::OnUserFunc(WPARAM wParam, LPARAM lParam)
 		//Main->str_Loop.Format(_T("%d"),Main->Loop); // int를 string으로 변환
 		//Main->m_Loop.SetWindowTextW(Main->str_Loop);
 
+		if( Main->Fail_cnt <= 0 )
+			Main->Test_result = "PASS";
+		else
+			Main->Test_result = "FAIL";
+
 		Main->str_Loop.Format(_T("%d"),Main->cnt); // Loop를 string으로 변환
 		Main->str_Test_screen.Format(_T("%d"),Main->Test_screen); // 캡쳐한 n개의 화면 int형을 string으로 변환
-		Main->str_Accurate.Format(_T("%.2f%%"),Main->Match_Accurate * 100); // Accurate를 string으로 변환
+		Main->str_Compare_creen_cnt.Format(_T("%d"),Main->Compare_screen_cnt); // 총 비교한 이미지를 string으로 변환
+		Main->str_Fail_cnt.Format(_T("%d"),Main->Fail_cnt); // Fail 갯수를 string으로 변환
+		Main->str_match_score_min.Format(_T("%.2f%%"),Main->match_score_min * 100); // 최저 정확도를 string으로 변환
 
 		int inserted_index = m_Result_table.InsertItem(LVIF_TEXT|LVIF_STATE, row_cnt,Main->str_Loop, 0, LVIS_SELECTED, 0, 0); // Loop추가
 		m_Result_table.SetItemText(inserted_index ,1,Main->str_Test_screen); // n번째 항목 추가
 		m_Result_table.SetItemText(inserted_index ,2,Main->Test_result); // 결과 추가
-		m_Result_table.SetItemText(inserted_index ,3,Main->str_Accurate); // 정확도 추가
-		cout << "Main->row_cnt : " << Main->row_cnt << endl;
+		m_Result_table.SetItemText(inserted_index ,3,Main->str_Compare_creen_cnt); // 총 비교한 이미지 추가
+		m_Result_table.SetItemText(inserted_index ,4,Main->str_Fail_cnt); // Fail 갯수 추가
+		m_Result_table.SetItemText(inserted_index ,5,Main->str_match_score_min); // 최저정확도 추가
+
+		//cout << "Main->row_cnt : " << Main->row_cnt << endl;
 		Main->row_cnt++;
 	}
 

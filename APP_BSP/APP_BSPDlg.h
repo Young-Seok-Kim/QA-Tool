@@ -91,7 +91,6 @@ public:
 	double Match_Accurate;
 	CString str_Accurate;
 	CString Test_result;
-	int loop_cnt;
 	CvvImage Main_draw;
 
 	int sw_Compare;
@@ -104,7 +103,8 @@ public:
 	CString str_Compare_creen_cnt;
 	int Fail_cnt; // FAIL °¹¼ö º¯¼ö
 	CString str_Fail_cnt;
-	int match_score_min;
+	CString str_match_score_min;
+	double match_score_min;
 	CTimeSpan Time_gap;
 	int Start_time_sw;
 

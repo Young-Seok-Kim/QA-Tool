@@ -342,6 +342,8 @@ void VIEW::OnBnClickedCapBtn1()
 		//cvShowImage("Main->Compare_cam",&Main->Compare_cam);
 	}
 
+	cvSaveImage("D:\\QA_Tool_Image\\Capture_Image\\Cap1.jpg", pic1_cap);
+
 	Thread_compare[0] = 1;
 	GetDlgItem(IDC_COM_BTN1)->EnableWindow(TRUE);
 
@@ -381,6 +383,8 @@ void VIEW::OnBnClickedCapBtn2()
 		//cvShowImage("Main->Compare_cam",&Main->Compare_cam);
 	}
 
+	cvSaveImage("D:\\QA_Tool_Image\\Capture_Image\\Cap2.jpg", pic2_cap);
+
 	Thread_compare[1] = 1;
 
 	GetDlgItem(IDC_COM_BTN2)->EnableWindow(TRUE);
@@ -418,6 +422,8 @@ void VIEW::OnBnClickedCapBtn3()
 		Main->Compare_cam[CAP2] = Main->Result_cap[CAP2];
 		//cvShowImage("Main->Compare_cam",&Main->Compare_cam);
 	}
+
+	cvSaveImage("D:\\QA_Tool_Image\\Capture_Image\\Cap3.jpg", pic3_cap);
 	
 	Thread_compare[2] = 1;
 
@@ -459,6 +465,8 @@ void VIEW::OnBnClickedCapBtn4()
 		//cvShowImage("Main->Compare_cam",&Main->Compare_cam);
 	}
 
+	cvSaveImage("D:\\QA_Tool_Image\\Capture_Image\\Cap4.jpg", pic4_cap);
+
 	Thread_compare[3] = 1;
 
 	GetDlgItem(IDC_COM_BTN4)->EnableWindow(TRUE);
@@ -497,6 +505,8 @@ void VIEW::OnBnClickedCapBtn5()
 		Main->Compare_cam[CAP4] = Main->Result_cap[CAP4];
 		//cvShowImage("Main->Compare_cam",&Main->Compare_cam);
 	}
+
+	cvSaveImage("D:\\QA_Tool_Image\\Capture_Image\\Cap5.jpg", pic5_cap);
 
 	Thread_compare[4] = 1;
 
@@ -537,6 +547,8 @@ void VIEW::OnBnClickedCapBtn6()
 		//cvShowImage("Main->Compare_cam",&Main->Compare_cam);
 	}
 
+	cvSaveImage("D:\\QA_Tool_Image\\Capture_Image\\Cap6.jpg", pic6_cap);
+
 	Thread_compare[5] = 1;
 
 	GetDlgItem(IDC_COM_BTN6)->EnableWindow(TRUE);
@@ -574,6 +586,8 @@ void VIEW::OnBnClickedCapBtn7()
 		Main->Compare_cam[CAP6] = Main->Result_cap[CAP6];
 		//cvShowImage("Main->Compare_cam",&Main->Compare_cam);
 	}
+
+	cvSaveImage("D:\\QA_Tool_Image\\Capture_Image\\Cap7.jpg", pic7_cap);
 
 	Thread_compare[6] = 1;
 
@@ -613,6 +627,8 @@ void VIEW::OnBnClickedCapBtn8()
 		Main->Compare_cam[CAP7] = Main->Result_cap[CAP7];
 		//cvShowImage("Main->Compare_cam",&Main->Compare_cam);
 	}
+
+	cvSaveImage("D:\\QA_Tool_Image\\Capture_Image\\Cap8.jpg", pic8_cap);
 
 	Thread_compare[7] = 1;
 
@@ -876,59 +892,89 @@ void VIEW::OnInitMenu(CMenu* pMenu)
 
 void VIEW::OnBnClickedComBtn1()
 {
-	// cout << Main->Result_cap[0] << endl;
+	CAPP_BSPDlg *Main = (CAPP_BSPDlg*)AfxGetApp()->GetMainWnd();
 
 	Main->compare_order[CAP0] = 1;
-	Main->sw_Compare = 1;
+
+	if(Main->Result_cap[CAP0])
+		Main->sw_Compare = 1;
 
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
 }
 
 void VIEW::OnBnClickedComBtn2()
 {
+	CAPP_BSPDlg *Main = (CAPP_BSPDlg*)AfxGetApp()->GetMainWnd();
+
 	Main->compare_order[CAP1] = 1;
-	Main->sw_Compare = 1;
+	
+	if(Main->Result_cap[CAP1])
+		Main->sw_Compare = 1;
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
 }
 
 void VIEW::OnBnClickedComBtn3()
 {
+	CAPP_BSPDlg *Main = (CAPP_BSPDlg*)AfxGetApp()->GetMainWnd();
+
 	Main->compare_order[CAP2] = 1;
-	Main->sw_Compare = 1;
+
+	if(Main->Result_cap[CAP2])
+		Main->sw_Compare = 1;
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
 }
 
 void VIEW::OnBnClickedComBtn4()
 {
+	CAPP_BSPDlg *Main = (CAPP_BSPDlg*)AfxGetApp()->GetMainWnd();
+
 	Main->compare_order[CAP3] = 1;
-	Main->sw_Compare = 1;
+
+	if(Main->Result_cap[CAP3])
+		Main->sw_Compare = 1;
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
 }
 
 void VIEW::OnBnClickedComBtn5()
 {
+	CAPP_BSPDlg *Main = (CAPP_BSPDlg*)AfxGetApp()->GetMainWnd();
+
 	Main->compare_order[CAP4] = 1;
-	Main->sw_Compare = 1;
+
+	if(Main->Result_cap[CAP4])
+		Main->sw_Compare = 1;
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
 }
 
 void VIEW::OnBnClickedComBtn6()
 {
+	CAPP_BSPDlg *Main = (CAPP_BSPDlg*)AfxGetApp()->GetMainWnd();
+
 	Main->compare_order[CAP5] = 1;
-	Main->sw_Compare = 1;
+	
+	if(Main->Result_cap[CAP5])
+		Main->sw_Compare = 1;
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
 }
 
 void VIEW::OnBnClickedComBtn7()
 {
+	CAPP_BSPDlg *Main = (CAPP_BSPDlg*)AfxGetApp()->GetMainWnd();
+
 	Main->compare_order[CAP6] = 1;
-	Main->sw_Compare = 1;
+
+	if(Main->Result_cap[CAP6])
+		Main->sw_Compare = 1;
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
 }
 
 void VIEW::OnBnClickedComBtn8()
 {
+	CAPP_BSPDlg *Main = (CAPP_BSPDlg*)AfxGetApp()->GetMainWnd();
+
 	Main->compare_order[CAP7] = 1;
-	Main->sw_Compare = 1;
+
+	if(Main->Result_cap[CAP7])
+		Main->sw_Compare = 1;
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
 }

@@ -533,7 +533,7 @@ UINT CAPP_BSPDlg::ThreadFirst(LPVOID _mothod) // Cam으로부터 이미지를 가져오고, 
 									if (Thread_compare[CAP] == 1)
 									{
 										Main->SendMessageW(WM_USER_MESSAGE1,100,200); // List Control에 결과를 추가하기 위한 코드
-										cvReleaseImage(&Main->Result_cap[CAP]);
+										
 									}
 
 									Main->Compare_screen_cnt = 0;
@@ -551,8 +551,8 @@ UINT CAPP_BSPDlg::ThreadFirst(LPVOID _mothod) // Cam으로부터 이미지를 가져오고, 
 
 								for(int i=0 ; i < 8 ; i++)
 								{
-									if ( Compare_cam[i])
-										cvReleaseImage(&Compare_cam[i]); // 이 코드는 추후에 Compare Image 기능을 구현 한 후에 그곳으로 옮겨야할것같다.
+									if ( Compare_cam[i] && Main->Result_cap[i])
+										cvReleaseImage(&Compare_cam[i]);
 								}
 						
 								if(Main->Start == false)
@@ -562,7 +562,9 @@ UINT CAPP_BSPDlg::ThreadFirst(LPVOID _mothod) // Cam으로부터 이미지를 가져오고, 
 						for(int i=0 ; i < 8 ; i++)
 						{
 							Thread_compare[i] = 0;
+							cvReleaseImage(&Main->Result_cap[i]);
 						}
+
 
 						cout << endl;
 						cout << "ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ" << endl;

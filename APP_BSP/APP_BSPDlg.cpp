@@ -204,8 +204,7 @@ BOOL CAPP_BSPDlg::OnInitDialog()
 
 		//Main->Test_screen_cnt = 0;
 		Main->Test_result = "PASS";
-		Main->Save_Fail_Image_Dir = "D:\\QA_Tool_Image\\Fail_Image\\";
-
+		
 		Main->str_Loop.Format(_T("%d"),Main->Loop);
 		Main->m_Loop.SetWindowTextW(Main->str_Loop);
 		Main->m_after.SetWindowTextW(TEXT("1"));
@@ -496,24 +495,15 @@ UINT CAPP_BSPDlg::ThreadFirst(LPVOID _mothod) // Cam으로부터 이미지를 가져오고, 
 																		Main->Fail_cnt++;
 
 																		//아래 코드는 CString to Char*로 변환하는 코드로, Fail Image를 jpg파일로 저장할때 cvSaveIamge(?)함수를 사용할때 1번째 인자에 사용한다.
-																		
-																		/*
-																		//CString szString = "hello";
-																		char* Buffer = (char*) malloc(szString.GetLength());
-																		size_t CharactersConverted = 0;
-																		wcstombs_s(&CharactersConverted, Buffer, szString.GetLength()+1, szString, _TRUNCATE);
-																		
-
 																		Main->str_Fail_cnt.Format(_T("%d"),Main->Fail_cnt); // Fail 갯수를 string으로 변환
-																		Main->Save_Fail_Image_Dir += Main->Save_Fail_Image_Dir + "Fail_Image_" + Main->str_Fail_cnt;
+																		Main->Save_Fail_Image_Dir = "D:\\QA_Tool_Image\\Fail_Image\\Fail_Image_";
+																		Main->Save_Fail_Image_Dir += Main->str_Fail_cnt; // 몇번째 Fail 이미지인지 지정
+																		Main->Save_Fail_Image_Dir +=  ".jpg"; // 확장자 지정
 
 																		Main->Save_Fail_Image = (char*) malloc(Main->Save_Fail_Image_Dir.GetLength());
 																		wcstombs_s(&Main->CharactersConverted, Main->Save_Fail_Image, Main->Save_Fail_Image_Dir.GetLength()+1, Main->Save_Fail_Image_Dir, _TRUNCATE);
 
-																		//Main->Fail_Image = Main->ResultImage;
-
-																		cvSaveImage(Main->Save_Fail_Image, imgNames[1]);
-																		*/
+																		cvSaveImage(Main->Save_Fail_Image, Main->ResultImage); // 첫번째 파라미터가 Char* 이므로 위 코드를 통해 CString 에서 Char*로 변경하였다.
 																	
 
 																	}

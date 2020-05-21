@@ -364,11 +364,10 @@ UINT CAPP_BSPDlg::ThreadFirst(LPVOID _mothod) // Cam으로부터 이미지를 가져오고, 
 	CDC *pDC;
 
 
-	cout << "Main->Loop : " << Main->Loop << endl;
-	cout << "Main->After : " << Main->After << endl;
-	cout << "Main->Gap : " << Main->Gap << endl;
-	cout << "Main->Accurate : " << Main->Accurate << endl;
-	cout << "Main->Start : " << Main->Start << endl;
+	cout << "n번 검사 : " << Main->Loop << endl;
+	cout << "n초후 검사 : " << Main->After << endl;
+	cout << "화면 사이의 n초 간격 : " << Main->Gap << endl;
+	cout << "정확도 : " << Main->Accurate << endl;
 	cout << "ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ" << endl;
 
 	cout << "Thread First 실행" << endl;
@@ -783,11 +782,10 @@ void CAPP_BSPDlg::OnBnClickedSetting()
 	GetDlgItemTextW(IDC_ACCURATE,Main->str_Accurate);
 	Main->str_Accurate.Format(_T("%1.2f"),Main->Accurate); // Accurate를 string으로 변환
 
-		cout << "Main->Loop : " << Main->Loop << endl;
-		cout << "Main->After : " << Main->After << endl;
-		cout << "Main->Gap : " << Main->Gap << endl;
-		cout << "Main->sel_cap : " << Main->sel_cap << endl;
-		cout << "Main->Accurate : " << Main->Accurate << endl << endl;
+	cout << "n번 검사 : " << Main->Loop << endl;
+	cout << "n초후 검사 : " << Main->After << endl;
+	cout << "화면 사이의 n초 간격 : " << Main->Gap << endl;
+	cout << "정확도 : " << Main->Accurate << endl << endl;
 
 	//Main->Match_result = new bool[Main->Loop];
 	

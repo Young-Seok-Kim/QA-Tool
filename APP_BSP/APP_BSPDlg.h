@@ -62,6 +62,10 @@ private:
 	double match_score_min;
 	CTimeSpan Time_gap;
 	int Start_time_sw;
+	CString Save_Fail_Image_Dir;
+	char *Save_Fail_Image;
+	size_t CharactersConverted;
+	IplImage Fail_Image;
 
 public:
 	afx_msg void OnBnClickedView();

@@ -204,6 +204,7 @@ BOOL CAPP_BSPDlg::OnInitDialog()
 
 		//Main->Test_screen_cnt = 0;
 		Main->Test_result = "PASS";
+		Main->Dir_Check = GetFileAttributes((LPCWSTR)("D:\\QA_Tool_Image\\Fail_Image\\"));
 		
 		Main->str_Loop.Format(_T("%d"),Main->Loop);
 		Main->m_Loop.SetWindowTextW(Main->str_Loop);
@@ -494,18 +495,27 @@ UINT CAPP_BSPDlg::ThreadFirst(LPVOID _mothod) // Cam으로부터 이미지를 가져오고, 
 																	{
 																		Main->Fail_cnt++;
 
+																		if(GetFileAttributes((LPCWSTR)"D:\\QA_Tool_Image\\Fail_Image") /*Main->Dir_Check */ == INVALID_FILE_ATTRIBUTES)
+																		{
+																			CreateDirectory(_T("D:\\QA_Tool_Image\\Fail_Image"),NULL);
+																			cout << "D:\\QA_Tool_Image\\Fail_Image 폴더가 존재하지 않아 해당 폴더를 새로 생성 합니다." << endl;
+																		}
+
 																		//아래 코드는 CString to Char*로 변환하는 코드로, Fail Image를 jpg파일로 저장할때 cvSaveIamge(?)함수를 사용할때 1번째 인자에 사용한다.
+																		Main->str_Loop.Format(_T("%d"),Main->cnt); // Loop를 string으로 변환
 																		Main->str_Fail_cnt.Format(_T("%d"),Main->Fail_cnt); // Fail 갯수를 string으로 변환
-																		Main->Save_Fail_Image_Dir = "D:\\QA_Tool_Image\\Fail_Image\\Fail_Image_";
+																		Main->Save_Fail_Image_Dir = "D:\\QA_Tool_Image\\Fail_Image\\Fail_Image_"; // 두번째 이후부터 루프가 돌때 이전에 지정해놓은 파일명이 저장되어 있으므로 초기화 해준다.
+																		Main->Save_Fail_Image_Dir += Main->str_Loop; // 몇번째 Loop중인지 지정
+																		Main->Save_Fail_Image_Dir += "_";
 																		Main->Save_Fail_Image_Dir += Main->str_Fail_cnt; // 몇번째 Fail 이미지인지 지정
 																		Main->Save_Fail_Image_Dir +=  ".jpg"; // 확장자 지정
+																		//저장된 Fail 이미지의 이름은 Fail_Image_1_1 .. Fail_Image_1_2 .. Fail_Image_1_3 .. Fail_Image_2_1 ..
+																		//첫번째 숫자는 Loop, 두번째 숫자는 Fail난 이미지 갯수이다.
 
 																		Main->Save_Fail_Image = (char*) malloc(Main->Save_Fail_Image_Dir.GetLength());
 																		wcstombs_s(&Main->CharactersConverted, Main->Save_Fail_Image, Main->Save_Fail_Image_Dir.GetLength()+1, Main->Save_Fail_Image_Dir, _TRUNCATE);
 
 																		cvSaveImage(Main->Save_Fail_Image, Main->ResultImage); // 첫번째 파라미터가 Char* 이므로 위 코드를 통해 CString 에서 Char*로 변경하였다.
-																	
-
 																	}
 																}
 															}

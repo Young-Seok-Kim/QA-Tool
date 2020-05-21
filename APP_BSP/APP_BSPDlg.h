@@ -66,6 +66,7 @@ private:
 	char *Save_Fail_Image;
 	size_t CharactersConverted;
 	IplImage Fail_Image;
+	DWORD Dir_Check;
 
 public:
 	afx_msg void OnBnClickedView();

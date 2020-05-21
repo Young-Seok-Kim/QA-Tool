@@ -204,7 +204,7 @@ BOOL CAPP_BSPDlg::OnInitDialog()
 
 		//Main->Test_screen_cnt = 0;
 		Main->Test_result = "PASS";
-		Main->Dir_Check = GetFileAttributes((LPCWSTR)("D:\\QA_Tool_Image\\Fail_Image\\"));
+		Main->Dir_Check = "D:\\QA_Tool_Image\\Fail_Image";
 		
 		Main->str_Loop.Format(_T("%d"),Main->Loop);
 		Main->m_Loop.SetWindowTextW(Main->str_Loop);
@@ -495,7 +495,7 @@ UINT CAPP_BSPDlg::ThreadFirst(LPVOID _mothod) // Cam으로부터 이미지를 가져오고, 
 																	{
 																		Main->Fail_cnt++;
 
-																		if(GetFileAttributes((LPCWSTR)"D:\\QA_Tool_Image\\Fail_Image") /*Main->Dir_Check */ == INVALID_FILE_ATTRIBUTES)
+																		if( GetFileAttributes(Main->Dir_Check) == -1 ) // D:\\QA_Tool_Image\\Fail_Image 폴더가 존재하지 않으면 해당 폴더 생성
 																		{
 																			CreateDirectory(_T("D:\\QA_Tool_Image\\Fail_Image"),NULL);
 																			cout << "D:\\QA_Tool_Image\\Fail_Image 폴더가 존재하지 않아 해당 폴더를 새로 생성 합니다." << endl;

@@ -46,6 +46,7 @@ protected:
 
 private:
 	CAPP_BSPDlg *m_MainDlg; // 스레드에 사용
+	
 
 public: 
 	int mREC;
@@ -102,4 +103,5 @@ public:
 	afx_msg void OnBnClickedComBtn6();
 	afx_msg void OnBnClickedComBtn7();
 	afx_msg void OnBnClickedComBtn8();
+
 };

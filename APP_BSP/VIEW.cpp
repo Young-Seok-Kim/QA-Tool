@@ -296,6 +296,8 @@ int VIEW::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	//Main->Thread_second_running_count += 1;
 	
 	sel.SetCurSel(Main->sel_cam);
+
+	
 	
 	
 	
@@ -306,11 +308,8 @@ void VIEW::OnBnClickedCapBtn1()
 {
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
 
-	//Sleep(5000); // 임시용, 테스트 끝난후 삭제 할것
-
+	
 	CAPP_BSPDlg *Main = (CAPP_BSPDlg*)AfxGetApp()->GetMainWnd();
-
-	//Main->Test_screen_cnt++;
 
 	CWnd* pic1 = GetDlgItem(IDC_CAP_PIC1); // pic1_cap의 포인터를 GetDlgItem 함수를 이용해 pWnd에 저장한다.
 	// pic1는 캡처된 런처 화면의 포인터, 화면이 어디에 출력될지를 위한 변수
@@ -342,7 +341,19 @@ void VIEW::OnBnClickedCapBtn1()
 		//cvShowImage("Main->Compare_cam",&Main->Compare_cam);
 	}
 
-	cvSaveImage("D:\\QA_Tool_Image\\Capture_Image\\Cap1.jpg", pic1_cap);
+	if( GetFileAttributes(Main->Save_Root_Dir) == -1 ) // D:\\QA_Tool\\Fail_Image 폴더가 존재하지 않으면 해당 폴더 생성
+	{
+		CreateDirectory(_T("D:\\QA_Tool"),NULL);
+		cout << "D:\\QA_Tool 폴더가 존재하지 않아 해당 폴더를 새로 생성 합니다." << endl;
+	}
+
+	if( GetFileAttributes(Main->Save_CAP_Image_Dir_Check) == -1 ) // D:\\QA_Tool\\Fail_Image 폴더가 존재하지 않으면 해당 폴더 생성
+	{
+		CreateDirectory(_T("D:\\QA_Tool\\Capture_Image"),NULL);
+		cout << "D:\\QA_Tool\\Capture_Image 폴더가 존재하지 않아 해당 폴더를 새로 생성 합니다." << endl;
+	}
+
+	cvSaveImage("D:\\QA_Tool\\Capture_Image\\Cap1.jpg", pic1_cap);
 
 	Thread_compare[0] = 1;
 	GetDlgItem(IDC_COM_BTN1)->EnableWindow(TRUE);
@@ -352,6 +363,9 @@ void VIEW::OnBnClickedCapBtn1()
 
 void VIEW::OnBnClickedCapBtn2()
 {
+
+	CAPP_BSPDlg *Main = (CAPP_BSPDlg*)AfxGetApp()->GetMainWnd();
+
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
 	CWnd* pic2 = GetDlgItem(IDC_CAP_PIC2); // pic2_cap의 포인터를 GetDlgItem 함수를 이용해 pWnd에 저장한다.
 	// pic2는 캡처된 런처 화면의 포인터, 화면이 어디에 출력될지를 위한 변수
@@ -383,7 +397,20 @@ void VIEW::OnBnClickedCapBtn2()
 		//cvShowImage("Main->Compare_cam",&Main->Compare_cam);
 	}
 
-	cvSaveImage("D:\\QA_Tool_Image\\Capture_Image\\Cap2.jpg", pic2_cap);
+	if( GetFileAttributes(Main->Save_Root_Dir) == -1 ) // D:\\QA_Tool\\Fail_Image 폴더가 존재하지 않으면 해당 폴더 생성
+	{
+		CreateDirectory(_T("D:\\QA_Tool"),NULL);
+		cout << "D:\\QA_Tool 폴더가 존재하지 않아 해당 폴더를 새로 생성 합니다." << endl;
+	}
+	
+	if( GetFileAttributes(Main->Save_CAP_Image_Dir_Check) == -1 ) // D:\\QA_Tool\\Fail_Image 폴더가 존재하지 않으면 해당 폴더 생성
+	{
+		CreateDirectory(_T("D:\\QA_Tool\\Capture_Image"),NULL);
+		cout << "D:\\QA_Tool\\Capture_Image 폴더가 존재하지 않아 해당 폴더를 새로 생성 합니다." << endl;
+	}
+	
+
+	cvSaveImage("D:\\QA_Tool\\Capture_Image\\Cap2.jpg", pic2_cap);
 
 	Thread_compare[1] = 1;
 
@@ -391,6 +418,8 @@ void VIEW::OnBnClickedCapBtn2()
 }
 void VIEW::OnBnClickedCapBtn3()
 {
+	CAPP_BSPDlg *Main = (CAPP_BSPDlg*)AfxGetApp()->GetMainWnd();
+
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
 	
 	CWnd* pic3 = GetDlgItem(IDC_CAP_PIC3); // pic3_cap의 포인터를 GetDlgItem 함수를 이용해 pWnd에 저장한다.
@@ -423,7 +452,19 @@ void VIEW::OnBnClickedCapBtn3()
 		//cvShowImage("Main->Compare_cam",&Main->Compare_cam);
 	}
 
-	cvSaveImage("D:\\QA_Tool_Image\\Capture_Image\\Cap3.jpg", pic3_cap);
+	if( GetFileAttributes(Main->Save_Root_Dir) == -1 ) // D:\\QA_Tool\\Fail_Image 폴더가 존재하지 않으면 해당 폴더 생성
+	{
+		CreateDirectory(_T("D:\\QA_Tool"),NULL);
+		cout << "D:\\QA_Tool 폴더가 존재하지 않아 해당 폴더를 새로 생성 합니다." << endl;
+	}
+
+	if( GetFileAttributes(Main->Save_CAP_Image_Dir_Check) == -1 ) // D:\\QA_Tool\\Fail_Image 폴더가 존재하지 않으면 해당 폴더 생성
+	{
+		CreateDirectory(_T("D:\\QA_Tool\\Capture_Image"),NULL);
+		cout << "D:\\QA_Tool\\Capture_Image 폴더가 존재하지 않아 해당 폴더를 새로 생성 합니다." << endl;
+	}
+
+	cvSaveImage("D:\\QA_Tool\\Capture_Image\\Cap3.jpg", pic3_cap);
 	
 	Thread_compare[2] = 1;
 
@@ -432,6 +473,9 @@ void VIEW::OnBnClickedCapBtn3()
 
 void VIEW::OnBnClickedCapBtn4()
 {
+
+	CAPP_BSPDlg *Main = (CAPP_BSPDlg*)AfxGetApp()->GetMainWnd();
+
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
 	
 	
@@ -465,7 +509,20 @@ void VIEW::OnBnClickedCapBtn4()
 		//cvShowImage("Main->Compare_cam",&Main->Compare_cam);
 	}
 
-	cvSaveImage("D:\\QA_Tool_Image\\Capture_Image\\Cap4.jpg", pic4_cap);
+	if( GetFileAttributes(Main->Save_Root_Dir) == -1 ) // D:\\QA_Tool\\Fail_Image 폴더가 존재하지 않으면 해당 폴더 생성
+	{
+		CreateDirectory(_T("D:\\QA_Tool"),NULL);
+		cout << "D:\\QA_Tool 폴더가 존재하지 않아 해당 폴더를 새로 생성 합니다." << endl;
+	}
+
+
+	if( GetFileAttributes(Main->Save_CAP_Image_Dir_Check) == -1 ) // D:\\QA_Tool\\Fail_Image 폴더가 존재하지 않으면 해당 폴더 생성
+	{
+		CreateDirectory(_T("D:\\QA_Tool\\Capture_Image"),NULL);
+		cout << "D:\\QA_Tool\\Capture_Image 폴더가 존재하지 않아 해당 폴더를 새로 생성 합니다." << endl;
+	}
+
+	cvSaveImage("D:\\QA_Tool\\Capture_Image\\Cap4.jpg", pic4_cap);
 
 	Thread_compare[3] = 1;
 
@@ -474,6 +531,9 @@ void VIEW::OnBnClickedCapBtn4()
 
 void VIEW::OnBnClickedCapBtn5()
 {
+
+	CAPP_BSPDlg *Main = (CAPP_BSPDlg*)AfxGetApp()->GetMainWnd();
+
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
 
 	CWnd* pic5 = GetDlgItem(IDC_CAP_PIC5); // pic5_cap의 포인터를 GetDlgItem 함수를 이용해 pWnd에 저장한다.
@@ -506,7 +566,20 @@ void VIEW::OnBnClickedCapBtn5()
 		//cvShowImage("Main->Compare_cam",&Main->Compare_cam);
 	}
 
-	cvSaveImage("D:\\QA_Tool_Image\\Capture_Image\\Cap5.jpg", pic5_cap);
+	if( GetFileAttributes(Main->Save_Root_Dir) == -1 ) // D:\\QA_Tool\\Fail_Image 폴더가 존재하지 않으면 해당 폴더 생성
+	{
+		CreateDirectory(_T("D:\\QA_Tool"),NULL);
+		cout << "D:\\QA_Tool 폴더가 존재하지 않아 해당 폴더를 새로 생성 합니다." << endl;
+	}
+
+	if( GetFileAttributes(Main->Save_CAP_Image_Dir_Check) == -1 ) // D:\\QA_Tool\\Fail_Image 폴더가 존재하지 않으면 해당 폴더 생성
+	{
+		CreateDirectory(_T("D:\\QA_Tool\\Capture_Image"),NULL);
+		cout << "D:\\QA_Tool\\Capture_Image 폴더가 존재하지 않아 해당 폴더를 새로 생성 합니다." << endl;
+	}
+
+
+	cvSaveImage("D:\\QA_Tool\\Capture_Image\\Cap5.jpg", pic5_cap);
 
 	Thread_compare[4] = 1;
 
@@ -515,6 +588,8 @@ void VIEW::OnBnClickedCapBtn5()
 
 void VIEW::OnBnClickedCapBtn6()
 {
+	CAPP_BSPDlg *Main = (CAPP_BSPDlg*)AfxGetApp()->GetMainWnd();
+
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
 
 	CWnd* pic6 = GetDlgItem(IDC_CAP_PIC6); // pic6_cap의 포인터를 GetDlgItem 함수를 이용해 pWnd에 저장한다.
@@ -547,7 +622,19 @@ void VIEW::OnBnClickedCapBtn6()
 		//cvShowImage("Main->Compare_cam",&Main->Compare_cam);
 	}
 
-	cvSaveImage("D:\\QA_Tool_Image\\Capture_Image\\Cap6.jpg", pic6_cap);
+	if( GetFileAttributes(Main->Save_Root_Dir) == -1 ) // D:\\QA_Tool\\Fail_Image 폴더가 존재하지 않으면 해당 폴더 생성
+	{
+		CreateDirectory(_T("D:\\QA_Tool"),NULL);
+		cout << "D:\\QA_Tool 폴더가 존재하지 않아 해당 폴더를 새로 생성 합니다." << endl;
+	}
+
+	if( GetFileAttributes(Main->Save_CAP_Image_Dir_Check) == -1 ) // D:\\QA_Tool\\Fail_Image 폴더가 존재하지 않으면 해당 폴더 생성
+	{
+		CreateDirectory(_T("D:\\QA_Tool\\Capture_Image"),NULL);
+		cout << "D:\\QA_Tool\\Capture_Image 폴더가 존재하지 않아 해당 폴더를 새로 생성 합니다." << endl;
+	}
+
+	cvSaveImage("D:\\QA_Tool\\Capture_Image\\Cap6.jpg", pic6_cap);
 
 	Thread_compare[5] = 1;
 
@@ -556,6 +643,8 @@ void VIEW::OnBnClickedCapBtn6()
 
 void VIEW::OnBnClickedCapBtn7()
 {
+	CAPP_BSPDlg *Main = (CAPP_BSPDlg*)AfxGetApp()->GetMainWnd();
+
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
 	CWnd* pic7 = GetDlgItem(IDC_CAP_PIC7); // pic7_cap의 포인터를 GetDlgItem 함수를 이용해 pWnd에 저장한다.
 	// pic7는 캡처된 런처 화면의 포인터, 화면이 어디에 출력될지를 위한 변수
@@ -587,7 +676,19 @@ void VIEW::OnBnClickedCapBtn7()
 		//cvShowImage("Main->Compare_cam",&Main->Compare_cam);
 	}
 
-	cvSaveImage("D:\\QA_Tool_Image\\Capture_Image\\Cap7.jpg", pic7_cap);
+	if( GetFileAttributes(Main->Save_Root_Dir) == -1 ) // D:\\QA_Tool\\Fail_Image 폴더가 존재하지 않으면 해당 폴더 생성
+	{
+		CreateDirectory(_T("D:\\QA_Tool"),NULL);
+		cout << "D:\\QA_Tool 폴더가 존재하지 않아 해당 폴더를 새로 생성 합니다." << endl;
+	}
+
+	if( GetFileAttributes(Main->Save_CAP_Image_Dir_Check) == -1 ) // D:\\QA_Tool\\Fail_Image 폴더가 존재하지 않으면 해당 폴더 생성
+	{
+		CreateDirectory(_T("D:\\QA_Tool\\Capture_Image"),NULL);
+		cout << "D:\\QA_Tool\\Capture_Image 폴더가 존재하지 않아 해당 폴더를 새로 생성 합니다." << endl;
+	}
+
+	cvSaveImage("D:\\QA_Tool\\Capture_Image\\Cap7.jpg", pic7_cap);
 
 	Thread_compare[6] = 1;
 
@@ -596,6 +697,7 @@ void VIEW::OnBnClickedCapBtn7()
 
 void VIEW::OnBnClickedCapBtn8()
 {
+	CAPP_BSPDlg *Main = (CAPP_BSPDlg*)AfxGetApp()->GetMainWnd();
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
 
 	CWnd* pic8 = GetDlgItem(IDC_CAP_PIC8); // pic8_cap의 포인터를 GetDlgItem 함수를 이용해 pWnd에 저장한다.
@@ -628,7 +730,19 @@ void VIEW::OnBnClickedCapBtn8()
 		//cvShowImage("Main->Compare_cam",&Main->Compare_cam);
 	}
 
-	cvSaveImage("D:\\QA_Tool_Image\\Capture_Image\\Cap8.jpg", pic8_cap);
+	if( GetFileAttributes(Main->Save_Root_Dir) == -1 ) // D:\\QA_Tool\\Fail_Image 폴더가 존재하지 않으면 해당 폴더 생성
+	{
+		CreateDirectory(_T("D:\\QA_Tool"),NULL);
+		cout << "D:\\QA_Tool 폴더가 존재하지 않아 해당 폴더를 새로 생성 합니다." << endl;
+	}
+
+	if( GetFileAttributes(Main->Save_CAP_Image_Dir_Check) == -1 ) // D:\\QA_Tool\\Fail_Image 폴더가 존재하지 않으면 해당 폴더 생성
+	{
+		CreateDirectory(_T("D:\\QA_Tool\\Capture_Image"),NULL);
+		cout << "D:\\QA_Tool\\Capture_Image 폴더가 존재하지 않아 해당 폴더를 새로 생성 합니다." << endl;
+	}
+
+	cvSaveImage("D:\\QA_Tool\\Capture_Image\\Cap8.jpg", pic8_cap);
 
 	Thread_compare[7] = 1;
 
@@ -884,8 +998,8 @@ void VIEW::OnInitMenu(CMenu* pMenu)
 		Main->compare_order[i] = 0;
 	}
 
-	//Main->Thread_second_running = true;
 	
+
 	Main->sel_cap = m_sel_cap.SetCurSel(0);
 	
 }

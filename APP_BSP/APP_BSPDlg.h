@@ -66,8 +66,9 @@ private:
 	char *Save_Fail_Image;
 	size_t CharactersConverted;
 	IplImage Fail_Image;
-	CString Dir_Check;
-
+	CString Save_Fail_Image_Dir_Check; // Fail 이미지가 저장되어 있지 않다면 저장하는 폴더 생성을 위한 변수
+	
+	
 public:
 	afx_msg void OnBnClickedView();
 	afx_msg void OnActivate(UINT nState, CWnd* pWndOther, BOOL bMinimized);
@@ -115,11 +116,9 @@ public:
 
 	int sw_Compare;
 
-	
+	CString Save_CAP_Image_Dir_Check; // 이미지를 캡쳐 할때 이미지 저장 폴더가 없다면 생성하기 위한 변수
+	CString Save_Root_Dir;
 
-
-//	bool Test_result[];
-//	int Test_sleep[];
 	
 	static CCriticalSection cs; // 스레드 동기화를 위한 변수
 	int sel_cap; // 이미지를 몇개나 Compare 할것인지 선택한다.

@@ -204,7 +204,9 @@ BOOL CAPP_BSPDlg::OnInitDialog()
 
 		//Main->Test_screen_cnt = 0;
 		Main->Test_result = "PASS";
-		Main->Dir_Check = "D:\\QA_Tool_Image\\Fail_Image";
+		Main->Save_Fail_Image_Dir_Check = "D:\\QA_Tool\\Fail_Image";
+		Main->Save_CAP_Image_Dir_Check = "D:\\QA_Tool\\Capture_Image"; // 캡쳐된 이미지가 저장된경로, 해당 폴더가 없으면 폴더 생성을 위해 변수 저장 하였다.
+		Main->Save_Root_Dir = "D:\\QA_Tool";
 		
 		Main->str_Loop.Format(_T("%d"),Main->Loop);
 		Main->m_Loop.SetWindowTextW(Main->str_Loop);
@@ -495,16 +497,22 @@ UINT CAPP_BSPDlg::ThreadFirst(LPVOID _mothod) // Cam으로부터 이미지를 가져오고, 
 																	{
 																		Main->Fail_cnt++;
 
-																		if( GetFileAttributes(Main->Dir_Check) == -1 ) // D:\\QA_Tool_Image\\Fail_Image 폴더가 존재하지 않으면 해당 폴더 생성
+																		if( GetFileAttributes(Main->Save_Root_Dir) == -1 ) // D:\\QA_Tool\\Fail_Image 폴더가 존재하지 않으면 해당 폴더 생성
 																		{
-																			CreateDirectory(_T("D:\\QA_Tool_Image\\Fail_Image"),NULL);
-																			cout << "D:\\QA_Tool_Image\\Fail_Image 폴더가 존재하지 않아 해당 폴더를 새로 생성 합니다." << endl;
+																			CreateDirectory(_T("D:\\QA_Tool"),NULL);
+																			cout << "D:\\QA_Tool 폴더가 존재하지 않아 해당 폴더를 새로 생성 합니다." << endl;
+																		}
+
+																		if( GetFileAttributes(Main->Save_Fail_Image_Dir_Check) == -1 ) // D:\\QA_Tool\\Fail_Image 폴더가 존재하지 않으면 해당 폴더 생성
+																		{
+																			CreateDirectory(_T("D:\\QA_Tool\\Fail_Image"),NULL);
+																			cout << "D:\\QA_Tool\\Fail_Image 폴더가 존재하지 않아 해당 폴더를 새로 생성 합니다." << endl;
 																		}
 
 																		//아래 코드는 CString to Char*로 변환하는 코드로, Fail Image를 jpg파일로 저장할때 cvSaveIamge(?)함수를 사용할때 1번째 인자에 사용한다.
 																		Main->str_Loop.Format(_T("%d"),Main->cnt); // Loop를 string으로 변환
 																		Main->str_Fail_cnt.Format(_T("%d"),Main->Fail_cnt); // Fail 갯수를 string으로 변환
-																		Main->Save_Fail_Image_Dir = "D:\\QA_Tool_Image\\Fail_Image\\Fail_Image_"; // 두번째 이후부터 루프가 돌때 이전에 지정해놓은 파일명이 저장되어 있으므로 초기화 해준다.
+																		Main->Save_Fail_Image_Dir = "D:\\QA_Tool\\Fail_Image\\Fail_Image_"; // 두번째 이후부터 루프가 돌때 이전에 지정해놓은 파일명이 저장되어 있으므로 초기화 해준다.
 																		Main->Save_Fail_Image_Dir += Main->str_Loop; // 몇번째 Loop중인지 지정
 																		Main->Save_Fail_Image_Dir += "_";
 																		Main->Save_Fail_Image_Dir += Main->str_Fail_cnt; // 몇번째 Fail 이미지인지 지정

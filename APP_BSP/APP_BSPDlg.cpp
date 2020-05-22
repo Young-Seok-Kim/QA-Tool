@@ -41,6 +41,8 @@ CCriticalSection CAPP_BSPDlg::cs; // 스레드 동기화를 위한 변수
 IplImage *pthImage = NULL;
 CString Main_SelectCam=_T(""); // 문자형 -> 정수형으로 변경해야 하므로 선언하였다.
 
+void DeleteAllFiles(CString dirName); // 폴더 내 모든 파일을 삭제하는 함수
+
 
 
 IMPLEMENT_DYNAMIC(CAPP_BSPDlg, CDialog)
@@ -408,6 +410,12 @@ UINT CAPP_BSPDlg::ThreadFirst(LPVOID _mothod) // Cam으로부터 이미지를 가져오고, 
 						for(int Loop_cnt = 0 ; Loop_cnt < Main->Loop ; Loop_cnt++) // 테스트를 Loop_cnt번 반복
 						{
 							cout << endl << Loop_cnt + 1 << "회 반복중" << endl;
+							
+							if(Loop_cnt == 0)
+							{
+								DeleteAllFiles(_T("D:\\QA_Tool\\Fail_Image"));
+								cout << "D:\QA_Tool\Fail_Image 폴더를 비웁니다." << endl;
+							}
 							
 							Main->cnt += 1; // 전체 몇번도는지 누적
 
@@ -910,4 +918,24 @@ void CAPP_BSPDlg::OnLvnItemchangedList(NMHDR *pNMHDR, LRESULT *pResult)
 	LPNMLISTVIEW pNMLV = reinterpret_cast<LPNMLISTVIEW>(pNMHDR);
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
 	*pResult = 0;
+}
+
+void DeleteAllFiles(CString dirName) // 폴더 내 모든 파일을 삭제하는 함수
+{
+        CFileFind finder;
+       
+        BOOL bWorking = finder.FindFile((CString)dirName + "/*.*");
+       
+        while(bWorking)
+        {
+                bWorking = finder.FindNextFile();
+                if(finder.IsDots())
+                {
+                        continue;
+                }
+ 
+                CString filePath = finder.GetFilePath();
+                DeleteFile(filePath);
+         }
+        finder.Close();
 }

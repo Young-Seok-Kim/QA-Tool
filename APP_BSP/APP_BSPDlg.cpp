@@ -205,6 +205,8 @@ BOOL CAPP_BSPDlg::OnInitDialog()
 
 		Main->Test_cnt = 0;
 
+		Main->m_Main_sel_cam.SetCurSel(0); // 카메라가 기본적으로 0번 선택되게함
+
 		//Main->Test_screen_cnt = 0;
 		Main->Test_result = "PASS";
 		Main->Save_Fail_Image_Dir_Check = "D:\\QA_Tool\\Fail_Image";
@@ -239,9 +241,6 @@ BOOL CAPP_BSPDlg::OnInitDialog()
 		sw_listcontrol = 1;
 	}
 
-	//Main->Match_result = new bool[Main->Loop]; // 결과 저장 배열 동적할당
-
-	
 	UpdateData(FALSE);
 
 	// TODO: 여기에 추가 초기화 작업을 추가합니다.
@@ -381,6 +380,9 @@ UINT CAPP_BSPDlg::ThreadFirst(LPVOID _mothod) // Cam으로부터 이미지를 가져오고, 
 	
 	while(1)
 	{
+		if(!Main->cam)
+			Main->cam = cvCaptureFromCAM(Main->m_Main_sel_cam.GetCurSel());
+
 				if (Main->ThreadFirst_running == false)
 					break;
 				
@@ -499,7 +501,7 @@ UINT CAPP_BSPDlg::ThreadFirst(LPVOID _mothod) // Cam으로부터 이미지를 가져오고, 
 																		Main->match_score_min = matching_score;
 																	
 
-																	if(matching_score < Main->Accurate/100000) // 결과에 따라 True False 결과 저장
+																	if(matching_score * 100 < Main->Accurate/1000) // 결과에 따라 True False 결과 저장
 																	{
 																		Main->Fail_cnt++;
 

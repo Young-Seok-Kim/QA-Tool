@@ -126,7 +126,7 @@ UINT VIEW::ThreadSecond(LPVOID _mothod) // picture Control에 영상 띄우는 코드, O
 	
 	
 
-	cout << "Thread Second 실행" << endl;
+	//cout << "Thread Second 실행" << endl;
 	//cout << "Main->Image_order = " << Main->Image_order << endl;
 	
 	while(1)
@@ -196,46 +196,12 @@ void VIEW::OnClose()
 {
 	// TODO: 여기에 메시지 처리기 코드를 추가 및/또는 기본값을 호출합니다.
 	CAPP_BSPDlg *Main = (CAPP_BSPDlg*)AfxGetApp()->GetMainWnd();
-	
 
 	Main->Thread_second_running = false;
-
-	//p1->SuspendThread();
-
-	//sw_active = 0; // Thread second를 종료시키는 코드
-
-	if ( Main->Thread_second_running == false )
-		cout << "VIEW 종료" << endl;
 	
-	//Main->ThreadFirst_pause = true;
+	//if ( Main->Thread_second_running == false )
+		//cout << "VIEW 종료" << endl;
 	
-	/*
-	int z;
-		for (z=0 ; z<10 ; z++)
-		// 처음부터 0번째 배열에 저장된 이미지를 Release 하려고 하면 에러가 난다... 왜?;;
-		{
-			//cvReleaseImage(&ResultImage[z]);
-			//cout << z << "번째 이미지가 Release 되었습니다." << endl;
-			
-			if( z == 0)
-			{
-				//cvReleaseImage(&ResultImage[0]); // 이부분이 문제??????????
-				//cout << "0번째 이미지가 Release 되었습니다." << endl; // 0부터 시작이므로 9번째 이미지가 10번째 이미지이다.
-			}
-			else if ( z <= x && (CAPP_BSPDlg::ResultImage[z-1] != NULL) )
-			{
-				cvReleaseImage(&ResultImage[z-1]);
-				cout << z-1 << "번째 이미지가 Release 되었습니다." << endl;
-			}
-			
-			if ( z == x)
-				break;
-		}
-
-	*/
-	
-	//WaitForSingleObject(ThreadFirst,INFINITE);
-
 	CDialog::OnClose();
 }
 void VIEW::OnBnClickedCamsel()
@@ -356,7 +322,7 @@ void VIEW::OnBnClickedCapBtn1()
 
 	if(Main->Test_cnt == 0)
 	{
-		cout << "이미지를 처음 캡쳐하여 D:\QA_Tool\Capture_Image 폴더를 비웁니다." << endl;
+		cout << "이미지를 처음 캡쳐하여 D:\QA_Tool\Capture_Image 폴더를 비웁니다." << endl << endl;
 		DeleteAllFiles_View(TEXT("D:\\QA_Tool\\Capture_Image"));
 	}
 

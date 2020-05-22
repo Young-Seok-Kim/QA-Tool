@@ -378,7 +378,7 @@ UINT CAPP_BSPDlg::ThreadFirst(LPVOID _mothod) // Cam으로부터 이미지를 가져오고, 
 	cout << "정확도 : " << Main->Accurate / 1000.00 << "%" << endl;
 	cout << "ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ" << endl;
 
-	cout << "Thread First 실행" << endl;
+	//cout << "Thread First 실행" << endl;
 	
 	while(1)
 	{
@@ -812,7 +812,7 @@ void CAPP_BSPDlg::OnBnClickedSetting()
 	cout << "n번 검사 : " << Main->Loop << endl;
 	cout << "n초후 검사 : " << Main->After << endl;
 	cout << "화면 사이의 n초 간격 : " << Main->Gap << endl;
-	cout << "정확도 : " << Main->Accurate / 1000.00 << "%" << endl;
+	cout << "정확도 : " << Main->Accurate / 1000.00 << "%" << endl << endl;
 
 	//Main->Match_result = new bool[Main->Loop];
 	

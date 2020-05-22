@@ -91,7 +91,7 @@ END
 IDD_APP_BSP_DIALOG DIALOGEX 0, 0, 379, 302
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
 EXSTYLE WS_EX_APPWINDOW
-CAPTION "c"
+CAPTION "Application BSP Team"
 FONT 9, "MS Shell Dlg", 0, 0, 0x1
 BEGIN
     LTEXT           "",IDC_MAIN_CAM_DRAW,195,6,178,188,WS_BORDER
@@ -118,7 +118,7 @@ END
 
 IDD_VIEW DIALOGEX 0, 0, 655, 339
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "Dialog"
+CAPTION "View Dialog"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
     LTEXT           "현재",IDC_STATIC,18,9,20,9
@@ -185,7 +185,7 @@ BEGIN
             VALUE "InternalName", "APP_BSP.exe"
             VALUE "LegalCopyright", "QA Tool"
             VALUE "OriginalFilename", "APP_BSP.exe"
-            VALUE "ProductName", "TODO: <제품 이름>"
+            VALUE "ProductName", "Application_BSP_Team_QA_Tool"
             VALUE "ProductVersion", "1.0.0.1"
         END
     END

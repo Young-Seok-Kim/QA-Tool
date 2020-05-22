@@ -9,6 +9,7 @@
 #include "VIEW.h"
 #include "stdio.h"
 #include "use_opencv.h"
+#include "string.h"
 
 
 #define SCALE 02
@@ -202,6 +203,8 @@ BOOL CAPP_BSPDlg::OnInitDialog()
 
 		Main->CharactersConverted = 0;
 
+		Main->Test_cnt = 0;
+
 		//Main->Test_screen_cnt = 0;
 		Main->Test_result = "PASS";
 		Main->Save_Fail_Image_Dir_Check = "D:\\QA_Tool\\Fail_Image";
@@ -213,6 +216,9 @@ BOOL CAPP_BSPDlg::OnInitDialog()
 		Main->m_after.SetWindowTextW(TEXT("1"));
 		Main->m_gap.SetWindowTextW(TEXT("1"));
 		Main->m_Accurate.SetWindowTextW(TEXT("90000"));
+
+		GetDlgItemTextW(IDC_ACCURATE,Main->Accurate_tmp); // IDC_ACCURATE에서 값을 가져온후
+		Main->Accurate = _wtof(Main->Accurate_tmp); // 정확도 String 형을 double 형으로 변경한다.
 
 		Main->cnt = 0;
 
@@ -363,11 +369,12 @@ UINT CAPP_BSPDlg::ThreadFirst(LPVOID _mothod) // Cam으로부터 이미지를 가져오고, 
 
 	CDC *pDC;
 
-
+	
+	cout << "해당 값들은 초기 설정으로 기본적으로 설정되는 값입니다." << endl;
 	cout << "n번 검사 : " << Main->Loop << endl;
 	cout << "n초후 검사 : " << Main->After << endl;
-	cout << "화면 사이의 n초 간격 : " << Main->Gap << endl;
-	cout << "정확도 : " << Main->Accurate << endl;
+	cout << "화면 사이의 n초 간격 : " << Main->Gap << endl;	
+	cout << "정확도 : " << Main->Accurate / 1000.00 << "%" << endl;
 	cout << "ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ" << endl;
 
 	cout << "Thread First 실행" << endl;
@@ -384,7 +391,7 @@ UINT CAPP_BSPDlg::ThreadFirst(LPVOID _mothod) // Cam으로부터 이미지를 가져오고, 
 					cvFlip(pthImage,ResultImage,1); // Main.ResultImage 변수에 넣은 원본 이미지를 좌우반전한다.
 					
 
-					if(Main->Start == true) //START 버튼을 누르면
+					if(Main->Start == true && Main->Test_cnt > 0) //START 버튼을 누르면
 					{
 						Main->Start_time = CTime::GetCurrentTime();
 						cout << "테스트 시작 시간은 " << Main->Start_time.GetYear() << "년 " << Main->Start_time.GetMonth() << "월 " << Main->Start_time.GetDay() << "일" << endl;
@@ -496,6 +503,8 @@ UINT CAPP_BSPDlg::ThreadFirst(LPVOID _mothod) // Cam으로부터 이미지를 가져오고, 
 																	{
 																		Main->Fail_cnt++;
 
+																		cout << "캡쳐된 화면 CAP[" << CAP << "] 캠 화면 " << &Compare_cam << "의 유사도는 " << matching_score * 100 << "%" << endl << endl;
+
 																		if( GetFileAttributes(Main->Save_Root_Dir) == -1 ) // D:\\QA_Tool\\Fail_Image 폴더가 존재하지 않으면 해당 폴더 생성
 																		{
 																			CreateDirectory(_T("D:\\QA_Tool"),NULL);
@@ -605,8 +614,16 @@ UINT CAPP_BSPDlg::ThreadFirst(LPVOID _mothod) // Cam으로부터 이미지를 가져오고, 
 
 						Main->Start = false;
 
-					} // Start 버튼을 눌렀을시의 if문의 끝
+						Main->Test_cnt = 0;
+					} // if ( Main->Start == true && Main->Test_cnt > 0 ) 문의 끝
+					else if ( Main->Start == true && Main->Test_cnt == 0 )
+					{
+						cout << "캡쳐된 화면이 없어서 테스트를 진행할 수 없습니다." << endl;
+						cout << "D:\QA_Tool\Capture_Image 폴더에 이미지가 저장되어 있더라도 지난 테스트가 끝난 이후에 이미지 캡쳐를 하지 않으면 테스트를 진행할수 없습니다." << endl << endl;
+						Main->Start = false;
+					}
 
+					
 					
 					
 					if ( Main->Start == false && Main->sw_Compare == 1 ) // VIEW Dlg의 Com 버튼을 눌렀을때의 이벤트
@@ -778,14 +795,14 @@ void CAPP_BSPDlg::OnBnClickedSetting()
 
 	GetDlgItemTextW(IDC_GAP,Main->Gap_tmp);
 	Main->Gap = _ttoi(Main->Gap_tmp);
-	
-	GetDlgItemTextW(IDC_ACCURATE,Main->str_Accurate);
-	Main->str_Accurate.Format(_T("%1.2f"),Main->Accurate); // Accurate를 string으로 변환
 
+	GetDlgItemTextW(IDC_ACCURATE,Main->Accurate_tmp); // IDC_ACCURATE에서 값을 가져온후
+	Main->Accurate = _wtof(Main->Accurate_tmp); // 정확도 String 형을 double 형으로 변경한다.
+	
 	cout << "n번 검사 : " << Main->Loop << endl;
 	cout << "n초후 검사 : " << Main->After << endl;
 	cout << "화면 사이의 n초 간격 : " << Main->Gap << endl;
-	cout << "정확도 : " << Main->Accurate << endl << endl;
+	cout << "정확도 : " << Main->Accurate / 1000.00 << "%" << endl;
 
 	//Main->Match_result = new bool[Main->Loop];
 	
@@ -833,7 +850,7 @@ void CAPP_BSPDlg::OnBnClickedStop()
 {
 	CAPP_BSPDlg *Main = (CAPP_BSPDlg*)AfxGetApp()->GetMainWnd();
 
-	cout << "Compare 종료" << endl;
+	//cout << "Compare 종료" << endl;
 
 	Main->Start = false;
 

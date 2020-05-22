@@ -356,6 +356,7 @@ void VIEW::OnBnClickedCapBtn1()
 	cvSaveImage("D:\\QA_Tool\\Capture_Image\\Cap1.jpg", pic1_cap);
 
 	Thread_compare[0] = 1;
+	Main->Test_cnt++;
 	GetDlgItem(IDC_COM_BTN1)->EnableWindow(TRUE);
 
 	//((CButton*)GetDlgItem(IDC_BUTTON2))->EnableWindow(TRUE);
@@ -413,6 +414,7 @@ void VIEW::OnBnClickedCapBtn2()
 	cvSaveImage("D:\\QA_Tool\\Capture_Image\\Cap2.jpg", pic2_cap);
 
 	Thread_compare[1] = 1;
+	Main->Test_cnt++;
 
 	GetDlgItem(IDC_COM_BTN2)->EnableWindow(TRUE);
 }
@@ -467,6 +469,7 @@ void VIEW::OnBnClickedCapBtn3()
 	cvSaveImage("D:\\QA_Tool\\Capture_Image\\Cap3.jpg", pic3_cap);
 	
 	Thread_compare[2] = 1;
+	Main->Test_cnt++;
 
 	GetDlgItem(IDC_COM_BTN3)->EnableWindow(TRUE);
 }
@@ -525,6 +528,7 @@ void VIEW::OnBnClickedCapBtn4()
 	cvSaveImage("D:\\QA_Tool\\Capture_Image\\Cap4.jpg", pic4_cap);
 
 	Thread_compare[3] = 1;
+	Main->Test_cnt++;
 
 	GetDlgItem(IDC_COM_BTN4)->EnableWindow(TRUE);
 }
@@ -582,6 +586,7 @@ void VIEW::OnBnClickedCapBtn5()
 	cvSaveImage("D:\\QA_Tool\\Capture_Image\\Cap5.jpg", pic5_cap);
 
 	Thread_compare[4] = 1;
+	Main->Test_cnt++;
 
 	GetDlgItem(IDC_COM_BTN5)->EnableWindow(TRUE);
 }
@@ -637,6 +642,7 @@ void VIEW::OnBnClickedCapBtn6()
 	cvSaveImage("D:\\QA_Tool\\Capture_Image\\Cap6.jpg", pic6_cap);
 
 	Thread_compare[5] = 1;
+	Main->Test_cnt++;
 
 	GetDlgItem(IDC_COM_BTN6)->EnableWindow(TRUE);
 }
@@ -691,6 +697,7 @@ void VIEW::OnBnClickedCapBtn7()
 	cvSaveImage("D:\\QA_Tool\\Capture_Image\\Cap7.jpg", pic7_cap);
 
 	Thread_compare[6] = 1;
+	Main->Test_cnt++;
 
 	GetDlgItem(IDC_COM_BTN7)->EnableWindow(TRUE);
 }
@@ -745,6 +752,7 @@ void VIEW::OnBnClickedCapBtn8()
 	cvSaveImage("D:\\QA_Tool\\Capture_Image\\Cap8.jpg", pic8_cap);
 
 	Thread_compare[7] = 1;
+	Main->Test_cnt++;
 
 	GetDlgItem(IDC_COM_BTN8)->EnableWindow(TRUE);
 }

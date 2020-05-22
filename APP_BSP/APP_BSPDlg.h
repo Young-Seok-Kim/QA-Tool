@@ -67,6 +67,7 @@ private:
 	size_t CharactersConverted;
 	IplImage Fail_Image;
 	CString Save_Fail_Image_Dir_Check; // Fail 이미지가 저장되어 있지 않다면 저장하는 폴더 생성을 위한 변수
+	CString Accurate_tmp;
 	
 	
 public:
@@ -113,6 +114,7 @@ public:
 	CString str_Accurate;
 	CString Test_result;
 	CvvImage Main_draw;
+	int Test_cnt;
 
 	int sw_Compare;
 

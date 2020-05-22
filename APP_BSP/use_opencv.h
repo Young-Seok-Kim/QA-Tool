@@ -43,6 +43,7 @@
 
 #include "opencv2/legacy/legacy.hpp"
 
+#include "highgui.h"
 
 #ifdef _DEBUG
 

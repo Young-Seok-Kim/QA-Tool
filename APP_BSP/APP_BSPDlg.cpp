@@ -619,6 +619,8 @@ UINT CAPP_BSPDlg::ThreadFirst(LPVOID _mothod) // Cam으로부터 이미지를 가져오고, 
 						cout << "ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ" << endl;
 						cout << "Compare 종료" << endl;
 
+						AfxMessageBox(_T("테스트가 종료되었습니다."));
+
 						Main->Start_time_sw = 0;
 
 						Main->Start = false;

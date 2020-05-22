@@ -10,7 +10,6 @@
 #include "Cvvimage.h"
 //#include "afxwin.h"
 //#include "opencv/cv.h"
-#include "highgui.h"
 #include "APP_BSP.h"
 #include "afxmt.h"
 #include "afxwin.h"

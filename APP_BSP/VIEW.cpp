@@ -34,6 +34,7 @@ IplImage* CAPP_BSPDlg::Compare_cam[8];
 IplImage* CAPP_BSPDlg::ResultImage;
 IplImage* CAPP_BSPDlg::Result_cap[8];
 CvCapture *CAPP_BSPDlg::cam;
+void DeleteAllFiles_View(CString dirName); // 폴더 내 모든 파일을 삭제하는 함수
 
 IMPLEMENT_DYNAMIC(VIEW, CAPP_BSPDlg)
 
@@ -353,6 +354,12 @@ void VIEW::OnBnClickedCapBtn1()
 		cout << "D:\\QA_Tool\\Capture_Image 폴더가 존재하지 않아 해당 폴더를 새로 생성 합니다." << endl;
 	}
 
+	if(Main->Test_cnt == 0)
+	{
+		cout << "이미지를 처음 캡쳐하여 D:\QA_Tool\Capture_Image 폴더를 비웁니다." << endl;
+		DeleteAllFiles_View(TEXT("D:\\QA_Tool\\Capture_Image"));
+	}
+
 	cvSaveImage("D:\\QA_Tool\\Capture_Image\\Cap1.jpg", pic1_cap);
 
 	Thread_compare[0] = 1;
@@ -409,7 +416,12 @@ void VIEW::OnBnClickedCapBtn2()
 		CreateDirectory(_T("D:\\QA_Tool\\Capture_Image"),NULL);
 		cout << "D:\\QA_Tool\\Capture_Image 폴더가 존재하지 않아 해당 폴더를 새로 생성 합니다." << endl;
 	}
-	
+
+	if(Main->Test_cnt == 0)
+	{
+		cout << "이미지를 처음 캡쳐하여 D:\QA_Tool\Capture_Image 폴더를 비웁니다." << endl;
+		DeleteAllFiles_View(TEXT("D:\\QA_Tool\\Capture_Image"));
+	}
 
 	cvSaveImage("D:\\QA_Tool\\Capture_Image\\Cap2.jpg", pic2_cap);
 
@@ -464,6 +476,12 @@ void VIEW::OnBnClickedCapBtn3()
 	{
 		CreateDirectory(_T("D:\\QA_Tool\\Capture_Image"),NULL);
 		cout << "D:\\QA_Tool\\Capture_Image 폴더가 존재하지 않아 해당 폴더를 새로 생성 합니다." << endl;
+	}
+
+	if(Main->Test_cnt == 0)
+	{
+		cout << "이미지를 처음 캡쳐하여 D:\QA_Tool\Capture_Image 폴더를 비웁니다." << endl;
+		DeleteAllFiles_View(TEXT("D:\\QA_Tool\\Capture_Image"));
 	}
 
 	cvSaveImage("D:\\QA_Tool\\Capture_Image\\Cap3.jpg", pic3_cap);
@@ -525,6 +543,12 @@ void VIEW::OnBnClickedCapBtn4()
 		cout << "D:\\QA_Tool\\Capture_Image 폴더가 존재하지 않아 해당 폴더를 새로 생성 합니다." << endl;
 	}
 
+	if(Main->Test_cnt == 0)
+	{
+		cout << "이미지를 처음 캡쳐하여 D:\QA_Tool\Capture_Image 폴더를 비웁니다." << endl;
+		DeleteAllFiles_View(TEXT("D:\\QA_Tool\\Capture_Image"));
+	}
+
 	cvSaveImage("D:\\QA_Tool\\Capture_Image\\Cap4.jpg", pic4_cap);
 
 	Thread_compare[3] = 1;
@@ -582,6 +606,11 @@ void VIEW::OnBnClickedCapBtn5()
 		cout << "D:\\QA_Tool\\Capture_Image 폴더가 존재하지 않아 해당 폴더를 새로 생성 합니다." << endl;
 	}
 
+	if(Main->Test_cnt == 0)
+	{
+		cout << "이미지를 처음 캡쳐하여 D:\QA_Tool\Capture_Image 폴더를 비웁니다." << endl;
+		DeleteAllFiles_View(TEXT("D:\\QA_Tool\\Capture_Image"));
+	}
 
 	cvSaveImage("D:\\QA_Tool\\Capture_Image\\Cap5.jpg", pic5_cap);
 
@@ -639,6 +668,12 @@ void VIEW::OnBnClickedCapBtn6()
 		cout << "D:\\QA_Tool\\Capture_Image 폴더가 존재하지 않아 해당 폴더를 새로 생성 합니다." << endl;
 	}
 
+	if(Main->Test_cnt == 0)
+	{
+		cout << "이미지를 처음 캡쳐하여 D:\QA_Tool\Capture_Image 폴더를 비웁니다." << endl;
+		DeleteAllFiles_View(TEXT("D:\\QA_Tool\\Capture_Image"));
+	}
+
 	cvSaveImage("D:\\QA_Tool\\Capture_Image\\Cap6.jpg", pic6_cap);
 
 	Thread_compare[5] = 1;
@@ -694,6 +729,12 @@ void VIEW::OnBnClickedCapBtn7()
 		cout << "D:\\QA_Tool\\Capture_Image 폴더가 존재하지 않아 해당 폴더를 새로 생성 합니다." << endl;
 	}
 
+	if(Main->Test_cnt == 0)
+	{
+		cout << "이미지를 처음 캡쳐하여 D:\QA_Tool\Capture_Image 폴더를 비웁니다." << endl;
+		DeleteAllFiles_View(TEXT("D:\\QA_Tool\\Capture_Image"));
+	}
+
 	cvSaveImage("D:\\QA_Tool\\Capture_Image\\Cap7.jpg", pic7_cap);
 
 	Thread_compare[6] = 1;
@@ -747,6 +788,12 @@ void VIEW::OnBnClickedCapBtn8()
 	{
 		CreateDirectory(_T("D:\\QA_Tool\\Capture_Image"),NULL);
 		cout << "D:\\QA_Tool\\Capture_Image 폴더가 존재하지 않아 해당 폴더를 새로 생성 합니다." << endl;
+	}
+
+	if(Main->Test_cnt == 0)
+	{
+		cout << "이미지를 처음 캡쳐하여 D:\QA_Tool\Capture_Image 폴더를 비웁니다." << endl;
+		DeleteAllFiles_View(TEXT("D:\\QA_Tool\\Capture_Image"));
 	}
 
 	cvSaveImage("D:\\QA_Tool\\Capture_Image\\Cap8.jpg", pic8_cap);
@@ -1099,4 +1146,24 @@ void VIEW::OnBnClickedComBtn8()
 	if(Main->Result_cap[CAP7])
 		Main->sw_Compare = 1;
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+}
+
+void DeleteAllFiles_View(CString dirName) // 폴더 내 모든 파일을 삭제하는 함수
+{
+        CFileFind finder;
+       
+        BOOL bWorking = finder.FindFile((CString)dirName + "/*.*");
+       
+        while(bWorking)
+        {
+                bWorking = finder.FindNextFile();
+                if(finder.IsDots())
+                {
+                        continue;
+                }
+ 
+                CString filePath = finder.GetFilePath();
+                DeleteFile(filePath);
+         }
+        finder.Close();
 }

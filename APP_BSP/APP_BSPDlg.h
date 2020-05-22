@@ -117,7 +117,7 @@ public:
 	int Test_cnt;
 
 	int sw_Compare;
-
+	
 	CString Save_CAP_Image_Dir_Check; // 이미지를 캡쳐 할때 이미지 저장 폴더가 없다면 생성하기 위한 변수
 	CString Save_Root_Dir;
 

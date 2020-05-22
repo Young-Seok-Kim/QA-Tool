@@ -36,12 +36,12 @@ using namespace cv;
 IplImage *imgNames[NUM] = {CAPP_BSPDlg::ResultImage,CAPP_BSPDlg::Result_cap[0]}; // 이미지가 저장된 배열
 int CAPP_BSPDlg::Image_order = 0;
 int CAPP_BSPDlg::Thread_compare[8];
-//CvvImage VIEW::m_viewcopy[10];
 CCriticalSection CAPP_BSPDlg::cs; // 스레드 동기화를 위한 변수
 IplImage *pthImage = NULL;
 CString Main_SelectCam=_T(""); // 문자형 -> 정수형으로 변경해야 하므로 선언하였다.
-
 void DeleteAllFiles(CString dirName); // 폴더 내 모든 파일을 삭제하는 함수
+
+
 
 
 

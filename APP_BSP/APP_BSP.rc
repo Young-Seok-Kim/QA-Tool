@@ -101,7 +101,7 @@ BEGIN
     PUSHBUTTON      "STOP",IDC_STOP,281,276,91,19
     LTEXT           "화면사이의 n초 간격",IDC_STATIC,10,67,56,13
     LTEXT           "정확도",IDC_STATIC,10,85,56,13
-    LTEXT           "카메라를 선택한 후 카메라 선택을 누르면 카메라만 변경됨\n\nn초후부터 검사 - 숫자 1개\n\nn개의 화면 검사 - 1~8\n\n화면 사이의 n초 간격\nex)2 입력시 2초마다 Compare\n\n정확도 - 1~10000 까지 입력 가능 (100.00%)\n\nSetting 완료후 하단 Setting 버튼 클릭!!",IDC_INFO,9,106,181,96
+    LTEXT           "로그를 저장하며 테스트 진행후\nFail_Image의 생성 시간을 통해 로그 확인할 것\n\n 카메라를 선택한 후 카메라 선택을 누르면 카메라만 변경됨\n\nn초후부터 검사 - 숫자 1개\n\n화면 사이의 n초 간격\nex)2 입력시 2초마다 Compare\n\n정확도 - 1~100000 까지 입력 가능 (100.000%)\n\nSetting 완료후 하단 Setting 버튼 클릭!!",IDC_INFO,9,106,181,104
     GROUPBOX        "Setting",IDC_STATIC,6,4,187,99
     LTEXT           "n번 검사",IDC_TEST_COUNT,10,31,56,13
     EDITTEXT        IDC_LOOP,76,31,65,15,ES_AUTOHSCROLL | ES_NUMBER

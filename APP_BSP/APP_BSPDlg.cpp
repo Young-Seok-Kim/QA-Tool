@@ -501,8 +501,7 @@ UINT CAPP_BSPDlg::ThreadFirst(LPVOID _mothod) // Cam으로부터 이미지를 가져오고, 
 																{
 																	double matching_score = compareHist(histogram[i], histogram[j],CV_COMP_CORREL);
 																	Main->Match_Accurate = matching_score;
-																	//cout << "캡쳐된 화면 CAP[" << CAP << "] 캠 화면 " << &Compare_cam << "의 유사도는 " << matching_score * 100 << "%" << endl << endl;
-
+																	
 																	Main->Compare_screen_cnt++;
 
 																	if(matching_score < Main->match_score_min)
@@ -513,7 +512,7 @@ UINT CAPP_BSPDlg::ThreadFirst(LPVOID _mothod) // Cam으로부터 이미지를 가져오고, 
 																	{
 																		Main->Fail_cnt++;
 
-																		cout << "캡쳐된 화면 CAP[" << CAP << "] 캠 화면 " << &Compare_cam << "의 유사도는 " << matching_score * 100 << "%" << endl << endl;
+																		cout << "Fail_Image_" << Loop_cnt + 1 << "_" << CAP << "의 유사도는 " << matching_score * 100 << "%" << endl << endl;
 
 																		if( GetFileAttributes(Main->Save_Root_Dir) == -1 ) // D:\\QA_Tool\\Fail_Image 폴더가 존재하지 않으면 해당 폴더 생성
 																		{

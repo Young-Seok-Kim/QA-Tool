@@ -1,8 +1,6 @@
 #pragma once
 // APP_BSPDlg.cpp : 구현 파일
 
-
-
 #include "stdafx.h"
 #include "APP_BSP.h"
 #include "APP_BSPDlg.h"
@@ -34,16 +32,12 @@ using namespace cv;
 
 // CAPP_BSPDlg dialog
 IplImage *imgNames[NUM] = {CAPP_BSPDlg::ResultImage,CAPP_BSPDlg::Result_cap[0]}; // 이미지가 저장된 배열
-int CAPP_BSPDlg::Image_order = 0;
+//int CAPP_BSPDlg::Image_order = 0;
 int CAPP_BSPDlg::Thread_compare[8];
 CCriticalSection CAPP_BSPDlg::cs; // 스레드 동기화를 위한 변수
 IplImage *pthImage = NULL;
 CString Main_SelectCam=_T(""); // 문자형 -> 정수형으로 변경해야 하므로 선언하였다.
 void DeleteAllFiles(CString dirName); // 폴더 내 모든 파일을 삭제하는 함수
-
-
-
-
 
 IMPLEMENT_DYNAMIC(CAPP_BSPDlg, CDialog)
 
@@ -319,6 +313,7 @@ void CAPP_BSPDlg::OnBnClickedView()
 	//Main->ThreadFirst_running = false;
 	
 	Main->Thread_second_running = true;
+	Main->sw_active = 1;
 
 	UpdateData(FALSE);
 
@@ -357,7 +352,7 @@ UINT CAPP_BSPDlg::ThreadFirst(LPVOID _mothod) // Cam으로부터 이미지를 가져오고, 
 	
 	CAPP_BSPDlg *Main = (CAPP_BSPDlg*)AfxGetApp()->GetMainWnd();
 
-	IplImage *pthImage=NULL; // 원본 이미지	
+	IplImage *pthImage = NULL; // 원본 이미지
 	CRect rect;
 	VIEW View;
 	VIEW *pView = (VIEW*)AfxGetApp()->GetMainWnd();//(VIEW*)_mothod;
@@ -384,8 +379,8 @@ UINT CAPP_BSPDlg::ThreadFirst(LPVOID _mothod) // Cam으로부터 이미지를 가져오고, 
 			Main->cam = cvCaptureFromCAM(Main->m_Main_sel_cam.GetCurSel());
 					
 					pthImage = cvQueryFrame(Main->cam); // 원본이미지 변수에 캠의 화면을 저장
-					ResultImage = cvCreateImage(cvGetSize(pthImage),pthImage->depth,pthImage->nChannels); // ResultImage 변수에 원본이미지를 넣는다
-					cvFlip(pthImage,ResultImage,1); // Main.ResultImage 변수에 넣은 원본 이미지를 좌우반전한다.
+					Main->ResultImage = cvCreateImage(cvGetSize(pthImage),pthImage->depth,pthImage->nChannels); // ResultImage 변수에 원본이미지를 넣는다
+					cvFlip(pthImage,Main->ResultImage,1); // Main.ResultImage 변수에 넣은 원본 이미지를 좌우반전한다.
 					
 
 					if(Main->Start == true && Main->Test_cnt > 0) //START 버튼을 누르면
@@ -742,6 +737,9 @@ UINT CAPP_BSPDlg::ThreadFirst(LPVOID _mothod) // Cam으로부터 이미지를 가져오고, 
 							
 					 // 캠 그리기 끝
 					}
+
+					if( Main->ResultImage )
+						cvReleaseImage(&Main->ResultImage);
 					
 					cs.Unlock();
 

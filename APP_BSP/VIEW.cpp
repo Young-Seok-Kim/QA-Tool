@@ -118,50 +118,47 @@ UINT VIEW::ThreadSecond(LPVOID _mothod) // picture Control에 영상 띄우는 코드, O
 
 	CDC *pDC;
 	CRect rect;
+	IplImage *pthImage = NULL; // 원본 이미지
 	
 	pMain->m_ctrCamView.GetClientRect(rect);
-	
-	
-	
-	
 
-	//cout << "Thread Second 실행" << endl;
-	//cout << "Main->Image_order = " << Main->Image_order << endl;
-	
+	cout << "VIEW Dialog Open" << endl;
+
 	while(1)
 		{
-			cout << "VIEW Dialog Open" << endl;
-
 			cs.Lock();
 			
-			if (Main->Thread_second_running == true)
+			for(int i=0 ; i<2 ; i++)
 			{
-				if(Main->Image_order < 0)
-					Main->Image_order = 0;
+				if(Main->ResultImage)
+					cvReleaseImage(&Main->ResultImage);
+
+				pthImage = cvQueryFrame(Main->cam); // 원본이미지 변수에 캠의 화면을 저장
+				Main->ResultImage = cvCreateImage(cvGetSize(pthImage),pthImage->depth,pthImage->nChannels); // ResultImage 변수에 원본이미지를 넣는다
+				cvFlip(pthImage,Main->ResultImage,1); // Main.ResultImage 변수에 넣은 원본 이미지를 좌우반전한다.
+
+					
+				pDC = pMain->m_ctrCamView.GetDC();
+
+				if(Main->ResultImage != NULL)
 				{
-						pDC = pMain->m_ctrCamView.GetDC();
+					pMain->m_viewcopy.CopyOf(Main->ResultImage);
+					pMain->m_viewcopy.DrawToHDC(pDC->m_hDC,&rect);// 좌우반전한 Main->ResultImage를 출력한다.
+				}
 
-						if(Main->ResultImage != NULL)
-						{
-							pMain->m_viewcopy[0].CopyOf(Main->ResultImage);
-							pMain->m_viewcopy[0].DrawToHDC(pDC->m_hDC,&rect);// 좌우반전한 Main->ResultImage를 출력한다.
-						}
+				pMain->m_ctrCamView.ReleaseDC(pDC); // DC를 Release 해준다
 
-						pMain->m_ctrCamView.ReleaseDC(pDC); // DC를 Release 해준다
+				cvReleaseImage(&Main->ResultImage);
 
-						if(Main->Thread_second_running == true)
-							cvReleaseImage(&Main->ResultImage);
-
-				} // for 문의 끝
-			
 			}
-			else
+
+			if (Main->Thread_second_running == false)
 				break;
 
 			cs.Unlock();
 
 		} // while문의 끝
-	
+
 	cout << "VIEW Dialog Close" << endl;
 
 	cs.Unlock(); // Thread를 닫으면 Unlock 코드를 지나가지 않으므로 여기서 Unlock
@@ -192,16 +189,12 @@ void VIEW::OnBnClickedCamsel()
 
 	if(Main->sel_cam==0)
 		Main->cam = cvCaptureFromCAM(Main->sel_cam); // cam에 웹캠의 정보를 저장
-	else if (Main->sel_cam==1 && cvCreateCameraCapture(Main->sel_cam) != NULL)
-		if(cvCaptureFromCAM(1))
-			Main->cam = cvCaptureFromCAM(1); // cam에 웹캠의 정보를 저장
+	else //if (Main->sel_cam==1 && cvCreateCameraCapture(Main->sel_cam) != NULL)
+		if(cvCaptureFromCAM(Main->sel_cam))
+			Main->cam = cvCaptureFromCAM(Main->sel_cam); // cam에 웹캠의 정보를 저장
 		else
 			MessageBox(L"캠이 연결되어있지 않습니다.");
-	else
-		MessageBox(L"캠이 연결되어있지 않습니다.");
-
 	
-
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
 }
 
@@ -210,6 +203,12 @@ void VIEW::OnActivate(UINT nState, CWnd* pWndOther, BOOL bMinimized)
 	CDialog::OnActivate(nState, pWndOther, bMinimized);
 
 	CAPP_BSPDlg *Main = (CAPP_BSPDlg*)AfxGetApp()->GetMainWnd();
+	if(Main->sw_active == 1)
+	{
+		Main->p2 = AfxBeginThread(ThreadSecond, this); // 여기까지 스레드
+		Main->p2->m_bAutoDelete = FALSE;
+		Main->sw_active = 0;
+	}
 	
 	sel.SetCurSel(Main->sel_cam);
 }
@@ -228,20 +227,8 @@ int VIEW::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
 	//Main->Thread_second_running_count += 1;
 
-	//if (Main->sw_active == 1) // 스레드가 한번만 실행되게 하는 코드
-	{
-		//CWinThread *p1;
-		Main->p2 = AfxBeginThread(ThreadSecond, this); // 여기까지 스레드
-		Main->p2->m_bAutoDelete = FALSE;
-		Main->sw_active = 0;
-	}
-	
 	sel.SetCurSel(Main->sel_cam);
 
-	
-	
-	
-	
 	return 0;
 }
 
@@ -987,6 +974,8 @@ void VIEW::OnInitMenu(CMenu* pMenu)
 	// TODO: 여기에 메시지 처리기 코드를 추가합니다.
 	
 	CAPP_BSPDlg *Main = (CAPP_BSPDlg*)AfxGetApp()->GetMainWnd();
+
+	
 	
 	for(int i=0;i<8;i++)
 	{

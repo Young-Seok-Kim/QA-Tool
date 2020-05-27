@@ -90,8 +90,8 @@ public:
 	int Thread_second_running_count;
 	CWinThread *p1;
 	CWinThread *p2;
-	static int Image_order;
-	CvvImage m_viewcopy[10];
+	//static int Image_order;
+	CvvImage m_viewcopy;
 	CModalDialog *m_pDlg; // 모달리스로 VIEW를 열기 위한 변수
 	static IplImage *pthImage; // 원본 이미지
 	int Loop;

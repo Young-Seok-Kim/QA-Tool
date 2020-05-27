@@ -883,10 +883,6 @@ LRESULT CAPP_BSPDlg::OnUserFunc(WPARAM wParam, LPARAM lParam)
 		//cout << "Main->row_cnt : " << Main->row_cnt << endl;
 		Main->row_cnt++;
 	}
-
-	//UpdateData(FALSE);
-
-	//MessageBox(L"test!!");
 	
 
 	return 0;

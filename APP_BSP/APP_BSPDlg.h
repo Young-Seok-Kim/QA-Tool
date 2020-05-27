@@ -116,6 +116,7 @@ public:
 	CString Test_result;
 	CvvImage Main_draw;
 	int Test_cnt;
+	int sel_cap;
 
 	int sw_Compare;
 	

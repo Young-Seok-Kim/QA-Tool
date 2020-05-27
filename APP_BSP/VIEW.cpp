@@ -124,7 +124,7 @@ UINT VIEW::ThreadSecond(LPVOID _mothod) // picture Control에 영상 띄우는 코드, O
 
 	cout << "VIEW Dialog Open" << endl;
 
-	while(1)
+	while(Main->Thread_second_running == true)
 		{
 			cs.Lock();
 			
@@ -171,9 +171,11 @@ void VIEW::OnClose()
 	CAPP_BSPDlg *Main = (CAPP_BSPDlg*)AfxGetApp()->GetMainWnd();
 
 	Main->Thread_second_running = false;
-	
-	//if ( Main->Thread_second_running == false )
-		//cout << "VIEW 종료" << endl;
+	Main->ThreadFirst_running = true;
+
+	CWinThread static *p1 = NULL;
+	p1 = AfxBeginThread(ThreadFirst, this); // 여기까지 스레드
+	p1->m_bAutoDelete = FALSE;
 	
 	CDialog::OnClose();
 }

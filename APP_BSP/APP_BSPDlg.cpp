@@ -205,6 +205,13 @@ BOOL CAPP_BSPDlg::OnInitDialog()
 
 		Main->m_Main_sel_cam.SetCurSel(0); // 카메라가 기본적으로 0번 선택되게함
 
+		cout << "해당 값들은 초기 설정으로 기본적으로 설정되는 값입니다." << endl;
+		cout << "n번 검사 : " << Main->Loop << endl;
+		cout << "n초후 검사 : " << Main->After << endl;
+		cout << "화면 사이의 n초 간격 : " << Main->Gap << endl;	
+		cout << "정확도 : " << Main->Accurate / 1000.00 << "%" << endl;
+		cout << "ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ" << endl;
+
 		//Main->Test_screen_cnt = 0;
 		Main->Test_result = "PASS";
 		Main->Save_Fail_Image_Dir_Check = "D:\\QA_Tool\\Fail_Image";
@@ -310,7 +317,7 @@ void CAPP_BSPDlg::OnBnClickedView()
 
 	CAPP_BSPDlg *Main = (CAPP_BSPDlg*)AfxGetApp()->GetMainWnd();
 
-	//Main->ThreadFirst_running = false;
+	Main->ThreadFirst_running = false;
 	
 	Main->Thread_second_running = true;
 	Main->sw_active = 1;
@@ -361,19 +368,12 @@ UINT CAPP_BSPDlg::ThreadFirst(LPVOID _mothod) // Cam으로부터 이미지를 가져오고, 
 
 	CDC *pDC;
 
-	
-	cout << "해당 값들은 초기 설정으로 기본적으로 설정되는 값입니다." << endl;
-	cout << "n번 검사 : " << Main->Loop << endl;
-	cout << "n초후 검사 : " << Main->After << endl;
-	cout << "화면 사이의 n초 간격 : " << Main->Gap << endl;	
-	cout << "정확도 : " << Main->Accurate / 1000.00 << "%" << endl;
-	cout << "ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ" << endl;
-
 	//cout << "Thread First 실행" << endl;
-	
-	while(1)
+	cs.Lock();
+
+	while(Main->ThreadFirst_running == true)
 	{
-		cs.Lock();
+		
 
 		if(!Main->cam)
 			Main->cam = cvCaptureFromCAM(Main->m_Main_sel_cam.GetCurSel());
@@ -585,18 +585,18 @@ UINT CAPP_BSPDlg::ThreadFirst(LPVOID _mothod) // Cam으로부터 이미지를 가져오고, 
 									break;
 								}
 
-									Main->cTime = CTime::GetCurrentTime();
+								Main->cTime = CTime::GetCurrentTime();
 
-									if (Thread_compare[CAP] == 1)
-									{
-										Main->SendMessageW(WM_USER_MESSAGE1,100,200); // List Control에 결과를 추가하기 위한 코드
-										
-									}
+								if (Thread_compare[CAP] == 1)
+								{
+									Main->SendMessageW(WM_USER_MESSAGE1,100,200); // List Control에 결과를 추가하기 위한 코드
+									
+								}
 
-									Main->Compare_screen_cnt = 0;
-									Main->Fail_cnt = 0;
-									Main->Start_time_sw = 0;
-									Main->match_score_min = 100000;
+								Main->Compare_screen_cnt = 0;
+								Main->Fail_cnt = 0;
+								Main->Start_time_sw = 0;
+								Main->match_score_min = 100000;
 
 								} //CAP for문의 끝
 							
@@ -740,10 +740,14 @@ UINT CAPP_BSPDlg::ThreadFirst(LPVOID _mothod) // Cam으로부터 이미지를 가져오고, 
 
 					if( Main->ResultImage )
 						cvReleaseImage(&Main->ResultImage);
-					
-					cs.Unlock();
 
+					//if(Main->ThreadFirst_running == false)
+						//break;
+					
+					
 	} // while문의 끝
+
+	cs.Unlock();
 
 	cout << "Thread First 종료" << endl;
 

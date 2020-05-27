@@ -203,6 +203,8 @@ BOOL CAPP_BSPDlg::OnInitDialog()
 
 		Main->Test_cnt = 0;
 
+		Main->sel_cam = 0;
+
 		Main->m_Main_sel_cam.SetCurSel(0); // 카메라가 기본적으로 0번 선택되게함
 
 		cout << "해당 값들은 초기 설정으로 기본적으로 설정되는 값입니다." << endl;
@@ -749,13 +751,10 @@ void CAPP_BSPDlg::OnBnClickedCamSel()
 	if(Main->sel_cam==0)
 		Main->cam = cvCaptureFromCAM(Main->sel_cam); // cam에 웹캠의 정보를 저장
 	else if (Main->sel_cam==1 && cvCreateCameraCapture(Main->sel_cam) != NULL)
-		if(cvCaptureFromCAM(1))
-			Main->cam = cvCaptureFromCAM(1); // cam에 웹캠의 정보를 저장
+		if(cvCaptureFromCAM(Main->sel_cam))
+			Main->cam = cvCaptureFromCAM(Main->sel_cam); // cam에 웹캠의 정보를 저장
 		else
-			MessageBox(L"캠이 연결되어있지 않습니다.");
-	else
-		MessageBox(L"캠이 연결되어있지 않습니다.");
-
+			MessageBox(L"캠이 연결되어있지 않습니다.");	
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
 }
 

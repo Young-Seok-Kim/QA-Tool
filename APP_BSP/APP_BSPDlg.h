@@ -124,8 +124,7 @@ public:
 
 	
 	static CCriticalSection cs; // 스레드 동기화를 위한 변수
-	int sel_cap; // 이미지를 몇개나 Compare 할것인지 선택한다.
-
+	
 	static UINT ThreadFirst(LPVOID _mothod); // Main Dialog에서 돌아갈 스레드를 만든다.
 	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
 	afx_msg void OnBnClickedSetting();

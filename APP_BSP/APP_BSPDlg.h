@@ -67,6 +67,7 @@ private:
 	IplImage Fail_Image;
 	CString Save_Fail_Image_Dir_Check; // Fail 이미지가 저장되어 있지 않다면 저장하는 폴더 생성을 위한 변수
 	CString Accurate_tmp;
+	CString str_CAP;
 	
 	
 public:
@@ -88,6 +89,7 @@ public:
 	bool Thread_second_running;
 	int Thread_second_running_count;
 	CWinThread *p1;
+	CWinThread *p2;
 	static int Image_order;
 	CvvImage m_viewcopy[10];
 	CModalDialog *m_pDlg; // 모달리스로 VIEW를 열기 위한 변수

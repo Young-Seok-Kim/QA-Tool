@@ -116,7 +116,6 @@ UINT VIEW::ThreadSecond(LPVOID _mothod) // picture Control에 영상 띄우는 코드, O
     VIEW *pMain = (VIEW*)_mothod;
 	CAPP_BSPDlg *Main = (CAPP_BSPDlg*)AfxGetApp()->GetMainWnd();
 
-	//Main->pthImage=NULL; // 원본 이미지
 	CDC *pDC;
 	CRect rect;
 	
@@ -131,64 +130,41 @@ UINT VIEW::ThreadSecond(LPVOID _mothod) // picture Control에 영상 띄우는 코드, O
 	
 	while(1)
 		{
+			cout << "VIEW Dialog Open" << endl;
+
 			cs.Lock();
-			//cout << "Thread Second Lock 시작" << endl;
 			
 			if (Main->Thread_second_running == true)
 			{
 				if(Main->Image_order < 0)
 					Main->Image_order = 0;
+				{
+						pDC = pMain->m_ctrCamView.GetDC();
 
-			//cout << "Main->Image_order = " << Main->Image_order << endl;
+						if(Main->ResultImage != NULL)
+						{
+							pMain->m_viewcopy[0].CopyOf(Main->ResultImage);
+							pMain->m_viewcopy[0].DrawToHDC(pDC->m_hDC,&rect);// 좌우반전한 Main->ResultImage를 출력한다.
+						}
 
-			//for(int i = 0 ; i <= Main->Image_order ; i++ )
-			{
-				//if(Main->Image_order == 9)
-				//	cout << "test" << endl;
-				
-					//cout << "i = " << i << endl;
+						pMain->m_ctrCamView.ReleaseDC(pDC); // DC를 Release 해준다
 
-					pDC = pMain->m_ctrCamView.GetDC();
+						if(Main->Thread_second_running == true)
+							cvReleaseImage(&Main->ResultImage);
 
-					//해당 코드는 이미지를 받아오는
-					//pthImage = cvQueryFrame(Main->cam); // 원본이미지 변수에 캠의 화면을 저장
-					//m_MainDlg->GetQueryFrame(&pthImage);// 원본이미지 변수에 캠의 화면을 저장
-					//Main->ResultImage[Main->Image_order] = cvCreateImage(cvGetSize(Main->pthImage),Main->pthImage->depth,Main->pthImage->nChannels); // Main->ResultImage 변수에 원본이미지를 넣는다
-					//cout << Main->Image_order << "번째 이미지 Load" << endl;
-
-					//cvFlip(Main->pthImage,Main->ResultImage[Main->Image_order],1); // Main->ResultImage 변수에 넣은 원본 이미지를 좌우반전한다.
-					
-					//if(Main->Compare_cam == NULL)
-					//Main->Compare_cam = cvCreateImage(cvGetSize(Main->pthImage),Main->pthImage->depth,Main->pthImage->nChannels); // Main->Compare_cam 변수에 원본이미지를 넣는다
-					
-
-					if(Main->ResultImage != NULL)
-					{
-						pMain->m_viewcopy[0].CopyOf(Main->ResultImage);
-						pMain->m_viewcopy[0].DrawToHDC(pDC->m_hDC,&rect);// 좌우반전한 Main->ResultImage를 출력한다.
-						//Main->ResultImage[i].DrawToHDC(pDC->m_hDC,&rect);// DrawToHDC 왼쪽에는 클래스/구조체/공용구조체가 있어야 합니다. 에러가 나옴
-					}
-
-					//if ( Main->ResultImage[x] != NULL)
-					//cvCopy(Main->ResultImage[x], Main->Compare_cam);
-
-					pMain->m_ctrCamView.ReleaseDC(pDC); // DC를 Release 해준다
-
-					
-					if(Main->Thread_second_running == true)
-						cvReleaseImage(&Main->ResultImage);
-
-			} // for 문의 끝
+				} // for 문의 끝
 			
-			//Sleep(3); // CPU의 과도한 점유를 막기위한 코드
-		
-			//cout << "Thread Second Unlock" << endl;
 			}
+			else
+				break;
+
 			cs.Unlock();
 
 		} // while문의 끝
 	
-	cout << "Thread Second 종료" << endl;
+	cout << "VIEW Dialog Close" << endl;
+
+	cs.Unlock(); // Thread를 닫으면 Unlock 코드를 지나가지 않으므로 여기서 Unlock
 	return 0;
 }
 
@@ -234,16 +210,6 @@ void VIEW::OnActivate(UINT nState, CWnd* pWndOther, BOOL bMinimized)
 	CDialog::OnActivate(nState, pWndOther, bMinimized);
 
 	CAPP_BSPDlg *Main = (CAPP_BSPDlg*)AfxGetApp()->GetMainWnd();
-
-	if (Main->sw_active == 1) // 스레드가 한번만 실행되게 하는 코드
-	{
-		sel.SetCurSel(0); //  캠의 ComboBox에 기본값을 지정한다.
-		
-		CWinThread *p1;
-		p1 = AfxBeginThread(ThreadSecond, this); // 여기까지 스레드
-		p1->m_bAutoDelete = FALSE;
-		Main->sw_active = 0;
-	}
 	
 	sel.SetCurSel(Main->sel_cam);
 }
@@ -261,6 +227,14 @@ int VIEW::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	CAPP_BSPDlg *Main = (CAPP_BSPDlg*)AfxGetApp()->GetMainWnd();
 
 	//Main->Thread_second_running_count += 1;
+
+	//if (Main->sw_active == 1) // 스레드가 한번만 실행되게 하는 코드
+	{
+		//CWinThread *p1;
+		Main->p2 = AfxBeginThread(ThreadSecond, this); // 여기까지 스레드
+		Main->p2->m_bAutoDelete = FALSE;
+		Main->sw_active = 0;
+	}
 	
 	sel.SetCurSel(Main->sel_cam);
 
@@ -1018,10 +992,6 @@ void VIEW::OnInitMenu(CMenu* pMenu)
 	{
 		Main->compare_order[i] = 0;
 	}
-
-	
-
-	Main->sel_cap = m_sel_cap.SetCurSel(0);
 	
 }
 

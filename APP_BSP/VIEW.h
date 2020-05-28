@@ -103,4 +103,5 @@ public:
 	afx_msg void OnBnClickedComBtn7();
 	afx_msg void OnBnClickedComBtn8();
 
+	afx_msg void OnBnClickedInitImage();
 };

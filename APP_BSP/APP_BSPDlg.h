@@ -112,7 +112,7 @@ public:
 	CString str_Test_screen;
 	double Accurate;
 	double Match_Accurate;
-	CString str_Accurate;
+	double Accurate_inspect; // Setting 클릭시 정확도를 올바르게 입력했는지 확인하는 if문에서 사용할 변수
 	CString Test_result;
 	CvvImage Main_draw;
 	int Test_cnt;

@@ -108,6 +108,7 @@ ON_BN_CLICKED(IDC_COM_BTN5, &VIEW::OnBnClickedComBtn5)
 ON_BN_CLICKED(IDC_COM_BTN6, &VIEW::OnBnClickedComBtn6)
 ON_BN_CLICKED(IDC_COM_BTN7, &VIEW::OnBnClickedComBtn7)
 ON_BN_CLICKED(IDC_COM_BTN8, &VIEW::OnBnClickedComBtn8)
+ON_BN_CLICKED(IDC_INIT_IMAGE, &VIEW::OnBnClickedInitImage)
 END_MESSAGE_MAP()
 
 UINT VIEW::ThreadSecond(LPVOID _mothod) // picture Control에 영상 띄우는 코드, OnActvie 이벤트에 스레드 실행 지정하였다.
@@ -295,6 +296,7 @@ void VIEW::OnActivate(UINT nState, CWnd* pWndOther, BOOL bMinimized)
 	}
 	
 	sel.SetCurSel(Main->sel_cam);
+	m_sel_cap.SetCurSel(Main->sel_cap - 1);
 }
 
 
@@ -312,6 +314,7 @@ int VIEW::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	//Main->Thread_second_running_count += 1;
 
 	sel.SetCurSel(Main->sel_cam);
+	m_sel_cap.SetCurSel(Main->sel_cap - 1);
 
 	return 0;
 }
@@ -350,6 +353,9 @@ void VIEW::OnBnClickedCapBtn1()
 		m_cImage.DrawToHDC(dc.m_hDC,&rect); //CvvImage 클래수의 함수중 하나로 rect에 그린다.
 		
 		Main->Compare_cam[CAP0] = Main->Result_cap[CAP0];
+
+		if ( i == 0 )
+			cvReleaseImage(&Main->Result_cap[CAP0]);
 		//cvShowImage("Main->Compare_cam",&Main->Compare_cam);
 	}
 
@@ -413,6 +419,9 @@ void VIEW::OnBnClickedCapBtn2()
 		m_cImage.DrawToHDC(dc.m_hDC,&rect); //CvvImage 클래수의 함수중 하나로 rect에 그린다.
 		
 		Main->Compare_cam[CAP1] = Main->Result_cap[CAP1];
+		
+		if ( i == 0 )
+			cvReleaseImage(&Main->Result_cap[CAP1]);
 		//cvShowImage("Main->Compare_cam",&Main->Compare_cam);
 	}
 
@@ -474,6 +483,9 @@ void VIEW::OnBnClickedCapBtn3()
 		m_cImage.DrawToHDC(dc.m_hDC,&rect); //CvvImage 클래수의 함수중 하나로 rect에 그린다.
 		
 		Main->Compare_cam[CAP2] = Main->Result_cap[CAP2];
+
+		if ( i == 0 )
+			cvReleaseImage(&Main->Result_cap[CAP2]);
 		//cvShowImage("Main->Compare_cam",&Main->Compare_cam);
 	}
 
@@ -538,7 +550,9 @@ void VIEW::OnBnClickedCapBtn4()
 		m_cImage.DrawToHDC(dc.m_hDC,&rect); //CvvImage 클래수의 함수중 하나로 rect에 그린다.
 		
 		Main->Compare_cam[CAP3] = Main->Result_cap[CAP3];
-		//cvShowImage("Main->Compare_cam",&Main->Compare_cam);
+
+		if ( i == 0 )
+			cvReleaseImage(&Main->Result_cap[CAP3]);
 	}
 
 	if( GetFileAttributes(Main->Save_Root_Dir) == -1 ) // D:\\QA_Tool\\Fail_Image 폴더가 존재하지 않으면 해당 폴더 생성
@@ -602,7 +616,9 @@ void VIEW::OnBnClickedCapBtn5()
 		m_cImage.DrawToHDC(dc.m_hDC,&rect); //CvvImage 클래수의 함수중 하나로 rect에 그린다.
 		
 		Main->Compare_cam[CAP4] = Main->Result_cap[CAP4];
-		//cvShowImage("Main->Compare_cam",&Main->Compare_cam);
+		
+		if ( i == 0 )
+			cvReleaseImage(&Main->Result_cap[CAP4]);
 	}
 
 	if( GetFileAttributes(Main->Save_Root_Dir) == -1 ) // D:\\QA_Tool\\Fail_Image 폴더가 존재하지 않으면 해당 폴더 생성
@@ -664,7 +680,10 @@ void VIEW::OnBnClickedCapBtn6()
 		m_cImage.DrawToHDC(dc.m_hDC,&rect); //CvvImage 클래수의 함수중 하나로 rect에 그린다.
 		
 		Main->Compare_cam[CAP5] = Main->Result_cap[CAP5];
-		//cvShowImage("Main->Compare_cam",&Main->Compare_cam);
+
+		if ( i == 0 )
+			cvReleaseImage(&Main->Result_cap[CAP5]);
+
 	}
 
 	if( GetFileAttributes(Main->Save_Root_Dir) == -1 ) // D:\\QA_Tool\\Fail_Image 폴더가 존재하지 않으면 해당 폴더 생성
@@ -725,7 +744,9 @@ void VIEW::OnBnClickedCapBtn7()
 		m_cImage.DrawToHDC(dc.m_hDC,&rect); //CvvImage 클래수의 함수중 하나로 rect에 그린다.
 		
 		Main->Compare_cam[CAP6] = Main->Result_cap[CAP6];
-		//cvShowImage("Main->Compare_cam",&Main->Compare_cam);
+
+		if ( i == 0 )
+			cvReleaseImage(&Main->Result_cap[CAP6]);
 	}
 
 	if( GetFileAttributes(Main->Save_Root_Dir) == -1 ) // D:\\QA_Tool\\Fail_Image 폴더가 존재하지 않으면 해당 폴더 생성
@@ -786,7 +807,10 @@ void VIEW::OnBnClickedCapBtn8()
 		m_cImage.DrawToHDC(dc.m_hDC,&rect); //CvvImage 클래수의 함수중 하나로 rect에 그린다.
 		
 		Main->Compare_cam[CAP7] = Main->Result_cap[CAP7];
-		//cvShowImage("Main->Compare_cam",&Main->Compare_cam);
+
+		if ( i == 0 )
+			cvReleaseImage(&Main->Result_cap[CAP7]);
+
 	}
 
 	if( GetFileAttributes(Main->Save_Root_Dir) == -1 ) // D:\\QA_Tool\\Fail_Image 폴더가 존재하지 않으면 해당 폴더 생성
@@ -1175,4 +1199,16 @@ void DeleteAllFiles_View(CString dirName) // 폴더 내 모든 파일을 삭제하는 함수
                 DeleteFile(filePath);
          }
         finder.Close();
+}
+void VIEW::OnBnClickedInitImage()
+{
+	CAPP_BSPDlg *Main = (CAPP_BSPDlg*)AfxGetApp()->GetMainWnd();
+
+	for(int i = 0 ; i < 8 ; i++)
+		cvReleaseImage(&Main->Result_cap[i]);
+
+	Main->Test_cnt = 0;
+
+	AfxMessageBox(_T("비교할 이미지가 초기화 되었습니다."));
+	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
 }

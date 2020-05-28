@@ -668,7 +668,7 @@ UINT CAPP_BSPDlg::ThreadFirst(LPVOID _mothod) // Cam으로부터 이미지를 가져오고, 
 
 	cs.Unlock();
 
-	cout << "Thread First 종료" << endl;
+	//cout << "Thread First 종료" << endl;
 
 	return 0;
 }
@@ -697,27 +697,31 @@ int CAPP_BSPDlg::OnCreate(LPCREATESTRUCT lpCreateStruct)
 void CAPP_BSPDlg::OnBnClickedSetting()
 {
 	CAPP_BSPDlg *Main = (CAPP_BSPDlg*)AfxGetApp()->GetMainWnd();
-	
-
-	//if(Main->Match_result) // 동적할당 받았으면 해제
-		//delete [] Main->Match_result;
-
-	GetDlgItemTextW(IDC_LOOP,Main->Loop_tmp);
-	Main->Loop = _ttoi(Main->Loop_tmp);
-
-	GetDlgItemTextW(IDC_AFTER,Main->After_tmp);
-	Main->After = _ttoi(Main->After_tmp);
-
-	GetDlgItemTextW(IDC_GAP,Main->Gap_tmp);
-	Main->Gap = _ttoi(Main->Gap_tmp);
 
 	GetDlgItemTextW(IDC_ACCURATE,Main->Accurate_tmp); // IDC_ACCURATE에서 값을 가져온후
-	Main->Accurate = _wtof(Main->Accurate_tmp); // 정확도 String 형을 double 형으로 변경한다.
+	Main->Accurate_inspect = _wtof(Main->Accurate_tmp); // 정확도 String 형을 double 형으로 변경한다.
 	
-	cout << "n번 검사 : " << Main->Loop << endl;
-	cout << "n초후 검사 : " << Main->After << endl;
-	cout << "화면 사이의 n초 간격 : " << Main->Gap << endl;
-	cout << "정확도 : " << Main->Accurate / 1000.00 << "%" << endl << endl;
+	if (Main->Accurate_inspect >= 1 && Main->Accurate_inspect <= 100000 )
+	{
+		GetDlgItemTextW(IDC_LOOP,Main->Loop_tmp);
+		Main->Loop = _ttoi(Main->Loop_tmp);
+
+		GetDlgItemTextW(IDC_AFTER,Main->After_tmp);
+		Main->After = _ttoi(Main->After_tmp);
+
+		GetDlgItemTextW(IDC_GAP,Main->Gap_tmp);
+		Main->Gap = _ttoi(Main->Gap_tmp);
+
+		GetDlgItemTextW(IDC_ACCURATE,Main->Accurate_tmp); // IDC_ACCURATE에서 값을 가져온후
+		Main->Accurate = _wtof(Main->Accurate_tmp); // 정확도 String 형을 double 형으로 변경한다.
+		
+		cout << "n번 검사 : " << Main->Loop << endl;
+		cout << "n초후 검사 : " << Main->After << endl;
+		cout << "화면 사이의 n초 간격 : " << Main->Gap << endl;
+		cout << "정확도 : " << Main->Accurate / 1000.00 << "%" << endl << endl;
+	}
+	else
+		AfxMessageBox(_T("정확도를 1 ~ 100,000사이의 값을 입력하십시오(0.001% ~ 100%)"));
 
 	//Main->Match_result = new bool[Main->Loop];
 	
@@ -729,6 +733,12 @@ void CAPP_BSPDlg::OnBnClickedStart()
 
 	Main->m_Result_table.DeleteAllItems(); // 리스트박스 초기화 코드
 	Main->cnt = 0;
+	
+	for(int CAP = 0 ; CAP < 8 ; CAP++)
+	{
+		if (Thread_compare[CAP] == 1)
+			cout << CAP << "번째 이미지를 Compare 합니다." << endl;
+	}
 
 	Main->Start = true;
 	

@@ -1205,7 +1205,10 @@ void VIEW::OnBnClickedInitImage()
 	CAPP_BSPDlg *Main = (CAPP_BSPDlg*)AfxGetApp()->GetMainWnd();
 
 	for(int i = 0 ; i < 8 ; i++)
+	{
 		cvReleaseImage(&Main->Result_cap[i]);
+		Thread_compare[i] = 0;
+	}
 
 	Main->Test_cnt = 0;
 

@@ -163,90 +163,6 @@ BOOL CAPP_BSPDlg::OnInitDialog()
 
 	CAPP_BSPDlg *Main = (CAPP_BSPDlg*)AfxGetApp()->GetMainWnd();
 
-	if(sw_listcontrol == 0) // 초기화가 한번만 되게 해주는 코드
-	{
-		CWinThread static *p1 = NULL;
-		p1 = AfxBeginThread(ThreadFirst, this); // 여기까지 스레드
-		p1->m_bAutoDelete = FALSE;
-
-		Main->sw_active = 1; // Thread Second를 한번만 실행시키게 하기 위한 코드
-
-		ThreadFirst_running = true;
-
-		Main->Thread_second_running = false;
-
-		Main->Start = false;
-
-		Main->Loop = 1;
-
-		Main->After = 1;
-
-		Main->Gap = 1;
-
-		Main->Accurate = 90000;
-
-		Main->Test_screen = 0;
-
-		Main->row_cnt = 0;
-		
-		Main->Compare_screen_cnt = 0;
-
-		Main->Fail_cnt = 0;
-
-		Main->match_score_min = 100000;
-
-		Main->Start_time_sw = 0; // Start time이 한번만 초기화 되게 만들어주는 변수
-
-		Main->CharactersConverted = 0;
-
-		Main->Test_cnt = 0;
-
-		Main->sel_cam = 0;
-		
-		Main->sel_cap = 1;
-
-		Main->m_Main_sel_cam.SetCurSel(0); // 카메라가 기본적으로 0번 선택되게함
-
-		cout << "해당 값들은 초기 설정으로 기본적으로 설정되는 값입니다." << endl;
-		cout << "n번 검사 : " << Main->Loop << endl;
-		cout << "n초후 검사 : " << Main->After << endl;
-		cout << "화면 사이의 n초 간격 : " << Main->Gap << endl;	
-		cout << "정확도 : " << Main->Accurate / 1000.00 << "%" << endl;
-		cout << "ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ" << endl;
-
-		//Main->Test_screen_cnt = 0;
-		Main->Test_result = "PASS";
-		Main->Save_Fail_Image_Dir_Check = "D:\\QA_Tool\\Fail_Image";
-		Main->Save_CAP_Image_Dir_Check = "D:\\QA_Tool\\Capture_Image"; // 캡쳐된 이미지가 저장된경로, 해당 폴더가 없으면 폴더 생성을 위해 변수 저장 하였다.
-		Main->Save_Root_Dir = "D:\\QA_Tool";
-		
-		Main->str_Loop.Format(_T("%d"),Main->Loop);
-		Main->m_Loop.SetWindowTextW(Main->str_Loop);
-		Main->m_after.SetWindowTextW(TEXT("1"));
-		Main->m_gap.SetWindowTextW(TEXT("1"));
-		Main->m_Accurate.SetWindowTextW(TEXT("90000"));
-
-		GetDlgItemTextW(IDC_ACCURATE,Main->Accurate_tmp); // IDC_ACCURATE에서 값을 가져온후
-		Main->Accurate = _wtof(Main->Accurate_tmp); // 정확도 String 형을 double 형으로 변경한다.
-
-		Main->cnt = 0;
-
-		///////////// 이상 초기값 설정 코드
-
-		///////////// 이하 리스트 컨트롤 컬럼 추가 코드
-
-		Main->m_Result_table.GetWindowRect(&Main->rt);
-		Main->m_Result_table.SetExtendedStyle(LVS_EX_GRIDLINES | LVS_EX_FULLROWSELECT);
-
-		Main->m_Result_table.InsertColumn(0,_T("반복"),LVCFMT_CENTER,Main->rt.Width()*0.1);
-		Main->m_Result_table.InsertColumn(1,_T("n번째 항목"),LVCFMT_CENTER,Main->rt.Width()*0.1);
-		Main->m_Result_table.InsertColumn(2,_T("결과"),LVCFMT_CENTER,Main->rt.Width()*0.1);
-		Main->m_Result_table.InsertColumn(3,_T("총 비교한 이미지"),LVCFMT_CENTER,Main->rt.Width()*0.2);
-		Main->m_Result_table.InsertColumn(4,_T("FAIL 이미지"),LVCFMT_CENTER,Main->rt.Width()*0.2);
-		Main->m_Result_table.InsertColumn(5,_T("최저 정확도"),LVCFMT_CENTER,Main->rt.Width()*0.2);
-
-		sw_listcontrol = 1;
-	}
 
 	UpdateData(FALSE);
 
@@ -351,6 +267,91 @@ void CAPP_BSPDlg::OnActivate(UINT nState, CWnd* pWndOther, BOOL bMinimized)
 	// TODO: 여기에 메시지 처리기 코드를 추가합니다.
 
 	CAPP_BSPDlg *Main = (CAPP_BSPDlg*)AfxGetApp()->GetMainWnd();
+	
+	if(sw_listcontrol == 0) // 초기화가 한번만 되게 해주는 코드
+	{
+		CWinThread static *p1 = NULL;
+		p1 = AfxBeginThread(ThreadFirst, this); // 여기까지 스레드
+		p1->m_bAutoDelete = FALSE;
+
+		Main->sw_active = 1; // Thread Second를 한번만 실행시키게 하기 위한 코드
+
+		ThreadFirst_running = true;
+
+		Main->Thread_second_running = false;
+
+		Main->Start = false;
+
+		Main->Loop = 1;
+
+		Main->After = 1;
+
+		Main->Gap = 1;
+
+		Main->Accurate = 90000;
+
+		Main->Test_screen = 0;
+
+		Main->row_cnt = 0;
+		
+		Main->Compare_screen_cnt = 0;
+
+		Main->Fail_cnt = 0;
+
+		Main->match_score_min = 100000;
+
+		Main->Start_time_sw = 0; // Start time이 한번만 초기화 되게 만들어주는 변수
+
+		Main->CharactersConverted = 0;
+
+		Main->Test_cnt = 0;
+
+		Main->sel_cam = 0;
+		
+		Main->sel_cap = 1;
+
+		Main->m_Main_sel_cam.SetCurSel(0); // 카메라가 기본적으로 0번 선택되게함
+
+		cout << "해당 값들은 초기 설정으로 기본적으로 설정되는 값입니다." << endl;
+		cout << "n번 검사 : " << Main->Loop << endl;
+		cout << "n초후 검사 : " << Main->After << endl;
+		cout << "화면 사이의 n초 간격 : " << Main->Gap << endl;	
+		cout << "정확도 : " << Main->Accurate / 1000.00 << "%" << endl;
+		cout << "ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ" << endl;
+
+		//Main->Test_screen_cnt = 0;
+		Main->Test_result = "PASS";
+		Main->Save_Fail_Image_Dir_Check = "D:\\QA_Tool\\Fail_Image";
+		Main->Save_CAP_Image_Dir_Check = "D:\\QA_Tool\\Capture_Image"; // 캡쳐된 이미지가 저장된경로, 해당 폴더가 없으면 폴더 생성을 위해 변수 저장 하였다.
+		Main->Save_Root_Dir = "D:\\QA_Tool";
+		
+		Main->str_Loop.Format(_T("%d"),Main->Loop);
+		Main->m_Loop.SetWindowTextW(Main->str_Loop);
+		Main->m_after.SetWindowTextW(TEXT("1"));
+		Main->m_gap.SetWindowTextW(TEXT("1"));
+		Main->m_Accurate.SetWindowTextW(TEXT("90000"));
+
+		GetDlgItemTextW(IDC_ACCURATE,Main->Accurate_tmp); // IDC_ACCURATE에서 값을 가져온후
+		Main->Accurate = _wtof(Main->Accurate_tmp); // 정확도 String 형을 double 형으로 변경한다.
+
+		Main->cnt = 0;
+
+		///////////// 이상 초기값 설정 코드
+
+		///////////// 이하 리스트 컨트롤 컬럼 추가 코드
+
+		Main->m_Result_table.GetWindowRect(&Main->rt);
+		Main->m_Result_table.SetExtendedStyle(LVS_EX_GRIDLINES | LVS_EX_FULLROWSELECT);
+
+		Main->m_Result_table.InsertColumn(0,_T("반복"),LVCFMT_CENTER,Main->rt.Width()*0.1);
+		Main->m_Result_table.InsertColumn(1,_T("n번째 항목"),LVCFMT_CENTER,Main->rt.Width()*0.1);
+		Main->m_Result_table.InsertColumn(2,_T("결과"),LVCFMT_CENTER,Main->rt.Width()*0.1);
+		Main->m_Result_table.InsertColumn(3,_T("총 비교한 이미지"),LVCFMT_CENTER,Main->rt.Width()*0.2);
+		Main->m_Result_table.InsertColumn(4,_T("FAIL 이미지"),LVCFMT_CENTER,Main->rt.Width()*0.2);
+		Main->m_Result_table.InsertColumn(5,_T("최저 정확도"),LVCFMT_CENTER,Main->rt.Width()*0.2);
+
+		sw_listcontrol = 1;
+	}
 }
 
 

@@ -722,7 +722,7 @@ void CAPP_BSPDlg::OnBnClickedSetting()
 		cout << "정확도 : " << Main->Accurate / 1000.00 << "%" << endl << endl;
 	}
 	else
-		AfxMessageBox(_T("정확도를 1 ~ 100,000사이의 값을 입력하십시오(0.001% ~ 100%)"));
+		AfxMessageBox(_T("정확도를 1 ~ 100,000사이의 값을 입력하십시오.\n(0.001% ~ 100%)"));
 
 	//Main->Match_result = new bool[Main->Loop];
 	

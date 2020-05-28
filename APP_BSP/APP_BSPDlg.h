@@ -79,7 +79,7 @@ public:
 	int sw_active; // 스레드가 한번만 실행되게 하는 스위치 변수
 	static int compare_order[8]; // 몇번째의 이미지를 Compare 할 것인지 Compare 할것이면 1, 안할것이면 0으로 표시한다.
 	static int Thread_compare[8];
-	static IplImage *Compare_cam[8]; // Capture 1 ~ 8 에저장된 이미지와 캠을 비교한다.
+	static IplImage *Compare_cam[8]; // Capture 1 ~ 8 에저장된 이미지와 비교할 캠 이미지
 	static IplImage *ResultImage; // 캠으로 캡쳐중인 이미지가 저장된 배열
 	static IplImage *Result_cap[8]; // cap1 ~ cap 8까지 캡쳐된 이미지가 저장될 배열
 	static CvCapture *cam; // 현재 입력받고 있는 cam

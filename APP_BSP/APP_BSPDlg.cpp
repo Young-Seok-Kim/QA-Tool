@@ -434,10 +434,10 @@ UINT CAPP_BSPDlg::ThreadFirst(LPVOID _mothod) // Cam으로부터 이미지를 가져오고, 
 		
 											Main->Time_gap = Main->cTime - Main->Start_time;
 
-												Compare_cam[CAP] = cvCreateImage(cvGetSize(pthImage),pthImage->depth,pthImage->nChannels); // Compare_cam 변수에 원본이미지를 넣는다
-
-												if (Thread_compare[CAP] == 1)
+												if (Main->Thread_compare[CAP] == 1)
 												{
+													Compare_cam[CAP] = cvCreateImage(cvGetSize(pthImage),pthImage->depth,pthImage->nChannels); // Compare_cam 변수에 원본이미지를 넣는다
+
 													if (Main->ResultImage != NULL)
 													cvReleaseImage(&Main->ResultImage);
 
@@ -578,7 +578,7 @@ UINT CAPP_BSPDlg::ThreadFirst(LPVOID _mothod) // Cam으로부터 이미지를 가져오고, 
 											
 								} // while문의 끝
 
-								if(Main->Start == false)
+								if(Main->Start == false) // STOP 버튼을 누르면 실행할 코드
 								{
 									Main->Compare_screen_cnt = 0;
 									Main->Fail_cnt = 0;
@@ -603,19 +603,19 @@ UINT CAPP_BSPDlg::ThreadFirst(LPVOID _mothod) // Cam으로부터 이미지를 가져오고, 
 
 								} //CAP for문의 끝
 							
-							cout << endl;
-							//cout << "ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ" << endl;
+								cout << endl;
+								//cout << "ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ" << endl;
 
 							
-								for(int i=0 ; i < 8 ; i++) // 테스트가 끝나고 초기화 하는 코드
-								{
-									Main->Thread_compare[i] = 0;
-								}
-
 								if(Main->Start == false) // STOP 버튼을 누르면 나가는 코드
 									break;
 						
 								} // Loop for문의 끝
+
+								for(int i=0 ; i < 8 ; i++) // 테스트가 끝나고 초기화 하는 코드
+								{
+									Main->Thread_compare[i] = 0;
+								}
 
 								cout << endl;
 								cout << "ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ" << endl;

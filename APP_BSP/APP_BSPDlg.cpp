@@ -741,6 +741,8 @@ void CAPP_BSPDlg::OnBnClickedStart()
 			cout << CAP << "번째 이미지를 Compare 합니다." << endl;
 	}
 
+	cout << endl;
+
 	Main->Start = true;
 	
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.

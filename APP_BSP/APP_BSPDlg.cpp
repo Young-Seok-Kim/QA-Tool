@@ -544,8 +544,8 @@ UINT CAPP_BSPDlg::ThreadFirst(LPVOID _mothod) // Cam으로부터 이미지를 가져오고, 
 																	Main->Save_Fail_Image_Dir += "_";
 																	Main->Save_Fail_Image_Dir += Main->str_Fail_cnt; // 몇번째 Fail 이미지인지 지정
 																	Main->Save_Fail_Image_Dir +=  ".jpg"; // 확장자 지정
-																	//저장된 Fail 이미지의 이름은 Fail_Image_1_1 .. Fail_Image_1_2 .. Fail_Image_1_3 .. Fail_Image_2_1 ..
-																	//첫번째 숫자는 Loop, 두번째 숫자는 Fail난 이미지 갯수이다.
+																	//저장된 Fail 이미지의 이름은 Fail_Image_1_1_1 .. Fail_Image_1_1_2 .. Fail_Image_1_1_3 .. Fail_Image_1_2_1 ..
+																	//첫번째 숫자는 Loop, 두번째 숫자는 n번째 이미지,세번째 숫자는 Fail난 이미지 갯수이다.
 
 																	Main->Save_Fail_Image = (char*) malloc(Main->Save_Fail_Image_Dir.GetLength());
 																	wcstombs_s(&Main->CharactersConverted, Main->Save_Fail_Image, Main->Save_Fail_Image_Dir.GetLength()+1, Main->Save_Fail_Image_Dir, _TRUNCATE);
@@ -585,6 +585,8 @@ UINT CAPP_BSPDlg::ThreadFirst(LPVOID _mothod) // Cam으로부터 이미지를 가져오고, 
 										if( Main->Time_gap.GetTotalSeconds() > Main->Gap || Thread_compare[CAP] == 0)
 											break;
 									} // if(Main->Start == true)문의 끝
+
+									Sleep(3);
 											
 								} // while문의 끝
 
@@ -674,7 +676,8 @@ UINT CAPP_BSPDlg::ThreadFirst(LPVOID _mothod) // Cam으로부터 이미지를 가져오고, 
 					//if(Main->ThreadFirst_running == false)
 						//break;
 					
-					
+					Sleep(3);
+
 	} // while문의 끝
 
 	cs.Unlock();
@@ -775,12 +778,19 @@ void CAPP_BSPDlg::OnBnClickedCamSel()
 	m_Main_sel_cam.GetLBText(Main->sel_cam,Main_SelectCam);
 
 	if(Main->sel_cam==0)
+	{
 		Main->cam = cvCaptureFromCAM(Main->sel_cam); // cam에 웹캠의 정보를 저장
+		cout << Main->sel_cam << "번째 카메라로 캡쳐 시작" << endl;
+	}
 	else //if (Main->sel_cam==1 && cvCreateCameraCapture(Main->sel_cam) != NULL)
 		if(cvCaptureFromCAM(Main->sel_cam))
+		{
 			Main->cam = cvCaptureFromCAM(Main->sel_cam); // cam에 웹캠의 정보를 저장
+			cout << Main->sel_cam << "번째 카메라로 캡쳐 시작" << endl;
+		}
 		else
 			MessageBox(L"캠이 연결되어있지 않습니다.");
+
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
 }
 

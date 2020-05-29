@@ -273,10 +273,16 @@ void VIEW::OnBnClickedCamsel()
 	sel.GetLBText(Main->sel_cam,View_SelectCam);
 
 	if(Main->sel_cam==0)
+	{
 		Main->cam = cvCaptureFromCAM(Main->sel_cam); // cam에 웹캠의 정보를 저장
+		cout << Main->sel_cam << "번째 카메라로 캡쳐 시작" << endl;
+	}
 	else //if (Main->sel_cam==1 && cvCreateCameraCapture(Main->sel_cam) != NULL)
 		if(cvCaptureFromCAM(Main->sel_cam))
+		{
 			Main->cam = cvCaptureFromCAM(Main->sel_cam); // cam에 웹캠의 정보를 저장
+			cout << Main->sel_cam << "번째 카메라로 캡쳐 시작" << endl;
+		}
 		else
 			MessageBox(L"캠이 연결되어있지 않습니다.");
 	

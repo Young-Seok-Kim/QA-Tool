@@ -694,7 +694,10 @@ int CAPP_BSPDlg::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	CAPP_BSPDlg *Main = (CAPP_BSPDlg*)AfxGetApp()->GetMainWnd();
 	//Main->Thread_second_running = false;
 
-	cam = cvCaptureFromCAM(0);
+	Main->cam = cvCaptureFromCAM(0);
+
+	if( Main->cam == NULL )
+		AfxMessageBox(_T("캠이 연결되어 있지 않습니다. 캠을 연결하여 주십시오."));
 	
 	Main->Thread_second_running_count = 0;
 

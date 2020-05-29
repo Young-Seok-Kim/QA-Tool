@@ -773,11 +773,11 @@ void CAPP_BSPDlg::OnBnClickedCamSel()
 
 	if(Main->sel_cam==0)
 		Main->cam = cvCaptureFromCAM(Main->sel_cam); // cam에 웹캠의 정보를 저장
-	else if (Main->sel_cam==1 && cvCreateCameraCapture(Main->sel_cam) != NULL)
+	else //if (Main->sel_cam==1 && cvCreateCameraCapture(Main->sel_cam) != NULL)
 		if(cvCaptureFromCAM(Main->sel_cam))
 			Main->cam = cvCaptureFromCAM(Main->sel_cam); // cam에 웹캠의 정보를 저장
 		else
-			MessageBox(L"캠이 연결되어있지 않습니다.");	
+			MessageBox(L"캠이 연결되어있지 않습니다.");
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
 }
 

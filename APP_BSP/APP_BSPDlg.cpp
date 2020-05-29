@@ -412,12 +412,12 @@ UINT CAPP_BSPDlg::ThreadFirst(LPVOID _mothod) // Cam으로부터 이미지를 가져오고, 
 								if( cFileFinder.FindFile(_T("D:\\QA_Tool\\Fail_Image")) == TRUE)
 								{
 									DeleteAllFiles(_T("D:\\QA_Tool\\Fail_Image"));
-									cout << "D:\QA_Tool\Fail_Image 폴더를 비웁니다." << endl;
+									cout << "D:\\QA_Tool\\Fail_Image 폴더를 비웁니다." << endl;
 								}
 								else
 								{
 									CreateDirectory(_T("D:\\QA_Tool\\Fail_Image"),NULL);
-									cout << "폴더가 존재 하지 않아 D:\QA_Tool\Fail_Image 폴더를 생성합니다." << endl;
+									cout << "폴더가 존재 하지 않아 D:\\QA_Tool\\Fail_Image 폴더를 생성합니다." << endl;
 								}
 							}
 							

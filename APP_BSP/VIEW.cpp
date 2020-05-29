@@ -373,7 +373,7 @@ void VIEW::OnBnClickedCapBtn1()
 
 	if(Main->Test_cnt == 0)
 	{
-		cout << "이미지를 처음 캡쳐하여 D:\QA_Tool\Capture_Image 폴더를 비웁니다." << endl << endl;
+		cout << "이미지를 처음 캡쳐하여 D:\\QA_Tool\\Capture_Image 폴더를 비웁니다." << endl << endl;
 		DeleteAllFiles_View(TEXT("D:\\QA_Tool\\Capture_Image"));
 	}
 

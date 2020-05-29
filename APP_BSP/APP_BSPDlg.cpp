@@ -407,8 +407,18 @@ UINT CAPP_BSPDlg::ThreadFirst(LPVOID _mothod) // Cam으로부터 이미지를 가져오고, 
 							
 							if(Loop_cnt == 0)
 							{
-								DeleteAllFiles(_T("D:\\QA_Tool\\Fail_Image"));
-								cout << "D:\QA_Tool\Fail_Image 폴더를 비웁니다." << endl;
+								CFileFind cFileFinder;
+
+								if( cFileFinder.FindFile(_T("D:\\QA_Tool\\Fail_Image")) == TRUE)
+								{
+									DeleteAllFiles(_T("D:\\QA_Tool\\Fail_Image"));
+									cout << "D:\QA_Tool\Fail_Image 폴더를 비웁니다." << endl;
+								}
+								else
+								{
+									CreateDirectory(_T("D:\\QA_Tool\\Fail_Image"),NULL);
+									cout << "폴더가 존재 하지 않아 D:\QA_Tool\Fail_Image 폴더를 생성합니다." << endl;
+								}
 							}
 							
 							Main->cnt += 1; // 전체 몇번도는지 누적
@@ -563,7 +573,7 @@ UINT CAPP_BSPDlg::ThreadFirst(LPVOID _mothod) // Cam으로부터 이미지를 가져오고, 
 															
 													 // 캠 그리기 끝
 
-															if(Main->ThreadFirst_running == true)
+															//if(Main->ThreadFirst_running == true)
 																cvReleaseImage(&Main->ResultImage);
 															
 															cvReleaseImage(&Main->Compare_cam[CAP]);
@@ -593,7 +603,7 @@ UINT CAPP_BSPDlg::ThreadFirst(LPVOID _mothod) // Cam으로부터 이미지를 가져오고, 
 								if (Thread_compare[CAP] == 1)
 								{
 									Main->SendMessageW(WM_USER_MESSAGE1,100,200); // List Control에 결과를 추가하기 위한 코드
-									
+									Main->m_Result_table.SendMessage(WM_VSCROLL,SB_BOTTOM);
 								}
 
 								Main->Compare_screen_cnt = 0;
@@ -621,7 +631,7 @@ UINT CAPP_BSPDlg::ThreadFirst(LPVOID _mothod) // Cam으로부터 이미지를 가져오고, 
 								cout << "ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ" << endl;
 								cout << "Compare 종료" << endl;
 
-								AfxMessageBox(_T("테스트가 종료되었습니다."));
+								AfxMessageBox(_T("테스트가 종료되었습니다.\n테스트를 다시 진행하고자 한다면 이미지를 다시 캡쳐하여 주시기 바랍니다."));
 
 								Main->Start_time_sw = 0;
 

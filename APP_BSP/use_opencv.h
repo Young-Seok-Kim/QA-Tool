@@ -128,7 +128,7 @@
       #pragma comment(lib,"opencv_stitching249.lib")
 
       #pragma comment(lib,"opencv_legacy249.lib")
-/* // statick library link 할때 사용
+// statick library link 할때 사용
       #pragma comment(lib,"IlmImf.lib")
 
       #pragma comment(lib,"libjasper.lib")

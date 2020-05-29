@@ -238,6 +238,8 @@ UINT VIEW::ThreadSecond(LPVOID _mothod) // picture Control에 영상 띄우는 코드, O
 			if (Main->Thread_second_running == false)
 				break;
 
+			Sleep(1);
+
 			cs.Unlock();
 
 		} // while문의 끝

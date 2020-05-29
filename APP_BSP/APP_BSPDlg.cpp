@@ -586,7 +586,7 @@ UINT CAPP_BSPDlg::ThreadFirst(LPVOID _mothod) // Cam으로부터 이미지를 가져오고, 
 											break;
 									} // if(Main->Start == true)문의 끝
 
-									Sleep(3);
+									Sleep(1);
 											
 								} // while문의 끝
 
@@ -676,7 +676,7 @@ UINT CAPP_BSPDlg::ThreadFirst(LPVOID _mothod) // Cam으로부터 이미지를 가져오고, 
 					//if(Main->ThreadFirst_running == false)
 						//break;
 					
-					Sleep(3);
+					Sleep(1);
 
 	} // while문의 끝
 

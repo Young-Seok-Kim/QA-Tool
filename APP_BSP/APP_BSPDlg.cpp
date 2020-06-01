@@ -386,6 +386,8 @@ UINT CAPP_BSPDlg::ThreadFirst(LPVOID _mothod) // Cam으로부터 이미지를 가져오고, 
 
 					if(Main->Start == true && Main->Test_cnt > 0) //START 버튼을 누르면
 					{
+						Main->m_View_button.EnableWindow(FALSE);
+
 						if(Main->Start == false)
 							break;
 
@@ -760,8 +762,6 @@ void CAPP_BSPDlg::OnBnClickedStart()
 	cout << endl;
 
 	Main->Start = true;
-
-	GetDlgItem(IDC_VIEW)->EnableWindow(FALSE);
 	
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
 }

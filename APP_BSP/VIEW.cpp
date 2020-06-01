@@ -30,7 +30,7 @@ using namespace cv;
 CAPP_BSPDlg *Main = (CAPP_BSPDlg*)AfxGetApp()->GetMainWnd();
 
 int CAPP_BSPDlg::compare_order[8];
-IplImage* CAPP_BSPDlg::Compare_cam[8];
+IplImage* CAPP_BSPDlg::Compare_cam;
 IplImage* CAPP_BSPDlg::ResultImage;
 IplImage* CAPP_BSPDlg::Result_cap[8];
 CvCapture *CAPP_BSPDlg::cam;
@@ -157,7 +157,7 @@ UINT VIEW::ThreadSecond(LPVOID _mothod) // picture Control에 영상 띄우는 코드, O
 
 										// sleep구문 끝
 
-										Compare_cam[CAP] = cvCreateImage(cvGetSize(pthImage),pthImage->depth,pthImage->nChannels); // Compare_cam 변수에 원본이미지를 넣는다
+										Compare_cam = cvCreateImage(cvGetSize(pthImage),pthImage->depth,pthImage->nChannels); // Compare_cam 변수에 원본이미지를 넣는다
 
 										if (compare_order[CAP] == 1) // VIEW Dlg의 Com버튼을 누르면 이미지 비교를 하는 if문
 										{
@@ -222,7 +222,7 @@ UINT VIEW::ThreadSecond(LPVOID _mothod) // picture Control에 영상 띄우는 코드, O
 
 										} // compare cap[n] == 1 if문의 끝
 										
-										cvReleaseImage(&Compare_cam[CAP]);
+										cvReleaseImage(&Compare_cam);
 									
 									} // CAP[n] for문의 끝
 
@@ -360,11 +360,10 @@ void VIEW::OnBnClickedCapBtn1()
 		m_cImage.CopyOf(Main->Result_cap[CAP0]); // DrawToHDC 1번째 파라미터값이 CvvImage가 들어가야 하므로 m_cImage에 Result_cap[1]를 형변환해서 넣는다.
 		m_cImage.DrawToHDC(dc.m_hDC,&rect); //CvvImage 클래수의 함수중 하나로 rect에 그린다.
 		
-		Main->Compare_cam[CAP0] = Main->Result_cap[CAP0];
+		Main->Compare_cam = Main->Result_cap[CAP0];
 
 		if ( i == 0 )
 			cvReleaseImage(&Main->Result_cap[CAP0]);
-		//cvShowImage("Main->Compare_cam",&Main->Compare_cam);
 	}
 
 	if( GetFileAttributes(Main->Save_Root_Dir) == -1 ) // D:\\QA_Tool\\Fail_Image 폴더가 존재하지 않으면 해당 폴더 생성
@@ -426,11 +425,10 @@ void VIEW::OnBnClickedCapBtn2()
 		m_cImage.CopyOf(Result_cap[CAP1]); // DrawToHDC 2번째 파라미터값이 CvvImage가 들어가야 하므로 m_cImage에 Result_cap[2]를 형변환해서 넣는다.
 		m_cImage.DrawToHDC(dc.m_hDC,&rect); //CvvImage 클래수의 함수중 하나로 rect에 그린다.
 		
-		Main->Compare_cam[CAP1] = Main->Result_cap[CAP1];
+		Main->Compare_cam = Main->Result_cap[CAP1];
 		
 		if ( i == 0 )
 			cvReleaseImage(&Main->Result_cap[CAP1]);
-		//cvShowImage("Main->Compare_cam",&Main->Compare_cam);
 	}
 
 	if( GetFileAttributes(Main->Save_Root_Dir) == -1 ) // D:\\QA_Tool\\Fail_Image 폴더가 존재하지 않으면 해당 폴더 생성
@@ -490,11 +488,10 @@ void VIEW::OnBnClickedCapBtn3()
 		m_cImage.CopyOf(Result_cap[CAP2]); // DrawToHDC 3번째 파라미터값이 CvvImage가 들어가야 하므로 m_cImage에 Result_cap[3]를 형변환해서 넣는다.
 		m_cImage.DrawToHDC(dc.m_hDC,&rect); //CvvImage 클래수의 함수중 하나로 rect에 그린다.
 		
-		Main->Compare_cam[CAP2] = Main->Result_cap[CAP2];
+		Main->Compare_cam = Main->Result_cap[CAP2];
 
 		if ( i == 0 )
 			cvReleaseImage(&Main->Result_cap[CAP2]);
-		//cvShowImage("Main->Compare_cam",&Main->Compare_cam);
 	}
 
 	if( GetFileAttributes(Main->Save_Root_Dir) == -1 ) // D:\\QA_Tool\\Fail_Image 폴더가 존재하지 않으면 해당 폴더 생성
@@ -557,7 +554,7 @@ void VIEW::OnBnClickedCapBtn4()
 		m_cImage.CopyOf(Result_cap[CAP3]); // DrawToHDC 4번째 파라미터값이 CvvImage가 들어가야 하므로 m_cImage에 Result_cap[4]를 형변환해서 넣는다.
 		m_cImage.DrawToHDC(dc.m_hDC,&rect); //CvvImage 클래수의 함수중 하나로 rect에 그린다.
 		
-		Main->Compare_cam[CAP3] = Main->Result_cap[CAP3];
+		Main->Compare_cam = Main->Result_cap[CAP3];
 
 		if ( i == 0 )
 			cvReleaseImage(&Main->Result_cap[CAP3]);
@@ -623,7 +620,7 @@ void VIEW::OnBnClickedCapBtn5()
 		m_cImage.CopyOf(Result_cap[CAP4]); // DrawToHDC 5번째 파라미터값이 CvvImage가 들어가야 하므로 m_cImage에 Result_cap[5]를 형변환해서 넣는다.
 		m_cImage.DrawToHDC(dc.m_hDC,&rect); //CvvImage 클래수의 함수중 하나로 rect에 그린다.
 		
-		Main->Compare_cam[CAP4] = Main->Result_cap[CAP4];
+		Main->Compare_cam = Main->Result_cap[CAP4];
 		
 		if ( i == 0 )
 			cvReleaseImage(&Main->Result_cap[CAP4]);
@@ -687,7 +684,7 @@ void VIEW::OnBnClickedCapBtn6()
 		m_cImage.CopyOf(Result_cap[CAP5]); // DrawToHDC 6번째 파라미터값이 CvvImage가 들어가야 하므로 m_cImage에 Result_cap[6]를 형변환해서 넣는다.
 		m_cImage.DrawToHDC(dc.m_hDC,&rect); //CvvImage 클래수의 함수중 하나로 rect에 그린다.
 		
-		Main->Compare_cam[CAP5] = Main->Result_cap[CAP5];
+		Main->Compare_cam = Main->Result_cap[CAP5];
 
 		if ( i == 0 )
 			cvReleaseImage(&Main->Result_cap[CAP5]);
@@ -751,7 +748,7 @@ void VIEW::OnBnClickedCapBtn7()
 		m_cImage.CopyOf(Result_cap[CAP6]); // DrawToHDC 7번째 파라미터값이 CvvImage가 들어가야 하므로 m_cImage에 Result_cap[7]를 형변환해서 넣는다.
 		m_cImage.DrawToHDC(dc.m_hDC,&rect); //CvvImage 클래수의 함수중 하나로 rect에 그린다.
 		
-		Main->Compare_cam[CAP6] = Main->Result_cap[CAP6];
+		Main->Compare_cam = Main->Result_cap[CAP6];
 
 		if ( i == 0 )
 			cvReleaseImage(&Main->Result_cap[CAP6]);
@@ -814,7 +811,7 @@ void VIEW::OnBnClickedCapBtn8()
 		m_cImage.CopyOf(Result_cap[CAP7]); // DrawToHDC 8번째 파라미터값이 CvvImage가 들어가야 하므로 m_cImage에 Result_cap[8]를 형변환해서 넣는다.
 		m_cImage.DrawToHDC(dc.m_hDC,&rect); //CvvImage 클래수의 함수중 하나로 rect에 그린다.
 		
-		Main->Compare_cam[CAP7] = Main->Result_cap[CAP7];
+		Main->Compare_cam = Main->Result_cap[CAP7];
 
 		if ( i == 0 )
 			cvReleaseImage(&Main->Result_cap[CAP7]);

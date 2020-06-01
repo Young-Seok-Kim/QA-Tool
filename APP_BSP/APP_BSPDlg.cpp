@@ -446,7 +446,7 @@ UINT CAPP_BSPDlg::ThreadFirst(LPVOID _mothod) // Cam으로부터 이미지를 가져오고, 
 
 												if (Main->Thread_compare[CAP] == 1)
 												{
-													Compare_cam[CAP] = cvCreateImage(cvGetSize(pthImage),pthImage->depth,pthImage->nChannels); // Compare_cam 변수에 원본이미지를 넣는다
+													Compare_cam = cvCreateImage(cvGetSize(pthImage),pthImage->depth,pthImage->nChannels); // Compare_cam 변수에 원본이미지를 넣는다
 
 													if (Main->ResultImage != NULL)
 													cvReleaseImage(&Main->ResultImage);
@@ -576,7 +576,7 @@ UINT CAPP_BSPDlg::ThreadFirst(LPVOID _mothod) // Cam으로부터 이미지를 가져오고, 
 															//if(Main->ThreadFirst_running == true)
 																cvReleaseImage(&Main->ResultImage);
 															
-															cvReleaseImage(&Main->Compare_cam[CAP]);
+															cvReleaseImage(&Main->Compare_cam);
 													
 												} // (Thread_compare[CAP] == 1) 문
 
@@ -813,12 +813,7 @@ LRESULT CAPP_BSPDlg::OnUserFunc(WPARAM wParam, LPARAM lParam)
 	
 	//Main->m_Result_table.DeleteAllItems(); // 리스트박스 초기화 코드
 
-	{
-
-		//Main->str_Loop.Format(_T("%d"),Main->Loop); // int를 string으로 변환
-		//Main->m_Loop.SetWindowTextW(Main->str_Loop);
-
-		if( Main->Fail_cnt <= 0 )
+	if( Main->Fail_cnt <= 0 )
 			Main->Test_result = "PASS";
 		else
 			Main->Test_result = "FAIL";
@@ -838,9 +833,7 @@ LRESULT CAPP_BSPDlg::OnUserFunc(WPARAM wParam, LPARAM lParam)
 
 		//cout << "Main->row_cnt : " << Main->row_cnt << endl;
 		Main->row_cnt++;
-	}
 	
-
 	return 0;
 }
 

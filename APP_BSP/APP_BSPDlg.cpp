@@ -870,3 +870,17 @@ void DeleteAllFiles(CString dirName) // 폴더 내 모든 파일을 삭제하는 함수
          }
         finder.Close();
 }
+BOOL CAPP_BSPDlg::PreTranslateMessage(MSG* pMsg)
+{
+	// TODO: 여기에 특수화된 코드를 추가 및/또는 기본 클래스를 호출합니다.
+
+  if(pMsg->message == WM_KEYDOWN)
+  {
+    if(pMsg->wParam == VK_RETURN) // ENTER키 눌릴 시
+      return TRUE;
+    else if(pMsg->wParam == VK_ESCAPE) // ESC키 눌릴 시
+      return TRUE;
+  }
+
+	return CDialog::PreTranslateMessage(pMsg);
+}

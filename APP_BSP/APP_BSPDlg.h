@@ -143,4 +143,5 @@ public:
 	afx_msg void OnLvnItemchangedList(NMHDR *pNMHDR, LRESULT *pResult);
 	int sw_listcontrol;
 	CStatic m_main_cam_draw;
+	virtual BOOL PreTranslateMessage(MSG* pMsg);
 };

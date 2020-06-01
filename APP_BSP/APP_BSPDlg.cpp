@@ -106,6 +106,7 @@ void CAPP_BSPDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_AFTER, m_after);
 	DDX_Control(pDX, IDC_LIST1, m_Result_table);
 	DDX_Control(pDX, IDC_MAIN_CAM_DRAW, m_main_cam_draw);
+	DDX_Control(pDX, IDC_VIEW, m_View_button);
 }
 
 BEGIN_MESSAGE_MAP(CAPP_BSPDlg, CDialog)
@@ -241,9 +242,6 @@ void CAPP_BSPDlg::OnBnClickedView()
 	Main->sw_active = 1;
 
 	UpdateData(FALSE);
-
-	//if (Thread_second_running_count >0)
-		//p1->ResumeThread();
 
 	if(m_pDlg != NULL)
 	{
@@ -640,6 +638,8 @@ UINT CAPP_BSPDlg::ThreadFirst(LPVOID _mothod) // Cam으로부터 이미지를 가져오고, 
 						Main->Start = false;
 
 						Main->Test_cnt = 0;
+
+						Main->m_View_button.EnableWindow(TRUE);
 					} // if ( Main->Start == true && Main->Test_cnt > 0 ) 문의 끝
 					else if ( Main->Start == true && Main->Test_cnt == 0 )
 					{
@@ -760,6 +760,8 @@ void CAPP_BSPDlg::OnBnClickedStart()
 	cout << endl;
 
 	Main->Start = true;
+
+	GetDlgItem(IDC_VIEW)->EnableWindow(FALSE);
 	
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
 }

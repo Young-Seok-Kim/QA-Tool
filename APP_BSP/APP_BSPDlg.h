@@ -78,7 +78,7 @@ public:
 	int sel_cam; // 몇번째 카메라로 녹화할것인지 선택한다.
 	int sw_active; // 스레드가 한번만 실행되게 하는 스위치 변수
 	static int compare_order[8]; // 몇번째의 이미지를 Compare 할 것인지 Compare 할것이면 1, 안할것이면 0으로 표시한다.
-	static int Thread_compare[8];
+	static int Thread_compare[8]; // n번째 배열의 값이 1이면 n번째 이미지를 비교한다.
 	static IplImage *Compare_cam; // 캡쳐한 1번 ~ 8번 이미지와 비교할 캠 이미지
 	static IplImage *ResultImage; // 캠으로 캡쳐중인 이미지가 저장된 배열
 	static IplImage *Result_cap[8]; // cap1 ~ cap 8까지 캡쳐된 이미지가 저장될 배열
@@ -88,8 +88,8 @@ public:
 	bool ThreadFirst_pause;
 	bool Thread_second_running;
 	int Thread_second_running_count;
-	CWinThread *p1;
-	CWinThread *p2;
+	CWinThread *p1; // Thread First
+	CWinThread *p2; // Thread Second
 	//static int Image_order;
 	CvvImage m_viewcopy;
 	CModalDialog *m_pDlg; // 모달리스로 VIEW를 열기 위한 변수
@@ -144,4 +144,5 @@ public:
 	int sw_listcontrol;
 	CStatic m_main_cam_draw;
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
+	CButton m_View_button;
 };

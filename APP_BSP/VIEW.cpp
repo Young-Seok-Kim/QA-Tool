@@ -125,7 +125,7 @@ UINT VIEW::ThreadSecond(LPVOID _mothod) // picture Control에 영상 띄우는 코드, O
 
 	cout << "VIEW Dialog Open" << endl;
 
-	while(Main->Thread_second_running == true)
+		while(Main->Thread_second_running == true)
 		{
 			cs.Lock();
 			
@@ -243,6 +243,8 @@ UINT VIEW::ThreadSecond(LPVOID _mothod) // picture Control에 영상 띄우는 코드, O
 			cs.Unlock();
 
 		} // while문의 끝
+		
+		
 
 	cout << "VIEW Dialog Close" << endl;
 

@@ -704,7 +704,7 @@ UINT CAPP_BSPDlg::ThreadFirst(LPVOID _mothod) // Cam으로부터 이미지를 가져오고, 
 					else if ( Main->Start == true && Main->Test_cnt == 0 )
 					{
 						cout << "캡쳐된 화면이 없어서 테스트를 진행할 수 없습니다." << endl;
-						cout << "D:\QA_Tool\Capture_Image 폴더에 이미지가 저장되어 있더라도 지난 테스트가 끝난 이후에 이미지 캡쳐를 하지 않으면 테스트를 진행할수 없습니다." << endl << endl;
+						cout << "D:\\QA_Tool\\Capture_Image 폴더에 이미지가 저장되어 있더라도 지난 테스트가 끝난 이후에 이미지 캡쳐를 하지 않으면 테스트를 진행할수 없습니다." << endl << endl;
 						Main->Start = false;
 					}
 

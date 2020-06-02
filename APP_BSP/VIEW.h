@@ -44,7 +44,9 @@ protected:
 	DECLARE_MESSAGE_MAP()
 
 private:
-	CAPP_BSPDlg *m_MainDlg; // 스레드에 사용
+	void CAP_button_active();
+	void CAP_buttion_disable();
+
 	
 
 public: 

@@ -111,6 +111,29 @@ ON_BN_CLICKED(IDC_COM_BTN8, &VIEW::OnBnClickedComBtn8)
 ON_BN_CLICKED(IDC_INIT_IMAGE, &VIEW::OnBnClickedInitImage)
 END_MESSAGE_MAP()
 
+void VIEW::CAP_button_active()
+{
+	GetDlgItem(IDC_CAP_BTN1)->EnableWindow(TRUE);
+	GetDlgItem(IDC_CAP_BTN2)->EnableWindow(TRUE);
+	GetDlgItem(IDC_CAP_BTN3)->EnableWindow(TRUE);
+	GetDlgItem(IDC_CAP_BTN4)->EnableWindow(TRUE);
+	GetDlgItem(IDC_CAP_BTN5)->EnableWindow(TRUE);
+	GetDlgItem(IDC_CAP_BTN6)->EnableWindow(TRUE);
+	GetDlgItem(IDC_CAP_BTN7)->EnableWindow(TRUE);
+	GetDlgItem(IDC_CAP_BTN8)->EnableWindow(TRUE);
+}
+void VIEW::CAP_buttion_disable()
+{
+	GetDlgItem(IDC_CAP_BTN1)->EnableWindow(FALSE);
+	GetDlgItem(IDC_CAP_BTN2)->EnableWindow(FALSE);
+	GetDlgItem(IDC_CAP_BTN3)->EnableWindow(FALSE);
+	GetDlgItem(IDC_CAP_BTN4)->EnableWindow(FALSE);
+	GetDlgItem(IDC_CAP_BTN5)->EnableWindow(FALSE);
+	GetDlgItem(IDC_CAP_BTN6)->EnableWindow(FALSE);
+	GetDlgItem(IDC_CAP_BTN7)->EnableWindow(FALSE);
+	GetDlgItem(IDC_CAP_BTN8)->EnableWindow(FALSE);
+}
+
 UINT VIEW::ThreadSecond(LPVOID _mothod) // picture Control에 영상 띄우는 코드, OnActvie 이벤트에 스레드 실행 지정하였다.
 {
 	
@@ -260,9 +283,12 @@ void VIEW::OnClose()
 	Main->Thread_second_running = false;
 	Main->ThreadFirst_running = true;
 
-	CWinThread static *p1 = NULL;
-	p1 = AfxBeginThread(ThreadFirst, this); // 여기까지 스레드
-	p1->m_bAutoDelete = FALSE;
+	if(Main->cam)
+	{
+		CWinThread static *p1 = NULL;
+		p1 = AfxBeginThread(ThreadFirst, this); // 여기까지 스레드
+		p1->m_bAutoDelete = FALSE;
+	}
 	
 	CDialog::OnClose();
 }
@@ -279,7 +305,10 @@ void VIEW::OnBnClickedCamsel()
 	if(Main->sel_cam==0)
 	{
 		Main->cam = cvCaptureFromCAM(Main->sel_cam); // cam에 웹캠의 정보를 저장
-		cout << Main->sel_cam << "번째 카메라로 캡쳐 시작" << endl;
+		if(Main->cam)
+			cout << Main->sel_cam << "번째 카메라로 캡쳐 시작" << endl;
+		else 
+			AfxMessageBox(_T("카메라가 연결되어 있지 않습니다. 카메라를 연결하고 다시 시도해주세요."));
 	}
 	else //if (Main->sel_cam==1 && cvCreateCameraCapture(Main->sel_cam) != NULL)
 		if(cvCaptureFromCAM(Main->sel_cam))
@@ -300,9 +329,19 @@ void VIEW::OnActivate(UINT nState, CWnd* pWndOther, BOOL bMinimized)
 	CAPP_BSPDlg *Main = (CAPP_BSPDlg*)AfxGetApp()->GetMainWnd();
 	if(Main->sw_active == 1)
 	{
-		Main->p2 = AfxBeginThread(ThreadSecond, this); // 여기까지 스레드
-		Main->p2->m_bAutoDelete = FALSE;
-		Main->sw_active = 0;
+		if(Main->cam)
+		{
+			Main->p2 = AfxBeginThread(ThreadSecond, this); // 여기까지 스레드
+			Main->p2->m_bAutoDelete = FALSE;
+			Main->sw_active = 0;
+
+			CAP_button_active();
+
+		}
+		else
+		{
+			CAP_buttion_disable();
+		}
 	}
 	
 	sel.SetCurSel(Main->sel_cam);

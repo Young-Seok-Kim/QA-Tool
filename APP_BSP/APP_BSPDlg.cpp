@@ -315,9 +315,12 @@ void CAPP_BSPDlg::OnActivate(UINT nState, CWnd* pWndOther, BOOL bMinimized)
 	
 	if(sw_listcontrol == 0) // 초기화가 한번만 되게 해주는 코드
 	{
-		CWinThread static *p1 = NULL;
-		p1 = AfxBeginThread(ThreadFirst, this); // 여기까지 스레드
-		p1->m_bAutoDelete = FALSE;
+		if(Main->cam)
+		{
+			CWinThread static *p1 = NULL;
+			p1 = AfxBeginThread(ThreadFirst, this); // 여기까지 스레드
+			p1->m_bAutoDelete = FALSE;
+		}
 
 		Main->sw_active = 1; // Thread Second를 한번만 실행시키게 하기 위한 코드
 
@@ -834,7 +837,10 @@ void CAPP_BSPDlg::OnBnClickedCamSel()
 	if(Main->sel_cam==0)
 	{
 		Main->cam = cvCaptureFromCAM(Main->sel_cam); // cam에 웹캠의 정보를 저장
-		cout << Main->sel_cam << "번째 카메라로 캡쳐 시작" << endl;
+		if(Main->cam)
+			cout << Main->sel_cam << "번째 카메라로 캡쳐 시작" << endl;
+		else 
+			AfxMessageBox(_T("카메라가 연결되어 있지 않습니다. 카메라를 연결하고 다시 시도해주세요."));
 	}
 	else //if (Main->sel_cam==1 && cvCreateCameraCapture(Main->sel_cam) != NULL)
 		if(cvCaptureFromCAM(Main->sel_cam))

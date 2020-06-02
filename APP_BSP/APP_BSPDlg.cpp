@@ -172,6 +172,53 @@ BOOL CAPP_BSPDlg::OnInitDialog()
 	return TRUE;  // 포커스를 컨트롤에 설정하지 않으면 TRUE를 반환합니다.
 }
 
+void CAPP_BSPDlg::Save()
+{
+
+	//CSaveDlg를 자신의 다이얼로그 이름에 맞게 바꾸어야 함.
+
+	//파일을 쓸 준비를 한다.
+
+	CAPP_BSPDlg *Main = (CAPP_BSPDlg*)AfxGetApp()->GetMainWnd();
+	
+	setlocale(LC_ALL, "korean"); // WriteString에 한글 입력이 가능하게 해주는 코드
+	
+	CStdioFile file;
+
+	file.Open(_T("D:\\QA_Tool\\Result.txt"), CStdioFile::modeCreate | CStdioFile::modeWrite | CStdioFile::typeText);
+
+	Main->str_Test_Start_time_Year.Format(_T("%d"),Main->Test_Start_time.GetYear()); // 테스트 시작 년도를 int to String으로 변환
+	Main->str_Test_Start_time_Month.Format(_T("%d"),Main->Test_Start_time.GetMonth());
+	Main->str_Test_Start_time_Day.Format(_T("%d"),Main->Test_Start_time.GetDay());
+	Main->str_Test_Start_time_Hour.Format(_T("%d"),Main->Test_Start_time.GetHour());
+	Main->str_Test_Start_time_Minute.Format(_T("%d"),Main->Test_Start_time.GetMinute());
+	Main->str_Test_Start_time_Second.Format(_T("%d"),Main->Test_Start_time.GetSecond());
+
+	Main->str_Test_Start_time = _T("테스트 시작시간: ") + Main->str_Test_Start_time_Year + _T("년 ") + Main->str_Test_Start_time_Month + _T("월 ") + Main->str_Test_Start_time_Day + _T("일 ") + Main->str_Test_Start_time_Hour + _T("시 ") + Main->str_Test_Start_time_Minute + _T("분 ") + Main->str_Test_Start_time_Second + _T("초 ");
+
+	file.WriteString(Main->str_Test_Start_time + "\n\n");
+
+	file.WriteString(_T("반복\t항목\t결과\t총갯수\tFAIL\t최저 정확도\n"));
+ 
+	 // 리스트 컨트롤의 루프를 돌면서 값들을 가져온다.
+
+	 CString strVoca;
+
+ 	 for (int i=0; i < Main->m_Result_table.GetItemCount() ;i++) 
+	 {
+		 for ( int j = 0 ; j < 6 ; j++ )
+		 {
+			 strVoca = Main->m_Result_table.GetItemText(i,j);
+			  file.WriteString(strVoca+"\t");
+		 }
+		 file.WriteString(_T("\n"));
+	 }//for
+
+	 file.Close();
+
+	 //AfxMessageBox(_T("파일이 저장되었습니다"));
+}
+
 void CAPP_BSPDlg::OnSysCommand(UINT nID, LPARAM lParam)
 {
 	if ((nID & 0xFFF0) == IDM_ABOUTBOX)
@@ -379,270 +426,275 @@ UINT CAPP_BSPDlg::ThreadFirst(LPVOID _mothod) // Cam으로부터 이미지를 가져오고, 
 		if(!Main->cam)
 			Main->cam = cvCaptureFromCAM(Main->m_Main_sel_cam.GetCurSel());
 					
-					pthImage = cvQueryFrame(Main->cam); // 원본이미지 변수에 캠의 화면을 저장
-					Main->ResultImage = cvCreateImage(cvGetSize(pthImage),pthImage->depth,pthImage->nChannels); // ResultImage 변수에 원본이미지를 넣는다
-					cvFlip(pthImage,Main->ResultImage,1); // Main.ResultImage 변수에 넣은 원본 이미지를 좌우반전한다.
+			pthImage = cvQueryFrame(Main->cam); // 원본이미지 변수에 캠의 화면을 저장
+			Main->ResultImage = cvCreateImage(cvGetSize(pthImage),pthImage->depth,pthImage->nChannels); // ResultImage 변수에 원본이미지를 넣는다
+			cvFlip(pthImage,Main->ResultImage,1); // Main.ResultImage 변수에 넣은 원본 이미지를 좌우반전한다.
+			
+
+			if(Main->Start == true && Main->Test_cnt > 0) //START 버튼을 누르면
+			{
+				Main->Test_Start_time = CTime::GetCurrentTime();
+
+				Main->m_View_button.EnableWindow(FALSE);
+
+				if(Main->Start == false)
+					break;
+
+				Main->Start_time = CTime::GetCurrentTime();
+				cout << "테스트 시작 시간은 " << Main->Start_time.GetYear() << "년 " << Main->Start_time.GetMonth() << "월 " << Main->Start_time.GetDay() << "일" << endl;
+				cout << Main->Start_time.GetHour() << "시 " << Main->Start_time.GetMinute() << "분 " << Main->Start_time.GetSecond() << "초 " << endl << endl;
+				
+				for (int sleep_cnt = 0 ; sleep_cnt < Main->After ; sleep_cnt++ )
+				{
+						cout << "테스트를 위해" << sleep_cnt + 1 << "초 대기" << endl;
+						Sleep(1000);
+				}
+
+				for(int Loop_cnt = 0 ; Loop_cnt < Main->Loop ; Loop_cnt++) // 테스트를 Loop_cnt번 반복
+				{
+					cout << endl << Loop_cnt + 1 << "회 반복중" << endl;
 					
-
-					if(Main->Start == true && Main->Test_cnt > 0) //START 버튼을 누르면
+					if(Loop_cnt == 0)
 					{
-						Main->m_View_button.EnableWindow(FALSE);
+						CFileFind cFileFinder;
 
-						if(Main->Start == false)
-							break;
-
-						Main->Start_time = CTime::GetCurrentTime();
-						cout << "테스트 시작 시간은 " << Main->Start_time.GetYear() << "년 " << Main->Start_time.GetMonth() << "월 " << Main->Start_time.GetDay() << "일" << endl;
-						cout << Main->Start_time.GetHour() << "시 " << Main->Start_time.GetMinute() << "분 " << Main->Start_time.GetSecond() << "초 " << endl << endl;
-						
-						for (int sleep_cnt = 0 ; sleep_cnt < Main->After ; sleep_cnt++ )
+						if( cFileFinder.FindFile(_T("D:\\QA_Tool\\Fail_Image")) == TRUE)
 						{
-								cout << "테스트를 위해" << sleep_cnt + 1 << "초 대기" << endl;
-								Sleep(1000);
+							DeleteAllFiles(_T("D:\\QA_Tool\\Fail_Image"));
+							cout << "D:\\QA_Tool\\Fail_Image 폴더를 비웁니다." << endl;
+						}
+						else
+						{
+							CreateDirectory(_T("D:\\QA_Tool\\Fail_Image"),NULL);
+							cout << "폴더가 존재 하지 않아 D:\\QA_Tool\\Fail_Image 폴더를 생성합니다." << endl;
+						}
+					}
+					
+					Main->cnt += 1; // 전체 몇번도는지 누적
+
+					for(int CAP = 0 ; CAP < 8 ; CAP++) // [CAP]번째의 화면을 Compare 한다
+					{
+							while(1)
+							{
+								if(Main->Start == false)
+									break;
+									
+								if(Main->Start == true) //START 버튼을 누르면
+								{
+									if(Main->Start_time_sw == 0)
+									{
+										Main->Start_time = CTime::GetCurrentTime();
+										Main->cTime = CTime::GetCurrentTime(); // cTime의 초기값을 지정해주기 위한 코드
+
+										Main->Start_time_sw = 1;
+									}
+
+									//cout << CAP << "번째 화면 " << Main->Gap << "초간 Compare 시작 " << endl;
+
+									Main->Time_gap = Main->cTime - Main->Start_time;
+
+										if (Main->Thread_compare[CAP] == 1)
+										{
+											Compare_cam = cvCreateImage(cvGetSize(pthImage),pthImage->depth,pthImage->nChannels); // Compare_cam 변수에 원본이미지를 넣는다
+
+											if (Main->ResultImage != NULL)
+											cvReleaseImage(&Main->ResultImage);
+
+											Main->Test_screen = CAP; // List Control에 몇번째 이미지를 검색하는지 출력하기 위해 Test Screen 변수에 저장
+
+											if (Main->Thread_compare[CAP])
+											{
+												//if (Main->ResultImage == NULL)
+												{
+													pthImage = cvQueryFrame(Main->cam); // 원본이미지 변수에 캠의 화면을 저장
+													Main->ResultImage = cvCreateImage(cvGetSize(pthImage),pthImage->depth,pthImage->nChannels); // Main.ResultImage 변수에 원본이미지를 넣는다
+													cvFlip(pthImage,ResultImage,1); // Main.ResultImage 변수에 넣은 원본 이미지를 좌우반전한다.
+												}
+
+												IplImage *imgNames[NUM] = {ResultImage,Result_cap[CAP]}; // 이미지가 저장된 배열
+																			
+												Mat imgs[NUM];
+												Mat imgsHLS[NUM];
+
+												for(int i = 0 ; i < NUM ;i++)
+												{
+													imgs[i] = cvarrToMat(imgNames[i]); // IplImage를 Mat형태로 변환
+												
+													if(imgs[i].data==0)
+													{
+														cout << "Unable to read" << imgNames[i] <<endl;
+													}
+													
+													cvtColor(imgs[i],imgsHLS[i], COLOR_BGR2HLS);
+												}
+
+												//cout << endl << "succeeded to read all image" << endl;
+
+												Mat histogram[NUM];
+
+												int channel_numbers[] = {0,1,2};
+												for (int i=0;i<NUM;i++)
+												{
+													int* number_bins=new int[imgsHLS[i].channels()];
+
+													for (int ch=0;ch<imgsHLS[i].channels();ch++)
+													{
+														number_bins[ch]=BINS;
+													}
+
+													float ch_range[] = {0.0,255.0};
+													const float *channel_ranges[] = {ch_range,ch_range,ch_range};
+													calcHist(&imgsHLS[i],1,channel_numbers,Mat(),histogram[i],imgsHLS[i].channels(),number_bins,channel_ranges);
+													normalize(histogram[i],histogram[i],1.0);
+													delete[] number_bins;
+												}
+
+												//cout << "Image Comparison by HISTCMP_CORREL " << endl;
+
+												for(int i=0; i < NUM; i++)
+												{
+													for (int j = i+1 ; j<NUM ; j++)
+													{
+														double matching_score = compareHist(histogram[i], histogram[j],CV_COMP_CORREL);
+														Main->Match_Accurate = matching_score;
+														
+														Main->Compare_screen_cnt++;
+
+														if(matching_score < Main->match_score_min)
+															Main->match_score_min = matching_score;
+														
+
+														if(matching_score * 100 < Main->Accurate/1000) // 결과에 따라 True False 결과 저장
+														{
+															Main->Fail_cnt++;
+
+															cout << "Fail_Image_" << Loop_cnt + 1 << "_" << CAP << "_" << Main->Fail_cnt << "의 유사도는 " << matching_score * 100 << "%" << endl << endl;
+
+															if( GetFileAttributes(Main->Save_Root_Dir) == -1 ) // D:\\QA_Tool\\Fail_Image 폴더가 존재하지 않으면 해당 폴더 생성
+															{
+																CreateDirectory(_T("D:\\QA_Tool"),NULL);
+																cout << "D:\\QA_Tool 폴더가 존재하지 않아 해당 폴더를 새로 생성 합니다." << endl;
+															}
+
+															if( GetFileAttributes(Main->Save_Fail_Image_Dir_Check) == -1 ) // D:\\QA_Tool\\Fail_Image 폴더가 존재하지 않으면 해당 폴더 생성
+															{
+																CreateDirectory(_T("D:\\QA_Tool\\Fail_Image"),NULL);
+																cout << "D:\\QA_Tool\\Fail_Image 폴더가 존재하지 않아 해당 폴더를 새로 생성 합니다." << endl;
+															}
+
+															//아래 코드는 CString to Char*로 변환하는 코드로, Fail Image를 jpg파일로 저장할때 cvSaveIamge(?)함수를 사용할때 1번째 인자에 사용한다.
+															Main->str_Loop.Format(_T("%d"),Main->cnt); // Loop를 string으로 변환
+															Main->str_CAP.Format(_T("%d"),CAP); // Loop를 string으로 변환
+															Main->str_Fail_cnt.Format(_T("%d"),Main->Fail_cnt); // Fail 갯수를 string으로 변환
+															Main->Save_Fail_Image_Dir = "D:\\QA_Tool\\Fail_Image\\Fail_Image_"; // 두번째 이후부터 루프가 돌때 이전에 지정해놓은 파일명이 저장되어 있으므로 초기화 해준다.
+															Main->Save_Fail_Image_Dir += Main->str_Loop; // 몇번째 Loop중인지 지정
+															Main->Save_Fail_Image_Dir += "_";
+															Main->Save_Fail_Image_Dir += Main->str_CAP;
+															Main->Save_Fail_Image_Dir += "_";
+															Main->Save_Fail_Image_Dir += Main->str_Fail_cnt; // 몇번째 Fail 이미지인지 지정
+															Main->Save_Fail_Image_Dir +=  ".jpg"; // 확장자 지정
+															//저장된 Fail 이미지의 이름은 Fail_Image_1_1_1 .. Fail_Image_1_1_2 .. Fail_Image_1_1_3 .. Fail_Image_1_2_1 ..
+															//첫번째 숫자는 Loop, 두번째 숫자는 n번째 이미지,세번째 숫자는 Fail난 이미지 갯수이다.
+
+															Main->Save_Fail_Image = (char*) malloc(Main->Save_Fail_Image_Dir.GetLength());
+															wcstombs_s(&Main->CharactersConverted, Main->Save_Fail_Image, Main->Save_Fail_Image_Dir.GetLength()+1, Main->Save_Fail_Image_Dir, _TRUNCATE);
+
+															cvSaveImage(Main->Save_Fail_Image, Main->ResultImage); // 첫번째 파라미터가 Char* 이므로 위 코드를 통해 CString 에서 Char*로 변경하였다.
+														}
+													}
+												}
+
+											} // if (Main->Thread_compare[CAP]) 문
+
+											// 캠 그리기 시작
+
+												Main->m_main_cam_draw.GetClientRect(rect);
+
+												pDC = Main->m_main_cam_draw.GetDC();
+
+													if(Main->ResultImage != NULL)
+													{
+														Main->Main_draw.CopyOf(Main->ResultImage);
+														Main->Main_draw.DrawToHDC(pDC->m_hDC,&rect);// 좌우반전한 Main->ResultImage를 출력한다.
+													}
+
+													Main->m_main_cam_draw.ReleaseDC(pDC); // DC를 Release 해준다
+													
+											 // 캠 그리기 끝
+
+													//if(Main->ThreadFirst_running == true)
+														cvReleaseImage(&Main->ResultImage);
+													
+													cvReleaseImage(&Main->Compare_cam);
+											
+										} // (Thread_compare[CAP] == 1) 문
+
+								Main->cTime = CTime::GetCurrentTime(); // cTime 변수에 현재시간 저장
+
+								if( Main->Time_gap.GetTotalSeconds() > Main->Gap || Thread_compare[CAP] == 0)
+									break;
+							} // if(Main->Start == true)문의 끝
+
+							Sleep(1);
+									
+						} // while문의 끝
+
+						if(Main->Start == false) // STOP 버튼을 누르면 실행할 코드
+						{
+							Main->Compare_screen_cnt = 0;
+							Main->Fail_cnt = 0;
+							Main->Start_time_sw = 0;
+							Main->match_score_min = 100000;
+
+							break;
 						}
 
-						for(int Loop_cnt = 0 ; Loop_cnt < Main->Loop ; Loop_cnt++) // 테스트를 Loop_cnt번 반복
+						Main->cTime = CTime::GetCurrentTime();
+
+						if (Thread_compare[CAP] == 1)
 						{
-							cout << endl << Loop_cnt + 1 << "회 반복중" << endl;
-							
-							if(Loop_cnt == 0)
-							{
-								CFileFind cFileFinder;
+							Main->SendMessageW(WM_USER_MESSAGE1,100,200); // List Control에 결과를 추가하기 위한 코드
+							Main->m_Result_table.SendMessage(WM_VSCROLL,SB_BOTTOM);
+						}
 
-								if( cFileFinder.FindFile(_T("D:\\QA_Tool\\Fail_Image")) == TRUE)
-								{
-									DeleteAllFiles(_T("D:\\QA_Tool\\Fail_Image"));
-									cout << "D:\\QA_Tool\\Fail_Image 폴더를 비웁니다." << endl;
-								}
-								else
-								{
-									CreateDirectory(_T("D:\\QA_Tool\\Fail_Image"),NULL);
-									cout << "폴더가 존재 하지 않아 D:\\QA_Tool\\Fail_Image 폴더를 생성합니다." << endl;
-								}
-							}
-							
-							Main->cnt += 1; // 전체 몇번도는지 누적
+						Main->Compare_screen_cnt = 0;
+						Main->Fail_cnt = 0;
+						Main->Start_time_sw = 0;
+						Main->match_score_min = 100000;
 
-							for(int CAP = 0 ; CAP < 8 ; CAP++) // [CAP]번째의 화면을 Compare 한다
-							{
-									while(1)
-									{
-										if(Main->Start == false)
-											break;
-											
-										if(Main->Start == true) //START 버튼을 누르면
-										{
-											if(Main->Start_time_sw == 0)
-											{
-												Main->Start_time = CTime::GetCurrentTime();
-												Main->cTime = CTime::GetCurrentTime(); // cTime의 초기값을 지정해주기 위한 코드
+						} //CAP for문의 끝
+					
+						cout << endl;
+						//cout << "ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ" << endl;
 
-												Main->Start_time_sw = 1;
-											}
+					
+						if(Main->Start == false) // STOP 버튼을 누르면 나가는 코드
+							break;
+				
+						} // Loop for문의 끝
 
-											//cout << CAP << "번째 화면 " << Main->Gap << "초간 Compare 시작 " << endl;
-		
-											Main->Time_gap = Main->cTime - Main->Start_time;
+						for(int i=0 ; i < 8 ; i++) // 테스트가 끝나고 초기화 하는 코드
+						{
+							Main->Thread_compare[i] = 0;
+						}
 
-												if (Main->Thread_compare[CAP] == 1)
-												{
-													Compare_cam = cvCreateImage(cvGetSize(pthImage),pthImage->depth,pthImage->nChannels); // Compare_cam 변수에 원본이미지를 넣는다
+						cout << endl;
+						cout << "ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ" << endl;
+						cout << "Compare 종료" << endl;
 
-													if (Main->ResultImage != NULL)
-													cvReleaseImage(&Main->ResultImage);
+						AfxMessageBox(_T("테스트가 종료되었으며 결과가 저장되었습니다.\n테스트를 다시 진행하고자 한다면 이미지를 다시 캡쳐하여 주시기 바랍니다."));
 
-													Main->Test_screen = CAP; // List Control에 몇번째 이미지를 검색하는지 출력하기 위해 Test Screen 변수에 저장
-
-													if (Main->Thread_compare[CAP])
-													{
-														//if (Main->ResultImage == NULL)
-														{
-															pthImage = cvQueryFrame(Main->cam); // 원본이미지 변수에 캠의 화면을 저장
-															Main->ResultImage = cvCreateImage(cvGetSize(pthImage),pthImage->depth,pthImage->nChannels); // Main.ResultImage 변수에 원본이미지를 넣는다
-															cvFlip(pthImage,ResultImage,1); // Main.ResultImage 변수에 넣은 원본 이미지를 좌우반전한다.
-														}
-
-														IplImage *imgNames[NUM] = {ResultImage,Result_cap[CAP]}; // 이미지가 저장된 배열
-																					
-														Mat imgs[NUM];
-														Mat imgsHLS[NUM];
-
-														for(int i = 0 ; i < NUM ;i++)
-														{
-															imgs[i] = cvarrToMat(imgNames[i]); // IplImage를 Mat형태로 변환
-														
-															if(imgs[i].data==0)
-															{
-																cout << "Unable to read" << imgNames[i] <<endl;
-															}
-															
-															cvtColor(imgs[i],imgsHLS[i], COLOR_BGR2HLS);
-														}
-
-														//cout << endl << "succeeded to read all image" << endl;
-
-														Mat histogram[NUM];
-
-														int channel_numbers[] = {0,1,2};
-														for (int i=0;i<NUM;i++)
-														{
-															int* number_bins=new int[imgsHLS[i].channels()];
-
-															for (int ch=0;ch<imgsHLS[i].channels();ch++)
-															{
-																number_bins[ch]=BINS;
-															}
-
-															float ch_range[] = {0.0,255.0};
-															const float *channel_ranges[] = {ch_range,ch_range,ch_range};
-															calcHist(&imgsHLS[i],1,channel_numbers,Mat(),histogram[i],imgsHLS[i].channels(),number_bins,channel_ranges);
-															normalize(histogram[i],histogram[i],1.0);
-															delete[] number_bins;
-														}
-
-														//cout << "Image Comparison by HISTCMP_CORREL " << endl;
-
-														for(int i=0; i < NUM; i++)
-														{
-															for (int j = i+1 ; j<NUM ; j++)
-															{
-																double matching_score = compareHist(histogram[i], histogram[j],CV_COMP_CORREL);
-																Main->Match_Accurate = matching_score;
-																
-																Main->Compare_screen_cnt++;
-
-																if(matching_score < Main->match_score_min)
-																	Main->match_score_min = matching_score;
-																
-
-																if(matching_score * 100 < Main->Accurate/1000) // 결과에 따라 True False 결과 저장
-																{
-																	Main->Fail_cnt++;
-
-																	cout << "Fail_Image_" << Loop_cnt + 1 << "_" << CAP << "_" << Main->Fail_cnt << "의 유사도는 " << matching_score * 100 << "%" << endl << endl;
-
-																	if( GetFileAttributes(Main->Save_Root_Dir) == -1 ) // D:\\QA_Tool\\Fail_Image 폴더가 존재하지 않으면 해당 폴더 생성
-																	{
-																		CreateDirectory(_T("D:\\QA_Tool"),NULL);
-																		cout << "D:\\QA_Tool 폴더가 존재하지 않아 해당 폴더를 새로 생성 합니다." << endl;
-																	}
-
-																	if( GetFileAttributes(Main->Save_Fail_Image_Dir_Check) == -1 ) // D:\\QA_Tool\\Fail_Image 폴더가 존재하지 않으면 해당 폴더 생성
-																	{
-																		CreateDirectory(_T("D:\\QA_Tool\\Fail_Image"),NULL);
-																		cout << "D:\\QA_Tool\\Fail_Image 폴더가 존재하지 않아 해당 폴더를 새로 생성 합니다." << endl;
-																	}
-
-																	//아래 코드는 CString to Char*로 변환하는 코드로, Fail Image를 jpg파일로 저장할때 cvSaveIamge(?)함수를 사용할때 1번째 인자에 사용한다.
-																	Main->str_Loop.Format(_T("%d"),Main->cnt); // Loop를 string으로 변환
-																	Main->str_CAP.Format(_T("%d"),CAP); // Loop를 string으로 변환
-																	Main->str_Fail_cnt.Format(_T("%d"),Main->Fail_cnt); // Fail 갯수를 string으로 변환
-																	Main->Save_Fail_Image_Dir = "D:\\QA_Tool\\Fail_Image\\Fail_Image_"; // 두번째 이후부터 루프가 돌때 이전에 지정해놓은 파일명이 저장되어 있으므로 초기화 해준다.
-																	Main->Save_Fail_Image_Dir += Main->str_Loop; // 몇번째 Loop중인지 지정
-																	Main->Save_Fail_Image_Dir += "_";
-																	Main->Save_Fail_Image_Dir += Main->str_CAP;
-																	Main->Save_Fail_Image_Dir += "_";
-																	Main->Save_Fail_Image_Dir += Main->str_Fail_cnt; // 몇번째 Fail 이미지인지 지정
-																	Main->Save_Fail_Image_Dir +=  ".jpg"; // 확장자 지정
-																	//저장된 Fail 이미지의 이름은 Fail_Image_1_1_1 .. Fail_Image_1_1_2 .. Fail_Image_1_1_3 .. Fail_Image_1_2_1 ..
-																	//첫번째 숫자는 Loop, 두번째 숫자는 n번째 이미지,세번째 숫자는 Fail난 이미지 갯수이다.
-
-																	Main->Save_Fail_Image = (char*) malloc(Main->Save_Fail_Image_Dir.GetLength());
-																	wcstombs_s(&Main->CharactersConverted, Main->Save_Fail_Image, Main->Save_Fail_Image_Dir.GetLength()+1, Main->Save_Fail_Image_Dir, _TRUNCATE);
-
-																	cvSaveImage(Main->Save_Fail_Image, Main->ResultImage); // 첫번째 파라미터가 Char* 이므로 위 코드를 통해 CString 에서 Char*로 변경하였다.
-																}
-															}
-														}
-
-													} // if (Main->Thread_compare[CAP]) 문
-
-													// 캠 그리기 시작
-
-														Main->m_main_cam_draw.GetClientRect(rect);
-
-														pDC = Main->m_main_cam_draw.GetDC();
-
-															if(Main->ResultImage != NULL)
-															{
-																Main->Main_draw.CopyOf(Main->ResultImage);
-																Main->Main_draw.DrawToHDC(pDC->m_hDC,&rect);// 좌우반전한 Main->ResultImage를 출력한다.
-															}
-
-															Main->m_main_cam_draw.ReleaseDC(pDC); // DC를 Release 해준다
-															
-													 // 캠 그리기 끝
-
-															//if(Main->ThreadFirst_running == true)
-																cvReleaseImage(&Main->ResultImage);
-															
-															cvReleaseImage(&Main->Compare_cam);
-													
-												} // (Thread_compare[CAP] == 1) 문
-
-										Main->cTime = CTime::GetCurrentTime(); // cTime 변수에 현재시간 저장
-
-										if( Main->Time_gap.GetTotalSeconds() > Main->Gap || Thread_compare[CAP] == 0)
-											break;
-									} // if(Main->Start == true)문의 끝
-
-									Sleep(1);
-											
-								} // while문의 끝
-
-								if(Main->Start == false) // STOP 버튼을 누르면 실행할 코드
-								{
-									Main->Compare_screen_cnt = 0;
-									Main->Fail_cnt = 0;
-									Main->Start_time_sw = 0;
-									Main->match_score_min = 100000;
-
-									break;
-								}
-
-								Main->cTime = CTime::GetCurrentTime();
-
-								if (Thread_compare[CAP] == 1)
-								{
-									Main->SendMessageW(WM_USER_MESSAGE1,100,200); // List Control에 결과를 추가하기 위한 코드
-									Main->m_Result_table.SendMessage(WM_VSCROLL,SB_BOTTOM);
-								}
-
-								Main->Compare_screen_cnt = 0;
-								Main->Fail_cnt = 0;
-								Main->Start_time_sw = 0;
-								Main->match_score_min = 100000;
-
-								} //CAP for문의 끝
-							
-								cout << endl;
-								//cout << "ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ" << endl;
-
-							
-								if(Main->Start == false) // STOP 버튼을 누르면 나가는 코드
-									break;
-						
-								} // Loop for문의 끝
-
-								for(int i=0 ; i < 8 ; i++) // 테스트가 끝나고 초기화 하는 코드
-								{
-									Main->Thread_compare[i] = 0;
-								}
-
-								cout << endl;
-								cout << "ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ" << endl;
-								cout << "Compare 종료" << endl;
-
-								AfxMessageBox(_T("테스트가 종료되었습니다.\n테스트를 다시 진행하고자 한다면 이미지를 다시 캡쳐하여 주시기 바랍니다."));
-
-								Main->Start_time_sw = 0;
+						Main->Start_time_sw = 0;
 
 						Main->Start = false;
 
 						Main->Test_cnt = 0;
 
 						Main->m_View_button.EnableWindow(TRUE);
+
+						Main->Save();
 					} // if ( Main->Start == true && Main->Test_cnt > 0 ) 문의 끝
+
 					else if ( Main->Start == true && Main->Test_cnt == 0 )
 					{
 						cout << "캡쳐된 화면이 없어서 테스트를 진행할 수 없습니다." << endl;

@@ -49,7 +49,7 @@ protected:
 	DECLARE_MESSAGE_MAP()
 
 private:
-	CTime Start_time; // 테스트 시작 시간 저장 변수
+	CTime Start_time; // 테스트의 진행시간 계산을 위한 각 항목별 시작시간을 저장하는 변수
 	CTime cTime; // 테스트 진행중 시간 저장 변수
 
 	// 이하 n초동안 Comapre를 하는 동작을 구현하기 위해 선언해야 하는변수
@@ -68,12 +68,24 @@ private:
 	CString Save_Fail_Image_Dir_Check; // Fail 이미지가 저장되어 있지 않다면 저장하는 폴더 생성을 위한 변수
 	CString Accurate_tmp;
 	CString str_CAP;
+
+	CString str_Test_Start_time;
+	CString str_Test_Start_time_Year;
+	CString str_Test_Start_time_Month;
+	CString str_Test_Start_time_Day;
+	CString str_Test_Start_time_Hour;
+	CString str_Test_Start_time_Minute;
+	CString str_Test_Start_time_Second;
+	CTime Test_Start_time; // 테스트의 처음 시작 시간
 	
 	
 public:
 	afx_msg void OnBnClickedView();
 	afx_msg void OnActivate(UINT nState, CWnd* pWndOther, BOOL bMinimized);
 	afx_msg void OnInitMenu(CMenu* pMenu);
+
+	void Save(); // 리스트 컨트롤 메모장으로 저장
+	void Load();
 
 	int sel_cam; // 몇번째 카메라로 녹화할것인지 선택한다.
 	int sw_active; // 스레드가 한번만 실행되게 하는 스위치 변수

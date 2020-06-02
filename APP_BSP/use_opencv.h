@@ -45,6 +45,10 @@
 
 #include "highgui.h"
 
+// 이상 opencv 헤더파일
+
+#include <locale.h>
+
 #ifdef _DEBUG
 
       #pragma comment(lib,"opencv_core249d.lib")

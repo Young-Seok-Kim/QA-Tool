@@ -486,7 +486,7 @@ void VIEW::OnBnClickedCapBtn2()
 
 	if(Main->Test_cnt == 0)
 	{
-		cout << "이미지를 처음 캡쳐하여 D:\QA_Tool\Capture_Image 폴더를 비웁니다." << endl;
+		cout << "이미지를 처음 캡쳐하여 D:\\QA_Tool\\Capture_Image 폴더를 비웁니다." << endl;
 		DeleteAllFiles_View(TEXT("D:\\QA_Tool\\Capture_Image"));
 	}
 
@@ -549,7 +549,7 @@ void VIEW::OnBnClickedCapBtn3()
 
 	if(Main->Test_cnt == 0)
 	{
-		cout << "이미지를 처음 캡쳐하여 D:\QA_Tool\Capture_Image 폴더를 비웁니다." << endl;
+		cout << "이미지를 처음 캡쳐하여 D:\\QA_Tool\\Capture_Image 폴더를 비웁니다." << endl;
 		DeleteAllFiles_View(TEXT("D:\\QA_Tool\\Capture_Image"));
 	}
 
@@ -616,7 +616,7 @@ void VIEW::OnBnClickedCapBtn4()
 
 	if(Main->Test_cnt == 0)
 	{
-		cout << "이미지를 처음 캡쳐하여 D:\QA_Tool\Capture_Image 폴더를 비웁니다." << endl;
+		cout << "이미지를 처음 캡쳐하여 D:\\QA_Tool\\Capture_Image 폴더를 비웁니다." << endl;
 		DeleteAllFiles_View(TEXT("D:\\QA_Tool\\Capture_Image"));
 	}
 
@@ -681,7 +681,7 @@ void VIEW::OnBnClickedCapBtn5()
 
 	if(Main->Test_cnt == 0)
 	{
-		cout << "이미지를 처음 캡쳐하여 D:\QA_Tool\Capture_Image 폴더를 비웁니다." << endl;
+		cout << "이미지를 처음 캡쳐하여 D:\\QA_Tool\\Capture_Image 폴더를 비웁니다." << endl;
 		DeleteAllFiles_View(TEXT("D:\\QA_Tool\\Capture_Image"));
 	}
 
@@ -746,7 +746,7 @@ void VIEW::OnBnClickedCapBtn6()
 
 	if(Main->Test_cnt == 0)
 	{
-		cout << "이미지를 처음 캡쳐하여 D:\QA_Tool\Capture_Image 폴더를 비웁니다." << endl;
+		cout << "이미지를 처음 캡쳐하여 D:\\QA_Tool\\Capture_Image 폴더를 비웁니다." << endl;
 		DeleteAllFiles_View(TEXT("D:\\QA_Tool\\Capture_Image"));
 	}
 
@@ -809,7 +809,7 @@ void VIEW::OnBnClickedCapBtn7()
 
 	if(Main->Test_cnt == 0)
 	{
-		cout << "이미지를 처음 캡쳐하여 D:\QA_Tool\Capture_Image 폴더를 비웁니다." << endl;
+		cout << "이미지를 처음 캡쳐하여 D:\\QA_Tool\\Capture_Image 폴더를 비웁니다." << endl;
 		DeleteAllFiles_View(TEXT("D:\\QA_Tool\\Capture_Image"));
 	}
 
@@ -873,7 +873,7 @@ void VIEW::OnBnClickedCapBtn8()
 
 	if(Main->Test_cnt == 0)
 	{
-		cout << "이미지를 처음 캡쳐하여 D:\QA_Tool\Capture_Image 폴더를 비웁니다." << endl;
+		cout << "이미지를 처음 캡쳐하여 D:\\QA_Tool\\Capture_Image 폴더를 비웁니다." << endl;
 		DeleteAllFiles_View(TEXT("D:\\QA_Tool\\Capture_Image"));
 	}
 

@@ -45,7 +45,7 @@ protected:
 
 private:
 	void CAP_button_active();
-	void CAP_buttion_disable();
+	void CAP_button_disable();
 
 	
 

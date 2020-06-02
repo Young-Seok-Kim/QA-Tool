@@ -122,7 +122,7 @@ void VIEW::CAP_button_active()
 	GetDlgItem(IDC_CAP_BTN7)->EnableWindow(TRUE);
 	GetDlgItem(IDC_CAP_BTN8)->EnableWindow(TRUE);
 }
-void VIEW::CAP_buttion_disable()
+void VIEW::CAP_button_disable()
 {
 	GetDlgItem(IDC_CAP_BTN1)->EnableWindow(FALSE);
 	GetDlgItem(IDC_CAP_BTN2)->EnableWindow(FALSE);
@@ -340,7 +340,7 @@ void VIEW::OnActivate(UINT nState, CWnd* pWndOther, BOOL bMinimized)
 		}
 		else
 		{
-			CAP_buttion_disable();
+			CAP_button_disable();
 		}
 	}
 	

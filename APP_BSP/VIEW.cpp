@@ -1252,7 +1252,6 @@ void VIEW::OnBnClickedInitImage()
 
 	for(int i = 0 ; i < 8 ; i++)
 	{
-		
 		cvReleaseImage(&Main->Result_cap[i]);
 		Thread_compare[i] = 0;
 	}

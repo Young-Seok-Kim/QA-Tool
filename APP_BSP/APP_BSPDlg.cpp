@@ -194,7 +194,7 @@ void CAPP_BSPDlg::Save()
 	Main->str_Test_Start_time_Minute.Format(_T("%d"),Main->Test_Start_time.GetMinute());
 	Main->str_Test_Start_time_Second.Format(_T("%d"),Main->Test_Start_time.GetSecond());
 
-	Main->str_Test_Start_time = _T("테스트 시작시간: ") + Main->str_Test_Start_time_Year + _T("년 ") + Main->str_Test_Start_time_Month + _T("월 ") + Main->str_Test_Start_time_Day + _T("일 ") + Main->str_Test_Start_time_Hour + _T("시 ") + Main->str_Test_Start_time_Minute + _T("분 ") + Main->str_Test_Start_time_Second + _T("초 ");
+	Main->str_Test_Start_time = _T("테스트 시작시간 : ") + Main->str_Test_Start_time_Year + _T("년 ") + Main->str_Test_Start_time_Month + _T("월 ") + Main->str_Test_Start_time_Day + _T("일 ") + Main->str_Test_Start_time_Hour + _T("시 ") + Main->str_Test_Start_time_Minute + _T("분 ") + Main->str_Test_Start_time_Second + _T("초 ");
 
 	file.WriteString(Main->str_Test_Start_time + "\n\n");
 
@@ -625,8 +625,7 @@ UINT CAPP_BSPDlg::ThreadFirst(LPVOID _mothod) // Cam으로부터 이미지를 가져오고, 
 													
 											 // 캠 그리기 끝
 
-													//if(Main->ThreadFirst_running == true)
-														cvReleaseImage(&Main->ResultImage);
+													cvReleaseImage(&Main->ResultImage);
 													
 													cvReleaseImage(&Main->Compare_cam);
 											
@@ -679,6 +678,9 @@ UINT CAPP_BSPDlg::ThreadFirst(LPVOID _mothod) // Cam으로부터 이미지를 가져오고, 
 						for(int i=0 ; i < 8 ; i++) // 테스트가 끝나고 초기화 하는 코드
 						{
 							Main->Thread_compare[i] = 0;
+							
+							if(Main->Result_cap[i])
+								cvReleaseImage(&Main->Result_cap[i]);
 						}
 
 						cout << endl;
@@ -696,6 +698,7 @@ UINT CAPP_BSPDlg::ThreadFirst(LPVOID _mothod) // Cam으로부터 이미지를 가져오고, 
 						Main->m_View_button.EnableWindow(TRUE);
 
 						Main->Save();
+
 					} // if ( Main->Start == true && Main->Test_cnt > 0 ) 문의 끝
 
 					else if ( Main->Start == true && Main->Test_cnt == 0 )

@@ -948,7 +948,10 @@ void CAPP_BSPDlg::OnClose()
 	CAPP_BSPDlg *Main = (CAPP_BSPDlg*)AfxGetApp()->GetMainWnd();
 
 	if (p1)
+	{
 		Main->Start = false;
+		Main->Thread_second_running = false;
+	}
 
 	CDialog::OnClose();
 }

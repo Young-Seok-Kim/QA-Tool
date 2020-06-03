@@ -950,6 +950,7 @@ void CAPP_BSPDlg::OnClose()
 	if (p1)
 	{
 		Main->Start = false;
+		Main->ThreadFirst_running = false;
 		Main->Thread_second_running = false;
 	}
 

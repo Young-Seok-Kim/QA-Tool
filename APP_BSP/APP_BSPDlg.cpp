@@ -123,6 +123,7 @@ BEGIN_MESSAGE_MAP(CAPP_BSPDlg, CDialog)
 	ON_BN_CLICKED(IDC_CAM_SEL, &CAPP_BSPDlg::OnBnClickedCamSel)
 	ON_MESSAGE(WM_USER_MESSAGE1 , CAPP_BSPDlg::OnUserFunc)
 	ON_NOTIFY(LVN_ITEMCHANGED, IDC_LIST, &CAPP_BSPDlg::OnLvnItemchangedList)
+	ON_WM_CLOSE()
 END_MESSAGE_MAP()
 
 
@@ -615,12 +616,11 @@ UINT CAPP_BSPDlg::ThreadFirst(LPVOID _mothod) // Cam으로부터 이미지를 가져오고, 
 
 												pDC = Main->m_main_cam_draw.GetDC();
 
-													if(Main->ResultImage != NULL)
-													{
-														Main->Main_draw.CopyOf(Main->ResultImage);
-														Main->Main_draw.DrawToHDC(pDC->m_hDC,&rect);// 좌우반전한 Main->ResultImage를 출력한다.
-													}
-
+												if(Main->ResultImage != NULL && Main->Start == true)
+												{
+													Main->Main_draw.CopyOf(Main->ResultImage);
+													Main->Main_draw.DrawToHDC(pDC->m_hDC,&rect);// 좌우반전한 Main->ResultImage를 출력한다.
+												}
 													Main->m_main_cam_draw.ReleaseDC(pDC); // DC를 Release 해준다
 													
 											 // 캠 그리기 끝
@@ -939,4 +939,16 @@ BOOL CAPP_BSPDlg::PreTranslateMessage(MSG* pMsg)
   }
 
 	return CDialog::PreTranslateMessage(pMsg);
+}
+
+void CAPP_BSPDlg::OnClose()
+{
+	// TODO: 여기에 메시지 처리기 코드를 추가 및/또는 기본값을 호출합니다.
+	
+	CAPP_BSPDlg *Main = (CAPP_BSPDlg*)AfxGetApp()->GetMainWnd();
+
+	if (p1)
+		Main->Start = false;
+
+	CDialog::OnClose();
 }

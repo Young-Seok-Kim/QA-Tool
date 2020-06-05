@@ -77,7 +77,25 @@ private:
 	CString str_Test_Start_time_Minute;
 	CString str_Test_Start_time_Second;
 	CTime Test_Start_time; // 테스트의 처음 시작 시간
+	int Loop;
+	CString Loop_tmp;
+	int Gap;
+	CString After_tmp;
+	int After;
+	CString Gap_tmp;
+	bool *Match_result;
+	CString str_Loop;
+	CRect rt;
+	CString Add_result;
+	int cnt;
+	int row_cnt; // 결과 표 만들때 테스트 하기 위한 변수
+	int Test_screen; // 몇개의 화면을 테스트 할것인지
+	CString str_Test_screen;
+	double Accurate;
 	
+	double Accurate_inspect; // Setting 클릭시 정확도를 올바르게 입력했는지 확인하는 if문에서 사용할 변수
+	CString Test_result;
+	CvvImage Main_draw;
 	
 public:
 	afx_msg void OnBnClickedView();
@@ -106,38 +124,15 @@ public:
 	CvvImage m_viewcopy;
 	CModalDialog *m_pDlg; // 모달리스로 VIEW를 열기 위한 변수
 	static IplImage *pthImage; // 원본 이미지
-	int Loop;
-	CString Loop_tmp;
-	int Gap;
-	CString After_tmp;
-	int After;
-	CString Gap_tmp;
 	bool Start;
-	bool *Match_result;
-	CString str_Loop;
-	CRect rt;
-	CString Add_result;
-	afx_msg LRESULT OnUserFunc(WPARAM wParam, LPARAM lParam);
-	int cnt;
-	int row_cnt; // 결과 표 만들때 테스트 하기 위한 변수
-	int Test_screen; // 몇개의 화면을 테스트 할것인지
-	CString str_Test_screen;
-	double Accurate;
-	double Match_Accurate;
-	double Accurate_inspect; // Setting 클릭시 정확도를 올바르게 입력했는지 확인하는 if문에서 사용할 변수
-	CString Test_result;
-	CvvImage Main_draw;
 	int Test_cnt;
+	double Match_Accurate;
+	afx_msg LRESULT OnUserFunc(WPARAM wParam, LPARAM lParam);	
 	int sel_cap;
-
-	int sw_Compare;
-	
+	int sw_Compare;	
 	CString Save_CAP_Image_Dir_Check; // 이미지를 캡쳐 할때 이미지 저장 폴더가 없다면 생성하기 위한 변수
-	CString Save_Root_Dir;
-
-	
-	static CCriticalSection cs; // 스레드 동기화를 위한 변수
-	
+	CString Save_Root_Dir;	
+	static CCriticalSection cs; // 스레드 동기화를 위한 변수	
 	static UINT ThreadFirst(LPVOID _mothod); // Main Dialog에서 돌아갈 스레드를 만든다.
 	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
 	afx_msg void OnBnClickedSetting();

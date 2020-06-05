@@ -63,6 +63,7 @@
 #define IDC_CAP_BTN8                    1038
 #define IDC_BUTTON1                     1039
 #define IDC_INIT_IMAGE                  1039
+#define IDC_FOLDER                      1039
 
 // Next default values for new objects
 // 

@@ -114,6 +114,7 @@ BEGIN
     LTEXT           "카메라",IDC_MAIN_CAM,9,14,56,13
     LTEXT           "번",IDC_CAM_NUM,127,13,12,8
     LTEXT           "n초후 검사",IDC_STATIC,11,50,56,13
+    PUSHBUTTON      "폴더 열기",IDC_FOLDER,150,72,41,30
 END
 
 IDD_VIEW DIALOGEX 0, 0, 655, 339

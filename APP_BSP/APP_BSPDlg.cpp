@@ -124,6 +124,7 @@ BEGIN_MESSAGE_MAP(CAPP_BSPDlg, CDialog)
 	ON_MESSAGE(WM_USER_MESSAGE1 , CAPP_BSPDlg::OnUserFunc)
 	ON_NOTIFY(LVN_ITEMCHANGED, IDC_LIST, &CAPP_BSPDlg::OnLvnItemchangedList)
 	ON_WM_CLOSE()
+	ON_BN_CLICKED(IDC_FOLDER, &CAPP_BSPDlg::OnBnClickedFolder)
 END_MESSAGE_MAP()
 
 
@@ -955,4 +956,10 @@ void CAPP_BSPDlg::OnClose()
 	}
 
 	CDialog::OnClose();
+}
+
+void CAPP_BSPDlg::OnBnClickedFolder()
+{
+	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+	::ShellExecute(NULL, TEXT("open"), NULL, NULL, TEXT("D:\\QA_Tool"), SW_SHOW);	
 }

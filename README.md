@@ -19,7 +19,7 @@ D:\QA_Tool\Fail_Image 안의 이미지의 삭제가 오래 걸린다면, 직접 
 
 # 설명
 ## Main 화면
-![Main](https://user-images.githubusercontent.com/58472006/83585828-cefad580-a585-11ea-9565-fe054c089e44.png)
+![Main](https://user-images.githubusercontent.com/58472006/83824248-e5816800-a710-11ea-8023-39795d9a20ee.png)
 
 ### Setting
 카메라 : 노트북의 경우 내장된 카메라가 0번으로 설정되어 있으며, 0 ~ 5번의 카메라를 선택할수 있다. 카메라가 연결되어 있지 않다면 카메라가 연결되어 있지 않다는 메시지 박스가 나온다.
@@ -53,6 +53,8 @@ n초후 검사 : 테스트를 처음 시작할때 입력한 숫자만큼 대기
 * START : 이 버튼을 누르면 D:\QA_Tool\Fail_Image 폴더안의 파일들을 삭제 한 후 테스트가 시작된다.
 
 * STOP : 테스트중 이 버튼을 누르면 테스트가 종료된다.
+
+* 폴더 열기 : D:\QA_Tool 폴더를 연다.
 
 ## VIEW 다이얼로그
 ![VIEW](https://user-images.githubusercontent.com/58472006/83585836-d15d2f80-a585-11ea-88a6-205af219dc3b.png)

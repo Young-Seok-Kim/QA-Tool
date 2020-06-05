@@ -158,4 +158,5 @@ public:
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
 	CButton m_View_button;
 	afx_msg void OnClose();
+	afx_msg void OnBnClickedFolder();
 };

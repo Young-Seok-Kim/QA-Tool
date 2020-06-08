@@ -764,6 +764,12 @@ int CAPP_BSPDlg::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
 	if( Main->cam == NULL )
 		AfxMessageBox(_T("캠이 연결되어 있지 않습니다. 캠을 연결하여 주십시오."));
+
+	if( GetFileAttributes(Main->Save_Root_Dir) == -1 ) // D:\\QA_Tool\\Fail_Image 폴더가 존재하지 않으면 해당 폴더 생성
+	{
+		CreateDirectory(_T("D:\\QA_Tool"),NULL);
+		cout << "D:\\QA_Tool 폴더가 존재하지 않아 해당 폴더를 새로 생성 합니다." << endl<< endl;
+	}
 	
 	Main->Thread_second_running_count = 0;
 

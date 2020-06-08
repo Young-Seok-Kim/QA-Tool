@@ -70,7 +70,7 @@ D:\QA_Tool\Fail_Image 안의 이미지의 삭제가 오래 걸린다면, 직접 
 
 ## 콘솔
 ![Terminal](https://user-images.githubusercontent.com/58472006/83587426-066b8100-a58a-11ea-8ad8-5e2f9c754fad.png)
-에 해당 사진처럼 현재 진행중인 사항 등이 출력되며, Fail이 나오면 어떤 이미지가 유사도 몇으로 FAIL이 나왔는지 출력된다.
+콘솔에 해당 사진처럼 현재 진행중인 사항 등이 출력되며, Fail이 나오면 어떤 이미지가 유사도 몇으로 FAIL이 나왔는지 출력된다.
 
 ## 테스트 결과
 ![Result](https://user-images.githubusercontent.com/58472006/83585833-d0c49900-a585-11ea-84e2-089793d60879.png)

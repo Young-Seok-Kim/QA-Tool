@@ -109,6 +109,7 @@ ON_BN_CLICKED(IDC_COM_BTN6, &VIEW::OnBnClickedComBtn6)
 ON_BN_CLICKED(IDC_COM_BTN7, &VIEW::OnBnClickedComBtn7)
 ON_BN_CLICKED(IDC_COM_BTN8, &VIEW::OnBnClickedComBtn8)
 ON_BN_CLICKED(IDC_INIT_IMAGE, &VIEW::OnBnClickedInitImage)
+ON_WM_DESTROY()
 END_MESSAGE_MAP()
 
 void VIEW::CAP_button_active()
@@ -289,7 +290,7 @@ void VIEW::OnClose()
 		p1 = AfxBeginThread(ThreadFirst, this); // 여기까지 스레드
 		p1->m_bAutoDelete = FALSE;
 	}
-	
+
 	CDialog::OnClose();
 }
 void VIEW::OnBnClickedCamsel()
@@ -342,6 +343,7 @@ void VIEW::OnActivate(UINT nState, CWnd* pWndOther, BOOL bMinimized)
 		{
 			CAP_button_disable();
 		}
+		
 	}
 	
 	sel.SetCurSel(Main->sel_cam);
@@ -361,9 +363,6 @@ int VIEW::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	CAPP_BSPDlg *Main = (CAPP_BSPDlg*)AfxGetApp()->GetMainWnd();
 
 	//Main->Thread_second_running_count += 1;
-
-	sel.SetCurSel(Main->sel_cam);
-	m_sel_cap.SetCurSel(Main->sel_cap - 1);
 
 	return 0;
 }
@@ -1129,13 +1128,10 @@ void VIEW::OnInitMenu(CMenu* pMenu)
 	
 	CAPP_BSPDlg *Main = (CAPP_BSPDlg*)AfxGetApp()->GetMainWnd();
 
-	
-	
 	for(int i=0;i<8;i++)
 	{
 		Main->compare_order[i] = 0;
 	}
-	
 }
 
 void VIEW::OnBnClickedComBtn1()
@@ -1260,4 +1256,12 @@ void VIEW::OnBnClickedInitImage()
 
 	AfxMessageBox(_T("비교할 이미지가 초기화 되었습니다."));
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+}
+
+void VIEW::OnDestroy()
+{
+	//delete Main->m_pDlg;
+
+	CAPP_BSPDlg::OnDestroy();	
+	// TODO: 여기에 메시지 처리기 코드를 추가합니다.
 }

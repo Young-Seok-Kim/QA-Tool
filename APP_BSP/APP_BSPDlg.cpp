@@ -284,7 +284,8 @@ void CAPP_BSPDlg::OnBnClickedView()
 	*/
 
 	CAPP_BSPDlg *Main = (CAPP_BSPDlg*)AfxGetApp()->GetMainWnd();
-
+	VIEW *pView = (VIEW*)AfxGetApp()->GetMainWnd();//(VIEW*)_mothod;
+	
 	Main->ThreadFirst_running = false;
 	
 	Main->Thread_second_running = true;
@@ -292,16 +293,17 @@ void CAPP_BSPDlg::OnBnClickedView()
 
 	UpdateData(FALSE);
 
-	if(m_pDlg != NULL)
+
+	if(Main->m_pDlg != NULL)
 	{
-		m_pDlg->SetFocus();
-		m_pDlg->ShowWindow(SW_SHOW);
+		Main->m_pDlg->SetFocus();
+		Main->m_pDlg->ShowWindow(SW_SHOW);
 	}
 	else
 	{
-		m_pDlg = new VIEW;
-		m_pDlg->Create(IDD_VIEW,this);
-		m_pDlg->ShowWindow(SW_SHOW);
+		Main->m_pDlg = new VIEW;
+		Main->m_pDlg->Create(IDD_VIEW,this);
+		Main->m_pDlg->ShowWindow(SW_SHOW);
 	}
 	
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.

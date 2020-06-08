@@ -101,4 +101,5 @@ public:
 	afx_msg void OnBnClickedComBtn8();
 
 	afx_msg void OnBnClickedInitImage();
+	afx_msg void OnDestroy();
 };

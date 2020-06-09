@@ -607,7 +607,7 @@ UINT CAPP_BSPDlg::ThreadFirst(LPVOID _mothod) // Cam으로부터 이미지를 가져오고, 
 															Main->Save_Fail_Image_Dir += Main->str_Fail_cnt; // 몇번째 Fail 이미지인지 지정
 															Main->Save_Fail_Image_Dir +=  ".jpg"; // 확장자 지정
 															//저장된 Fail 이미지의 이름은 Fail_Image_1_1_1 .. Fail_Image_1_1_2 .. Fail_Image_1_1_3 .. Fail_Image_1_2_1 ..
-															//첫번째 숫자는 Loop, 두번째 숫자는 n번째 이미지,세번째 숫자는 Fail난 이미지 갯수이다.
+															//첫번째 숫자는 Loop, 두번째 숫자는 n번째 이미지,세번째 숫자는 n번째 Fail난 이미지이다.
 
 															Main->Save_Fail_Image = (char*) malloc(Main->Save_Fail_Image_Dir.GetLength());
 															wcstombs_s(&Main->CharactersConverted, Main->Save_Fail_Image, Main->Save_Fail_Image_Dir.GetLength()+1, Main->Save_Fail_Image_Dir, _TRUNCATE);
@@ -648,7 +648,7 @@ UINT CAPP_BSPDlg::ThreadFirst(LPVOID _mothod) // Cam으로부터 이미지를 가져오고, 
 
 							Sleep(1);
 									
-						} // while문의 끝
+						} // while문의 끝	
 
 						if(Main->Start == false) // STOP 버튼을 누르면 실행할 코드
 						{

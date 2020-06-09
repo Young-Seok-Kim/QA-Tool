@@ -345,7 +345,45 @@ void VIEW::OnActivate(UINT nState, CWnd* pWndOther, BOOL bMinimized)
 		}
 		
 	}
-	
+
+	for(int i=0;i<8;i++)
+	{
+		switch(i)
+		{
+			case 0:
+				if(!Main->Result_cap[i])
+					GetDlgItem(IDC_COM_BTN1)->EnableWindow(FALSE);
+					break;
+			case 1:
+				if(!Main->Result_cap[i])
+					GetDlgItem(IDC_COM_BTN2)->EnableWindow(FALSE);
+					break;
+			case 2:
+				if(!Main->Result_cap[i])
+					GetDlgItem(IDC_COM_BTN3)->EnableWindow(FALSE);
+					break;
+			case 3:
+				if(!Main->Result_cap[i])
+					GetDlgItem(IDC_COM_BTN4)->EnableWindow(FALSE);
+					break;
+			case 4:
+				if(!Main->Result_cap[i])
+					GetDlgItem(IDC_COM_BTN5)->EnableWindow(FALSE);
+					break;
+			case 5:
+				if(!Main->Result_cap[i])
+					GetDlgItem(IDC_COM_BTN6)->EnableWindow(FALSE);
+					break;
+			case 6:
+				if(!Main->Result_cap[i])
+					GetDlgItem(IDC_COM_BTN7)->EnableWindow(FALSE);
+					break;
+			case 7:
+				if(!Main->Result_cap[i])
+					GetDlgItem(IDC_COM_BTN8)->EnableWindow(FALSE);
+					break;
+		}
+	}
 	sel.SetCurSel(Main->sel_cam);
 	m_sel_cap.SetCurSel(Main->sel_cap - 1);
 }
@@ -897,23 +935,8 @@ void VIEW::OnBnClickedSelCap()
 	CBrush myBrush(GRAY); // dialog background color <- 요기 바꾸면 됨.
 
 	// 다시 눌렀을때를 대비해서 일단 전부 활성화 시키고, 필요한만큼 다시 비활성화 시킨다.
-	GetDlgItem(IDC_CAP_BTN1)->EnableWindow(TRUE);
-	GetDlgItem(IDC_CAP_BTN2)->EnableWindow(TRUE);
-	GetDlgItem(IDC_CAP_BTN3)->EnableWindow(TRUE);
-	GetDlgItem(IDC_CAP_BTN4)->EnableWindow(TRUE);
-	GetDlgItem(IDC_CAP_BTN5)->EnableWindow(TRUE);
-	GetDlgItem(IDC_CAP_BTN6)->EnableWindow(TRUE);
-	GetDlgItem(IDC_CAP_BTN7)->EnableWindow(TRUE);
-	GetDlgItem(IDC_CAP_BTN8)->EnableWindow(TRUE);
-
-	GetDlgItem(IDC_COM_BTN1)->EnableWindow(FALSE);
-	GetDlgItem(IDC_COM_BTN2)->EnableWindow(FALSE);
-	GetDlgItem(IDC_COM_BTN3)->EnableWindow(FALSE);
-	GetDlgItem(IDC_COM_BTN4)->EnableWindow(FALSE);
-	GetDlgItem(IDC_COM_BTN5)->EnableWindow(FALSE);
-	GetDlgItem(IDC_COM_BTN6)->EnableWindow(FALSE);
-	GetDlgItem(IDC_COM_BTN7)->EnableWindow(FALSE);
-	GetDlgItem(IDC_COM_BTN8)->EnableWindow(FALSE);
+	VIEW::CAP_button_active();
+	VIEW::COM_button_disable();
 
 	cout << m_sel_cap.GetCurSel()+1 << "개의 이미지 비교" << endl;
 	Main->sel_cap = m_sel_cap.GetCurSel() ;
@@ -1128,10 +1151,6 @@ void VIEW::OnInitMenu(CMenu* pMenu)
 	
 	CAPP_BSPDlg *Main = (CAPP_BSPDlg*)AfxGetApp()->GetMainWnd();
 
-	for(int i=0;i<8;i++)
-	{
-		Main->compare_order[i] = 0;
-	}
 }
 
 void VIEW::OnBnClickedComBtn1()
@@ -1254,6 +1273,9 @@ void VIEW::OnBnClickedInitImage()
 
 	Main->Test_cnt = 0;
 
+	VIEW::COM_button_disable();
+	VIEW::PIC_Invalidate();
+
 	AfxMessageBox(_T("비교할 이미지가 초기화 되었습니다."));
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
 }
@@ -1264,4 +1286,40 @@ void VIEW::OnDestroy()
 
 	CAPP_BSPDlg::OnDestroy();	
 	// TODO: 여기에 메시지 처리기 코드를 추가합니다.
+}
+
+void VIEW::COM_button_active()
+{
+	GetDlgItem(IDC_COM_BTN1)->EnableWindow(TRUE);
+	GetDlgItem(IDC_COM_BTN2)->EnableWindow(TRUE);
+	GetDlgItem(IDC_COM_BTN3)->EnableWindow(TRUE);
+	GetDlgItem(IDC_COM_BTN4)->EnableWindow(TRUE);
+	GetDlgItem(IDC_COM_BTN5)->EnableWindow(TRUE);
+	GetDlgItem(IDC_COM_BTN6)->EnableWindow(TRUE);
+	GetDlgItem(IDC_COM_BTN7)->EnableWindow(TRUE);
+	GetDlgItem(IDC_COM_BTN8)->EnableWindow(TRUE);
+}
+
+void VIEW::COM_button_disable()
+{
+	GetDlgItem(IDC_COM_BTN1)->EnableWindow(FALSE);
+	GetDlgItem(IDC_COM_BTN2)->EnableWindow(FALSE);
+	GetDlgItem(IDC_COM_BTN3)->EnableWindow(FALSE);
+	GetDlgItem(IDC_COM_BTN4)->EnableWindow(FALSE);
+	GetDlgItem(IDC_COM_BTN5)->EnableWindow(FALSE);
+	GetDlgItem(IDC_COM_BTN6)->EnableWindow(FALSE);
+	GetDlgItem(IDC_COM_BTN7)->EnableWindow(FALSE);
+	GetDlgItem(IDC_COM_BTN8)->EnableWindow(FALSE);
+}
+
+void VIEW::PIC_Invalidate()
+{
+	GetDlgItem(IDC_CAP_PIC1)->Invalidate(FALSE);
+	GetDlgItem(IDC_CAP_PIC2)->Invalidate(FALSE);
+	GetDlgItem(IDC_CAP_PIC3)->Invalidate(FALSE);
+	GetDlgItem(IDC_CAP_PIC4)->Invalidate(FALSE);
+	GetDlgItem(IDC_CAP_PIC5)->Invalidate(FALSE);
+	GetDlgItem(IDC_CAP_PIC6)->Invalidate(FALSE);
+	GetDlgItem(IDC_CAP_PIC7)->Invalidate(FALSE);
+	GetDlgItem(IDC_CAP_PIC8)->Invalidate(FALSE);
 }

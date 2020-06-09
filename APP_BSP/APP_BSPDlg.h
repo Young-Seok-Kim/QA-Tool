@@ -139,7 +139,6 @@ public:
 	CEdit m_Loop;
 	CEdit m_gap;
 	CEdit m_Accurate;
-//	afx_msg void OnBnClickedStop();
 	afx_msg void OnBnClickedStart();
 	afx_msg void OnBnClickedStop();
 	afx_msg void OnCbnSelchangeTestScreen();

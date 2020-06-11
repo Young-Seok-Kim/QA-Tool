@@ -128,7 +128,7 @@ public:
 	int Test_cnt;
 	double Match_Accurate;
 	afx_msg LRESULT OnUserFunc(WPARAM wParam, LPARAM lParam);	
-	int sel_cap;
+	//int sel_cap;
 	int sw_Compare;	
 	CString Save_CAP_Image_Dir_Check; // 이미지를 캡쳐 할때 이미지 저장 폴더가 없다면 생성하기 위한 변수
 	CString Save_Root_Dir;	

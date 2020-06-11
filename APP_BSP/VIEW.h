@@ -75,9 +75,9 @@ public:
 	afx_msg void OnBnClickedCapBtn6();
 	afx_msg void OnBnClickedCapBtn7();
 	afx_msg void OnBnClickedCapBtn8();
-	CComboBox m_sel_cap;
+	//CComboBox m_sel_cap;
 	CStatic m_cap8;
-	afx_msg void OnBnClickedSelCap();
+//	afx_msg void OnBnClickedSelCap();
 	CStatic m_cap7;
 	CStatic m_cap6;
 	CStatic m_cap5;

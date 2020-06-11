@@ -61,7 +61,7 @@ void VIEW::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_CAM, m_ctrCamView);
 	DDX_Control(pDX, IDC_COMBO1, sel);
 	DDX_Control(pDX, IDC_CAP_PIC1, m_cap1);
-	DDX_Control(pDX, IDC_CAP_SEL, m_sel_cap);
+	//DDX_Control(pDX, IDC_CAP_SEL, m_sel_cap);
 	DDX_Control(pDX, IDC_CAP_PIC8, m_cap8);
 	DDX_Control(pDX, IDC_CAP_PIC7, m_cap7);
 	DDX_Control(pDX, IDC_CAP_PIC6, m_cap6);
@@ -98,7 +98,7 @@ ON_BN_CLICKED(IDC_CAP_BTN6, &VIEW::OnBnClickedCapBtn6)
 ON_BN_CLICKED(IDC_CAP_BTN7, &VIEW::OnBnClickedCapBtn7)
 ON_BN_CLICKED(IDC_CAP_BTN8, &VIEW::OnBnClickedCapBtn8)
 
-ON_BN_CLICKED(IDC_sel_cap, &VIEW::OnBnClickedSelCap)
+//ON_BN_CLICKED(IDC_sel_cap, &VIEW::OnBnClickedSelCap)
 ON_WM_INITMENU()
 ON_BN_CLICKED(IDC_COM_BTN1, &VIEW::OnBnClickedComBtn1)
 ON_BN_CLICKED(IDC_COM_BTN2, &VIEW::OnBnClickedComBtn2)
@@ -111,6 +111,7 @@ ON_BN_CLICKED(IDC_COM_BTN8, &VIEW::OnBnClickedComBtn8)
 ON_BN_CLICKED(IDC_INIT_IMAGE, &VIEW::OnBnClickedInitImage)
 ON_WM_DESTROY()
 ON_WM_PAINT()
+//ON_CBN_SELCHANGE(IDC_CAP_SEL, &VIEW::OnCbnSelchangeCapSel)
 END_MESSAGE_MAP()
 
 void VIEW::CAP_button_active()
@@ -344,7 +345,8 @@ void VIEW::OnActivate(UINT nState, CWnd* pWndOther, BOOL bMinimized)
 		{
 			CAP_button_disable();
 		}
-		
+
+		//m_sel_cap.SetCurSel(Main->sel_cap - 1);
 	}
 
 	for(int i=0;i<8;i++)
@@ -386,7 +388,7 @@ void VIEW::OnActivate(UINT nState, CWnd* pWndOther, BOOL bMinimized)
 		}
 	}
 	sel.SetCurSel(Main->sel_cam);
-	m_sel_cap.SetCurSel(Main->sel_cap - 1);
+	
 }
 
 
@@ -925,224 +927,112 @@ void VIEW::OnBnClickedCapBtn8()
 
 
 
-void VIEW::OnBnClickedSelCap()
-{
-	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
-
-	CAPP_BSPDlg *Main = (CAPP_BSPDlg*)AfxGetApp()->GetMainWnd();
-
-	CRect rect;
-	GetClientRect(&rect);
-	CBrush myBrush(GRAY); // dialog background color <- 요기 바꾸면 됨.
-
-	// 다시 눌렀을때를 대비해서 일단 전부 활성화 시키고, 필요한만큼 다시 비활성화 시킨다.
-	VIEW::CAP_button_active();
-	VIEW::COM_button_disable();
-
-	cout << m_sel_cap.GetCurSel()+1 << "개의 이미지 비교" << endl;
-	Main->sel_cap = m_sel_cap.GetCurSel() ;
-
-	// for(Main->sel_cap = m_Main->sel_cap.GetCurSel() ; 7 - Main->sel_cap > 0 ;Main->sel_cap++ )
-	{
-		if(Main->sel_cap+1 == 1)
-		{
-			CDC* pDC2 = m_cap2.GetWindowDC();
-			CBrush *pOld2 = pDC2->SelectObject(&myBrush);
-			BOOL bRes2 = pDC2->PatBlt(0, 0, rect.Width(), rect.Height(), PATCOPY);
-			pDC2->SelectObject(pOld2); // restore old brush
-			
-			CDC* pDC3 = m_cap3.GetWindowDC();
-			CBrush *pOld3 = pDC3->SelectObject(&myBrush);
-			BOOL bRes3 = pDC3->PatBlt(0, 0, rect.Width(), rect.Height(), PATCOPY);
-			pDC3->SelectObject(pOld3); // restore old brush
-
-			CDC* pDC4 = m_cap4.GetWindowDC();
-			CBrush *pOld4 = pDC4->SelectObject(&myBrush);
-			BOOL bRes4 = pDC4->PatBlt(0, 0, rect.Width(), rect.Height(), PATCOPY);
-			pDC4->SelectObject(pOld4); // restore old brush
-			
-			CDC* pDC5 = m_cap5.GetWindowDC();
-			CBrush *pOld5 = pDC5->SelectObject(&myBrush);
-			BOOL bRes5 = pDC5->PatBlt(0, 0, rect.Width(), rect.Height(), PATCOPY);
-			pDC5->SelectObject(pOld5); // restore old brush
-
-			CDC* pDC6 = m_cap6.GetWindowDC();
-			CBrush *pOld6 = pDC6->SelectObject(&myBrush);
-			BOOL bRes6 = pDC6->PatBlt(0, 0, rect.Width(), rect.Height(), PATCOPY);
-			pDC6->SelectObject(pOld6); // restore old brush
-
-			CDC* pDC7 = m_cap7.GetWindowDC();
-			CBrush *pOld7 = pDC7->SelectObject(&myBrush);
-			BOOL bRes7 = pDC7->PatBlt(0, 0, rect.Width(), rect.Height(), PATCOPY);
-			pDC7->SelectObject(pOld7); // restore old brush
-
-			CDC* pDC8 = m_cap8.GetWindowDC();
-			CBrush *pOld8 = pDC8->SelectObject(&myBrush);
-			BOOL bRes8 = pDC8->PatBlt(0, 0, rect.Width(), rect.Height(), PATCOPY);
-			pDC8->SelectObject(pOld8); // restore old brush
-
-			GetDlgItem(IDC_CAP_BTN2)->EnableWindow(FALSE);
-			GetDlgItem(IDC_CAP_BTN3)->EnableWindow(FALSE);
-			GetDlgItem(IDC_CAP_BTN4)->EnableWindow(FALSE);
-			GetDlgItem(IDC_CAP_BTN5)->EnableWindow(FALSE);
-			GetDlgItem(IDC_CAP_BTN6)->EnableWindow(FALSE);
-			GetDlgItem(IDC_CAP_BTN7)->EnableWindow(FALSE);
-			GetDlgItem(IDC_CAP_BTN8)->EnableWindow(FALSE); // 버튼 비활성화
-		}
-		else if(Main->sel_cap+1 == 2)
-		{			
-			CDC* pDC3 = m_cap3.GetWindowDC();
-			CBrush *pOld3 = pDC3->SelectObject(&myBrush);
-			BOOL bRes3 = pDC3->PatBlt(0, 0, rect.Width(), rect.Height(), PATCOPY);
-			pDC3->SelectObject(pOld3); // restore old brush
-
-			CDC* pDC4 = m_cap4.GetWindowDC();
-			CBrush *pOld4 = pDC4->SelectObject(&myBrush);
-			BOOL bRes4 = pDC4->PatBlt(0, 0, rect.Width(), rect.Height(), PATCOPY);
-			pDC4->SelectObject(pOld4); // restore old brush
-			
-			CDC* pDC5 = m_cap5.GetWindowDC();
-			CBrush *pOld5 = pDC5->SelectObject(&myBrush);
-			BOOL bRes5 = pDC5->PatBlt(0, 0, rect.Width(), rect.Height(), PATCOPY);
-			pDC5->SelectObject(pOld5); // restore old brush
-
-			CDC* pDC6 = m_cap6.GetWindowDC();
-			CBrush *pOld6 = pDC6->SelectObject(&myBrush);
-			BOOL bRes6 = pDC6->PatBlt(0, 0, rect.Width(), rect.Height(), PATCOPY);
-			pDC6->SelectObject(pOld6); // restore old brush
-
-			CDC* pDC7 = m_cap7.GetWindowDC();
-			CBrush *pOld7 = pDC7->SelectObject(&myBrush);
-			BOOL bRes7 = pDC7->PatBlt(0, 0, rect.Width(), rect.Height(), PATCOPY);
-			pDC7->SelectObject(pOld7); // restore old brush
-
-			CDC* pDC8 = m_cap8.GetWindowDC();
-			CBrush *pOld8 = pDC8->SelectObject(&myBrush);
-			BOOL bRes8 = pDC8->PatBlt(0, 0, rect.Width(), rect.Height(), PATCOPY);
-			pDC8->SelectObject(pOld8); // restore old brush
-
-			GetDlgItem(IDC_CAP_BTN3)->EnableWindow(FALSE);
-			GetDlgItem(IDC_CAP_BTN4)->EnableWindow(FALSE);
-			GetDlgItem(IDC_CAP_BTN5)->EnableWindow(FALSE);
-			GetDlgItem(IDC_CAP_BTN6)->EnableWindow(FALSE);
-			GetDlgItem(IDC_CAP_BTN7)->EnableWindow(FALSE);
-			GetDlgItem(IDC_CAP_BTN8)->EnableWindow(FALSE); // 버튼 비활성화
-		}
-		else if(Main->sel_cap+1 == 3)
-		{
-			CDC* pDC4 = m_cap4.GetWindowDC();
-			CBrush *pOld4 = pDC4->SelectObject(&myBrush);
-			BOOL bRes4 = pDC4->PatBlt(0, 0, rect.Width(), rect.Height(), PATCOPY);
-			pDC4->SelectObject(pOld4); // restore old brush
-			
-			CDC* pDC5 = m_cap5.GetWindowDC();
-			CBrush *pOld5 = pDC5->SelectObject(&myBrush);
-			BOOL bRes5 = pDC5->PatBlt(0, 0, rect.Width(), rect.Height(), PATCOPY);
-			pDC5->SelectObject(pOld5); // restore old brush
-
-			CDC* pDC6 = m_cap6.GetWindowDC();
-			CBrush *pOld6 = pDC6->SelectObject(&myBrush);
-			BOOL bRes6 = pDC6->PatBlt(0, 0, rect.Width(), rect.Height(), PATCOPY);
-			pDC6->SelectObject(pOld6); // restore old brush
-
-			CDC* pDC7 = m_cap7.GetWindowDC();
-			CBrush *pOld7 = pDC7->SelectObject(&myBrush);
-			BOOL bRes7 = pDC7->PatBlt(0, 0, rect.Width(), rect.Height(), PATCOPY);
-			pDC7->SelectObject(pOld7); // restore old brush
-
-			CDC* pDC8 = m_cap8.GetWindowDC();
-			CBrush *pOld8 = pDC8->SelectObject(&myBrush);
-			BOOL bRes8 = pDC8->PatBlt(0, 0, rect.Width(), rect.Height(), PATCOPY);
-			pDC8->SelectObject(pOld8); // restore old brush
-			
-			GetDlgItem(IDC_CAP_BTN4)->EnableWindow(FALSE);
-			GetDlgItem(IDC_CAP_BTN5)->EnableWindow(FALSE);
-			GetDlgItem(IDC_CAP_BTN6)->EnableWindow(FALSE);
-			GetDlgItem(IDC_CAP_BTN7)->EnableWindow(FALSE);
-			GetDlgItem(IDC_CAP_BTN8)->EnableWindow(FALSE); // 버튼 비활성화
-		}
-		else if(Main->sel_cap+1 == 4)
-		{
-			
-			CDC* pDC5 = m_cap5.GetWindowDC();
-			CBrush *pOld5 = pDC5->SelectObject(&myBrush);
-			BOOL bRes5 = pDC5->PatBlt(0, 0, rect.Width(), rect.Height(), PATCOPY);
-			pDC5->SelectObject(pOld5); // restore old brush
-
-			CDC* pDC6 = m_cap6.GetWindowDC();
-			CBrush *pOld6 = pDC6->SelectObject(&myBrush);
-			BOOL bRes6 = pDC6->PatBlt(0, 0, rect.Width(), rect.Height(), PATCOPY);
-			pDC6->SelectObject(pOld6); // restore old brush
-
-			CDC* pDC7 = m_cap7.GetWindowDC();
-			CBrush *pOld7 = pDC7->SelectObject(&myBrush);
-			BOOL bRes7 = pDC7->PatBlt(0, 0, rect.Width(), rect.Height(), PATCOPY);
-			pDC7->SelectObject(pOld7); // restore old brush
-
-			CDC* pDC8 = m_cap8.GetWindowDC();
-			CBrush *pOld8 = pDC8->SelectObject(&myBrush);
-			BOOL bRes8 = pDC8->PatBlt(0, 0, rect.Width(), rect.Height(), PATCOPY);
-			pDC8->SelectObject(pOld8); // restore old brush
-			
-			GetDlgItem(IDC_CAP_BTN5)->EnableWindow(FALSE);
-			GetDlgItem(IDC_CAP_BTN6)->EnableWindow(FALSE);
-			GetDlgItem(IDC_CAP_BTN7)->EnableWindow(FALSE);
-			GetDlgItem(IDC_CAP_BTN8)->EnableWindow(FALSE); // 버튼 비활성화
-		}
-		else if(Main->sel_cap+1 == 5)
-		{
-			CDC* pDC6 = m_cap6.GetWindowDC();
-			CBrush *pOld6 = pDC6->SelectObject(&myBrush);
-			BOOL bRes6 = pDC6->PatBlt(0, 0, rect.Width(), rect.Height(), PATCOPY);
-			pDC6->SelectObject(pOld6); // restore old brush
-
-			CDC* pDC7 = m_cap7.GetWindowDC();
-			CBrush *pOld7 = pDC7->SelectObject(&myBrush);
-			BOOL bRes7 = pDC7->PatBlt(0, 0, rect.Width(), rect.Height(), PATCOPY);
-			pDC7->SelectObject(pOld7); // restore old brush
-
-			CDC* pDC8 = m_cap8.GetWindowDC();
-			CBrush *pOld8 = pDC8->SelectObject(&myBrush);
-			BOOL bRes8 = pDC8->PatBlt(0, 0, rect.Width(), rect.Height(), PATCOPY);
-			pDC8->SelectObject(pOld8); // restore old brush
-			
-			GetDlgItem(IDC_CAP_BTN6)->EnableWindow(FALSE);
-			GetDlgItem(IDC_CAP_BTN7)->EnableWindow(FALSE);
-			GetDlgItem(IDC_CAP_BTN8)->EnableWindow(FALSE); // 버튼 비활성화
-		}
-		else if(Main->sel_cap+1 == 6)
-		{
-			CDC* pDC7 = m_cap7.GetWindowDC();
-			CBrush *pOld7 = pDC7->SelectObject(&myBrush);
-			BOOL bRes7 = pDC7->PatBlt(0, 0, rect.Width(), rect.Height(), PATCOPY);
-			pDC7->SelectObject(pOld7); // restore old brush
-
-			CDC* pDC8 = m_cap8.GetWindowDC();
-			CBrush *pOld8 = pDC8->SelectObject(&myBrush);
-			BOOL bRes8 = pDC8->PatBlt(0, 0, rect.Width(), rect.Height(), PATCOPY);
-			pDC8->SelectObject(pOld8); // restore old brush
-			
-			GetDlgItem(IDC_CAP_BTN7)->EnableWindow(FALSE);
-			GetDlgItem(IDC_CAP_BTN8)->EnableWindow(FALSE); // 버튼 비활성화
-		}
-		else if(Main->sel_cap+1 == 7)
-		{
-			CDC* pDC8 = m_cap8.GetWindowDC();
-			CBrush *pOld8 = pDC8->SelectObject(&myBrush);
-			BOOL bRes8 = pDC8->PatBlt(0, 0, rect.Width(), rect.Height(), PATCOPY);
-			pDC8->SelectObject(pOld8); // restore old brush
-			
-			GetDlgItem(IDC_CAP_BTN8)->EnableWindow(FALSE); // 버튼 비활성화
-		}
-		else
-		{
-			cout << "이미지 8개 모두 비교" << endl;
-		} // if문의 끝
-		
-		//cout << "Main->sel_cap의 값은 : "<< Main->sel_cap << endl;
-	}// for문의 끝
-	cout << "--------------------" << endl;
-}
+//void VIEW::OnBnClickedSelCap()
+//{
+//	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+//
+//	CAPP_BSPDlg *Main = (CAPP_BSPDlg*)AfxGetApp()->GetMainWnd();
+//
+//	CRect rect;
+//	GetClientRect(&rect);
+//	CBrush myBrush(GRAY); // dialog background color <- 요기 바꾸면 됨.
+//	
+//	::InvalidateRect(this->m_hWnd,NULL,TRUE); // Picutre Control에 그려진 캡쳐된 이미지를 지워주는 코드
+//
+//	// 다시 눌렀을때를 대비해서 일단 전부 활성화 시키고, 필요한만큼 다시 비활성화 시킨다.
+//	VIEW::CAP_button_active();
+//	VIEW::COM_button_disable();
+//
+//	cout << m_sel_cap.GetCurSel() + 1 << "개의 이미지 비교" << endl;
+//	Main->sel_cap = m_sel_cap.GetCurSel() ;
+//
+//	for(int i = 7 ; i >= Main->sel_cap  ; i--)
+//	{
+//		if(Main->Result_cap[i])
+//			cvReleaseImage(&Main->Result_cap[i]);
+//
+//		Thread_compare[i] = 0;
+//	}
+//
+//		switch ( Main->sel_cap + 1 ) // 사용하지 않는 화면은 회색으로 만들어주는 기능
+//		{
+//			case 1 :
+//			{
+//				GetDlgItem(IDC_CAP_BTN2)->EnableWindow(FALSE);
+//				GetDlgItem(IDC_CAP_BTN3)->EnableWindow(FALSE);
+//				GetDlgItem(IDC_CAP_BTN4)->EnableWindow(FALSE);
+//				GetDlgItem(IDC_CAP_BTN5)->EnableWindow(FALSE);
+//				GetDlgItem(IDC_CAP_BTN6)->EnableWindow(FALSE);
+//				GetDlgItem(IDC_CAP_BTN7)->EnableWindow(FALSE);
+//				GetDlgItem(IDC_CAP_BTN8)->EnableWindow(FALSE); // 버튼 비활성화
+//
+//				break;
+//			}
+//			case 2 :
+//			{			
+//				GetDlgItem(IDC_CAP_BTN3)->EnableWindow(FALSE);
+//				GetDlgItem(IDC_CAP_BTN4)->EnableWindow(FALSE);
+//				GetDlgItem(IDC_CAP_BTN5)->EnableWindow(FALSE);
+//				GetDlgItem(IDC_CAP_BTN6)->EnableWindow(FALSE);
+//				GetDlgItem(IDC_CAP_BTN7)->EnableWindow(FALSE);
+//				GetDlgItem(IDC_CAP_BTN8)->EnableWindow(FALSE); // 버튼 비활성화
+//
+//				break;
+//			}
+//			case 3 :
+//			{
+//				
+//				GetDlgItem(IDC_CAP_BTN4)->EnableWindow(FALSE);
+//				GetDlgItem(IDC_CAP_BTN5)->EnableWindow(FALSE);
+//				GetDlgItem(IDC_CAP_BTN6)->EnableWindow(FALSE);
+//				GetDlgItem(IDC_CAP_BTN7)->EnableWindow(FALSE);
+//				GetDlgItem(IDC_CAP_BTN8)->EnableWindow(FALSE); // 버튼 비활성화
+//
+//				break;
+//			}
+//			case 4 :
+//			{
+//				GetDlgItem(IDC_CAP_BTN5)->EnableWindow(FALSE);
+//				GetDlgItem(IDC_CAP_BTN6)->EnableWindow(FALSE);
+//				GetDlgItem(IDC_CAP_BTN7)->EnableWindow(FALSE);
+//				GetDlgItem(IDC_CAP_BTN8)->EnableWindow(FALSE); // 버튼 비활성화
+//
+//				break;
+//			}
+//			case 5 :
+//			{
+//				GetDlgItem(IDC_CAP_BTN6)->EnableWindow(FALSE);
+//				GetDlgItem(IDC_CAP_BTN7)->EnableWindow(FALSE);
+//				GetDlgItem(IDC_CAP_BTN8)->EnableWindow(FALSE); // 버튼 비활성화
+//
+//				break;
+//			}
+//			case 6 :
+//			{
+//				GetDlgItem(IDC_CAP_BTN7)->EnableWindow(FALSE);
+//				GetDlgItem(IDC_CAP_BTN8)->EnableWindow(FALSE); // 버튼 비활성화
+//
+//				break;
+//			}
+//			case 7 :
+//			{
+//				/* Picutre Control에 색깔을 넣어주는 코드인데 사용하지 않아서 주석처리
+//					CDC* pDC8 = m_cap8.GetWindowDC();
+//					CBrush *pOld8 = pDC8->SelectObject(&myBrush);
+//					BOOL bRes8 = pDC8->PatBlt(0, 0, rect.Width(), rect.Height(), PATCOPY);
+//					pDC8->SelectObject(pOld8); // restore old brush
+//				*/
+//				
+//				GetDlgItem(IDC_CAP_BTN8)->EnableWindow(FALSE); // 버튼 비활성화
+//
+//				break;
+//			}
+//			default :
+//				cout << "이미지 8개 모두 비교" << endl;
+//		} // switch문의 끝
+//	
+//	cout << "--------------------" << endl;
+//}
 
 void VIEW::OnInitMenu(CMenu* pMenu)
 {
@@ -1316,3 +1206,4 @@ void VIEW::OnPaint()
 	// TODO: 여기에 메시지 처리기 코드를 추가합니다.
 	// 그리기 메시지에 대해서는 CAPP_BSPDlg::OnPaint()을(를) 호출하지 마십시오.
 }
+

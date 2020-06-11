@@ -23,7 +23,7 @@
 #define IDC_CAP_BTN3                    1012
 #define IDC_CAP_PIC4                    1013
 #define IDC_CAP_BTN4                    1014
-#define IDC_sel_cap                     1015
+//#define IDC_sel_cap                     1015
 #define IDC_COM_BTN                     1016
 #define IDC_COM_BTN2                    1017
 #define IDC_START                       1017

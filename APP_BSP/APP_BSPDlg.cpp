@@ -360,7 +360,7 @@ void CAPP_BSPDlg::OnActivate(UINT nState, CWnd* pWndOther, BOOL bMinimized)
 
 		Main->sel_cam = 0;
 		
-		Main->sel_cap = 1;
+		//Main->sel_cap = 1;
 
 		Main->m_Main_sel_cam.SetCurSel(0); // 카메라가 기본적으로 0번 선택되게함
 

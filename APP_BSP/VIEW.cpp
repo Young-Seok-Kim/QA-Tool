@@ -110,6 +110,7 @@ ON_BN_CLICKED(IDC_COM_BTN7, &VIEW::OnBnClickedComBtn7)
 ON_BN_CLICKED(IDC_COM_BTN8, &VIEW::OnBnClickedComBtn8)
 ON_BN_CLICKED(IDC_INIT_IMAGE, &VIEW::OnBnClickedInitImage)
 ON_WM_DESTROY()
+ON_WM_PAINT()
 END_MESSAGE_MAP()
 
 void VIEW::CAP_button_active()
@@ -1274,7 +1275,7 @@ void VIEW::OnBnClickedInitImage()
 	Main->Test_cnt = 0;
 
 	VIEW::COM_button_disable();
-	VIEW::PIC_Invalidate();
+	::InvalidateRect(this->m_hWnd,NULL,TRUE); // Picutre Control에 그려진 캡쳐된 이미지를 지워주는 코드
 
 	AfxMessageBox(_T("비교할 이미지가 초기화 되었습니다."));
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
@@ -1282,8 +1283,6 @@ void VIEW::OnBnClickedInitImage()
 
 void VIEW::OnDestroy()
 {
-	//delete Main->m_pDlg;
-
 	CAPP_BSPDlg::OnDestroy();	
 	// TODO: 여기에 메시지 처리기 코드를 추가합니다.
 }
@@ -1311,15 +1310,9 @@ void VIEW::COM_button_disable()
 	GetDlgItem(IDC_COM_BTN7)->EnableWindow(FALSE);
 	GetDlgItem(IDC_COM_BTN8)->EnableWindow(FALSE);
 }
-
-void VIEW::PIC_Invalidate()
+void VIEW::OnPaint()
 {
-	GetDlgItem(IDC_CAP_PIC1)->Invalidate(FALSE);
-	GetDlgItem(IDC_CAP_PIC2)->Invalidate(FALSE);
-	GetDlgItem(IDC_CAP_PIC3)->Invalidate(FALSE);
-	GetDlgItem(IDC_CAP_PIC4)->Invalidate(FALSE);
-	GetDlgItem(IDC_CAP_PIC5)->Invalidate(FALSE);
-	GetDlgItem(IDC_CAP_PIC6)->Invalidate(FALSE);
-	GetDlgItem(IDC_CAP_PIC7)->Invalidate(FALSE);
-	GetDlgItem(IDC_CAP_PIC8)->Invalidate(FALSE);
+	CPaintDC dc(this); // device context for painting
+	// TODO: 여기에 메시지 처리기 코드를 추가합니다.
+	// 그리기 메시지에 대해서는 CAPP_BSPDlg::OnPaint()을(를) 호출하지 마십시오.
 }

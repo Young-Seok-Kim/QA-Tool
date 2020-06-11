@@ -48,7 +48,6 @@ private:
 	void CAP_button_disable();
 	void COM_button_active();
 	void COM_button_disable();
-	void PIC_Invalidate();
 
 public: 
 	static UINT ThreadSecond(LPVOID _mothod); // 캠 영상을 Picture Control에 계속 띄워주기 위해 사용하는 쓰레드
@@ -105,4 +104,5 @@ public:
 
 	afx_msg void OnBnClickedInitImage();
 	afx_msg void OnDestroy();
+	afx_msg void OnPaint();
 };

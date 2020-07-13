@@ -8,4 +8,5 @@ Main Dialog가 열림
 -> STOP 버튼을 누르면 Compare 종료
 
 Thread First의 역할 : 다이얼로그에 캠을 그려주며 캡쳐한 이미지를 세팅에 맞게 Compare한다.
-Thread Second의 역할 : 다이얼로그에 캠을 그려주며 COM 버튼을 누르면 그 이미지 1개를 Compare한다.
+Thread Second의 역할 : 다이얼로그에 캠을 그려주며 CAP 버튼을 누르면 이미지를 캡쳐한다.
+		       COM 버튼을 누르면 그 이미지 1개를 Compare한다.

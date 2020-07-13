@@ -349,7 +349,7 @@ void VIEW::OnActivate(UINT nState, CWnd* pWndOther, BOOL bMinimized)
 		//m_sel_cap.SetCurSel(Main->sel_cap - 1);
 	}
 
-	for(int i=0;i<8;i++)
+	for(int i=0 ; i<8 ; i++)
 	{
 		switch(i)
 		{

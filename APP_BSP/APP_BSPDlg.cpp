@@ -925,6 +925,8 @@ void DeleteAllFiles(CString dirName) // 폴더 내 모든 파일을 삭제하는 함수
 		}
 
 		CString filePath = finder.GetFilePath();
+		CString fileName = finder.GetFileName();
+		wcout << (LPCTSTR)fileName << "를 삭제합니다." << endl;
 		DeleteFile(filePath);
 	}
 	finder.Close();

@@ -926,7 +926,7 @@ void DeleteAllFiles(CString dirName) // 폴더 내 모든 파일을 삭제하는 함수
 
 		CString filePath = finder.GetFilePath();
 		CString fileName = finder.GetFileName();
-		wcout << (LPCTSTR)fileName << "를 삭제합니다." << endl;
+		wcout << (LPCTSTR)fileName << "를 삭제합니다." << endl; // cout을 이용해 출력하면 16진수로 나와서 wcout을 사용했다.
 		DeleteFile(filePath);
 	}
 	finder.Close();
@@ -935,7 +935,7 @@ BOOL CAPP_BSPDlg::PreTranslateMessage(MSG* pMsg)
 {
 	// TODO: 여기에 특수화된 코드를 추가 및/또는 기본 클래스를 호출합니다.
 
-	if(pMsg->message == WM_KEYDOWN)
+	if(pMsg->message == WM_KEYDOWN) // ENTER키 및 ESC키로 툴이 종료되지 않게 만들어주는 코드
 	{
 		if(pMsg->wParam == VK_RETURN) // ENTER키 눌릴 시
 			return TRUE;
